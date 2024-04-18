@@ -1,9 +1,5 @@
 defmodule Karabinex do
-  @moduledoc """
-  Documentation for `Karabinex`.
-  """
-
-  @type command_kind :: :app | :sh | :raycast | :quit
+  @type command_kind :: :app | :quit | :sh | :raycast
   @type command :: {command_kind(), String.t()}
   @type keymap :: %{String.t() => command() | keymap()}
 
