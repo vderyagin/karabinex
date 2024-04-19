@@ -91,7 +91,7 @@ defmodule Karabinex do
       |> parse(rest)
     end
 
-    def parse(%__MODULE__{} = key, key_code) do
+    def parse(%__MODULE__{raw: raw} = key, key_code) do
       # TODO: fix this, it loads data from json on every call
       codes = key_codes()
 
@@ -100,7 +100,7 @@ defmodule Karabinex do
           MapSet.member?(codes[:regular], key_code) -> :regular
           MapSet.member?(codes[:consumer], key_code) -> :consumer
           MapSet.member?(codes[:pointer], key_code) -> :pointer
-          true -> raise "key code not recognized: #{key_code}"
+          true -> raise "key code not recognized: #{raw}"
         end
 
       key
@@ -142,94 +142,6 @@ defmodule Karabinex do
     end
   end
 
-  defmodule Manipulator do
-    @base_manipulator %{
-      type: :basic
-    }
-
-    def enable_keymap(key) do
-      @base_manipulator
-      |> Map.merge(Key.new(key) |> Key.from_object())
-      |> Map.merge(%{
-        to: [
-          %{
-            set_variable: %{
-              name: prefix_var_name(key),
-              value: 1
-            }
-          }
-        ]
-      })
-    end
-
-    def command(parent_key, key, kind, arg, _options) do
-      @base_manipulator
-      |> Map.merge(Key.new(key) |> Key.from_object())
-      |> Map.merge(%{
-        to: [
-          command_object(kind, arg),
-          %{
-            set_variable: %{
-              name: prefix_var_name(parent_key),
-              value: 0
-            }
-          }
-        ],
-        conditions: [
-          %{
-            type: :variable_if,
-            name: prefix_var_name(parent_key),
-            value: 1
-          }
-        ]
-      })
-    end
-
-    def command_object(:app, arg) do
-      command_object(:sh, "open -a '#{arg}'")
-    end
-
-    def command_object(:raycast, arg) do
-      command_object(:sh, "open raycast://#{arg}")
-    end
-
-    def command_object(:quit, arg) do
-      command_object(:sh, "osascript -e 'quit app \"#{arg}\"'")
-    end
-
-    def command_object(:sh, arg) do
-      %{shell_command: arg}
-    end
-
-    def disable_keymap(key) do
-      @base_manipulator
-      |> Map.merge(%{
-        from: %{
-          any: :key_code
-        },
-        to: [
-          %{
-            set_variable: %{
-              name: prefix_var_name(key),
-              value: 0
-            }
-          }
-        ],
-        conditions: [
-          %{
-            type: :variable_if,
-            name: prefix_var_name(key),
-            value: 1
-          }
-        ]
-      })
-    end
-
-    def prefix_var_name(key) do
-      key
-    end
-  end
-
   defmodule Command do
     @type kind ::
             :app
@@ -262,27 +174,128 @@ defmodule Karabinex do
   defmodule Keymap do
     @type spec :: %{String.t() => Command.spec() | spec()}
 
-    defstruct [:key, prefix: []]
+    defstruct [:key, prefix: [], commands: []]
 
-    def new(key, prefix) do
+    def new(key, prefix, commands) do
       %__MODULE__{
         key: key,
-        prefix: prefix
+        prefix: prefix,
+        commands: commands
       }
+    end
+  end
+
+  defmodule Manipulator do
+    @base_manipulator %{
+      type: :basic
+    }
+
+    def generate(%Keymap{key: key, prefix: prefix, commands: commands}) do
+      [
+        enable_keymap(key, prefix)
+        | commands |> Enum.flat_map(&generate/1)
+      ] ++ [disable_keymap(key, prefix)]
+    end
+
+    def generate(%Command{kind: kind, arg: arg, key: key, prefix: prefix}) do
+      @base_manipulator
+      |> Map.merge(Key.new(key) |> Key.from_object())
+      |> Map.merge(%{
+        to: [
+          command_object(kind, arg),
+          %{
+            set_variable: %{
+              name: prefix_var_name(prefix),
+              value: 0
+            }
+          }
+        ],
+        conditions: [
+          %{
+            type: :variable_if,
+            name: prefix_var_name(prefix),
+            value: 1
+          }
+        ]
+      })
+      |> List.wrap()
+    end
+
+    def enable_keymap(key, prefix) do
+      @base_manipulator
+      |> Map.merge(Key.new(key) |> Key.from_object())
+      |> Map.merge(%{
+        to: [
+          %{
+            set_variable: %{
+              name: prefix_var_name(prefix),
+              value: 0
+            }
+          },
+          %{
+            set_variable: %{
+              name: prefix_var_name(prefix ++ [key]),
+              value: 1
+            }
+          }
+        ]
+      })
+    end
+
+    def command_object(:app, arg) do
+      command_object(:sh, "open -a '#{arg}'")
+    end
+
+    def command_object(:raycast, arg) do
+      command_object(:sh, "open raycast://#{arg}")
+    end
+
+    def command_object(:quit, arg) do
+      command_object(:sh, "osascript -e 'quit app \"#{arg}\"'")
+    end
+
+    def command_object(:sh, arg) do
+      %{shell_command: arg}
+    end
+
+    def disable_keymap(key, prefix) do
+      @base_manipulator
+      |> Map.merge(%{
+        from: %{
+          any: :key_code
+        },
+        to: [
+          %{
+            set_variable: %{
+              name: prefix_var_name(prefix ++ [key]),
+              value: 0
+            }
+          }
+        ],
+        conditions: [
+          %{
+            type: :variable_if,
+            name: prefix_var_name(prefix ++ [key]),
+            value: 1
+          }
+        ]
+      })
+    end
+
+    def prefix_var_name(keys) do
+      (Enum.join(keys, "_") <> "_keymap")
+      |> String.replace("✦", "hyper")
     end
   end
 
   defmodule Config do
     def parse_definitions(defs, prefix \\ []) do
       defs
-      |> Enum.flat_map(&parse_definition(&1, prefix))
+      |> Enum.map(&parse_definition(&1, prefix))
     end
 
     def parse_definition({key, %{} = keymap_spec}, prefix) do
-      [
-        Keymap.new(key, prefix)
-        | parse_definitions(keymap_spec, prefix ++ [key])
-      ]
+      Keymap.new(key, prefix, parse_definitions(keymap_spec, prefix ++ [key]))
     end
 
     def parse_definition({key, {kind, arg}}, prefix) do
@@ -290,7 +303,7 @@ defmodule Karabinex do
     end
 
     def parse_definition({key, {kind, arg, opts}}, prefix) do
-      [Command.new(kind, arg, key, prefix, opts)]
+      Command.new(kind, arg, key, prefix, opts)
     end
   end
 
@@ -307,7 +320,8 @@ defmodule Karabinex do
         "r" => %{
           "c" => {:raycast, "extensions/raycast/raycast/confetti", repeat: :key},
           "g" => {:raycast, "extensions/josephschmitt/gif-search/search"},
-          "t" => {:raycast, "extensions/gebeto/translate/translate"}
+          "t" => {:raycast, "extensions/gebeto/translate/translate"},
+          "b" => {:raycast, "extensions/nhojb/brew/search"}
         }
       },
       "✦-k" => %{
@@ -323,5 +337,28 @@ defmodule Karabinex do
   def test do
     definitions()
     |> Config.parse_definitions()
+    |> Enum.flat_map(&Manipulator.generate/1)
+    |> Jason.encode!(pretty: true)
+    |> IO.puts()
+  end
+
+  def json do
+    %{
+      title: "Nested Emacs-like bindings",
+      rules: [
+        %{
+          description: "Nested Emacs-like bindings",
+          manipulators:
+            definitions()
+            |> Config.parse_definitions()
+            |> Enum.flat_map(&Manipulator.generate/1)
+        }
+      ]
+    }
+    |> Jason.encode!(pretty: true)
+  end
+
+  def write_config do
+    File.write!("./karabiner.json", json())
   end
 end
