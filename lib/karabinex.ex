@@ -322,6 +322,8 @@ defmodule Karabinex do
     def prefix_var_name(keys) do
       (Enum.join(keys, "_") <> "_keymap")
       |> String.replace("✦", "hyper")
+      |> String.replace("⌥", "option")
+      |> String.replace("⌘", "command")
     end
   end
 
