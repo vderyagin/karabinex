@@ -1,9 +1,23 @@
 defmodule Karabinex do
-  @type command_kind :: :app | :quit | :sh | :raycast
-  @type command :: {command_kind(), String.t()}
-  @type keymap :: %{String.t() => command() | keymap()}
+  defmodule Command do
+    @type kind ::
+            :app
+            | :quit
+            | :sh
+            | :raycast
 
-  @spec definitions :: %{String.t() => keymap()}
+    @type spec ::
+            {kind(), String.t()}
+            | {kind(), String.t(), [option()]}
+
+    @type option ::
+            {:if, any()}
+            | {:repeat, :key | :keymap}
+  end
+
+  @type keymap :: %{String.t() => Command.spec() | keymap()}
+
+  @spec definitions :: keymap()
   def definitions do
     %{
       "H-x" => %{
@@ -14,8 +28,9 @@ defmodule Karabinex do
         "d" => {:app, "Dash"},
         "m" => {:sh, "pgrep mpv && open -a mpv || true"},
         "r" => %{
-          "c" => {:raycast, "extensions/raycast/raycast/confetti"},
-          "g" => {:raycast, "extensions/josephschmitt/gif-search/search"}
+          "c" => {:raycast, "extensions/raycast/raycast/confetti", repeat: :key},
+          "g" => {:raycast, "extensions/josephschmitt/gif-search/search"},
+          "t" => {:raycast, "extensions/gebeto/translate/translate"}
         }
       },
       "H-k" => %{
