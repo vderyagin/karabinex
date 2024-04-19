@@ -4,6 +4,7 @@ defmodule Karabinex do
             :app
             | :quit
             | :sh
+            | :remap
             | :raycast
 
     @type spec ::
@@ -13,11 +14,43 @@ defmodule Karabinex do
     @type option ::
             {:if, any()}
             | {:repeat, :key | :keymap}
+
+    defstruct [:kind, :arg, :opts]
+
+    def new(kind, arg, opts \\ []), do: %__MODULE__{kind: kind, arg: arg, opts: opts}
   end
 
-  @type keymap :: %{String.t() => Command.spec() | keymap()}
+  defmodule Keymap do
+    @type spec :: %{String.t() => Command.spec() | spec()}
 
-  @spec definitions :: keymap()
+    defstruct [:key]
+
+    def new(key), do: %__MODULE__{key: key}
+  end
+
+  defmodule Config do
+    def parse_definitions(defs) do
+      defs
+      |> Enum.flat_map(&parse_definition/1)
+    end
+
+    def parse_definition({key, %{} = keymap_spec}) do
+      [
+        Keymap.new(key)
+        | parse_definitions(keymap_spec)
+      ]
+    end
+
+    def parse_definition({key, {kind, arg}}) do
+      parse_definition({key, {kind, arg, []}})
+    end
+
+    def parse_definition({key, {kind, arg, opts}}) do
+      [Command.new(kind, arg, opts)]
+    end
+  end
+
+  @spec definitions :: Keymap.spec()
   def definitions do
     %{
       "H-x" => %{
