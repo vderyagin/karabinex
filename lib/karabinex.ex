@@ -162,6 +162,45 @@ defmodule Karabinex do
       })
     end
 
+    def command(parent_key, key, kind, arg, _options) do
+      @base_manipulator
+      |> Map.merge(Key.new(key) |> Key.from_object())
+      |> Map.merge(%{
+        to: [
+          command_object(kind, arg),
+          %{
+            set_variable: %{
+              name: prefix_var_name(parent_key),
+              value: 0
+            }
+          }
+        ],
+        conditions: [
+          %{
+            type: :variable_if,
+            name: prefix_var_name(parent_key),
+            value: 1
+          }
+        ]
+      })
+    end
+
+    def command_object(:app, arg) do
+      command_object(:sh, "open -a '#{arg}'")
+    end
+
+    def command_object(:raycast, arg) do
+      command_object(:sh, "open raycast://#{arg}")
+    end
+
+    def command_object(:quit, arg) do
+      command_object(:sh, "osascript -e 'quit app \"#{arg}\"'")
+    end
+
+    def command_object(:sh, arg) do
+      %{shell_command: arg}
+    end
+
     def disable_keymap(key) do
       @base_manipulator
       |> Map.merge(%{
