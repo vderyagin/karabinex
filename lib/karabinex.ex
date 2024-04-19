@@ -128,16 +128,27 @@ defmodule Karabinex do
     end
 
     def from_object(%__MODULE__{code: {:regular, code}, modifiers: modifiers}) do
+      mandatory_modifiers =
+        modifiers
+        |> Enum.filter(fn {_k, v} -> v end)
+        |> Enum.map(fn {k, _v} -> k end)
+
       %{
-        from: %{
-          key_code: code,
-          modifiers: %{
-            mandatory:
-              modifiers
-              |> Enum.filter(fn {_k, v} -> v end)
-              |> Enum.map(fn {k, _v} -> k end)
+        from:
+          %{
+            key_code: code
           }
-        }
+          |> Map.merge(
+            if Enum.empty?(mandatory_modifiers) do
+              %{}
+            else
+              %{
+                modifiers: %{
+                  mandatory: mandatory_modifiers
+                }
+              }
+            end
+          )
       }
     end
   end
@@ -197,19 +208,24 @@ defmodule Karabinex do
       ] ++ [disable_keymap(key, prefix)]
     end
 
-    def generate(%Command{kind: kind, arg: arg, key: key, prefix: prefix}) do
+    def generate(%Command{kind: kind, arg: arg, key: key, prefix: prefix, opts: opts}) do
       @base_manipulator
       |> Map.merge(Key.new(key) |> Key.from_object())
       |> Map.merge(%{
-        to: [
-          command_object(kind, arg),
-          %{
-            set_variable: %{
-              name: prefix_var_name(prefix),
-              value: 0
-            }
-          }
-        ],
+        to:
+          if opts[:repeat] do
+            [command_object(kind, arg)]
+          else
+            [
+              command_object(kind, arg),
+              %{
+                set_variable: %{
+                  name: prefix_var_name(prefix),
+                  value: 0
+                }
+              }
+            ]
+          end,
         conditions: [
           %{
             type: :variable_if,
@@ -219,6 +235,21 @@ defmodule Karabinex do
         ]
       })
       |> List.wrap()
+    end
+
+    def enable_keymap(key, []) do
+      @base_manipulator
+      |> Map.merge(Key.new(key) |> Key.from_object())
+      |> Map.merge(%{
+        to: [
+          %{
+            set_variable: %{
+              name: prefix_var_name([key]),
+              value: 1
+            }
+          }
+        ]
+      })
     end
 
     def enable_keymap(key, prefix) do
@@ -237,6 +268,13 @@ defmodule Karabinex do
               name: prefix_var_name(prefix ++ [key]),
               value: 1
             }
+          }
+        ],
+        conditions: [
+          %{
+            type: :variable_if,
+            name: prefix_var_name(prefix),
+            value: 1
           }
         ]
       })
@@ -311,10 +349,13 @@ defmodule Karabinex do
   def definitions do
     %{
       "✦-x" => %{
+        "e" => {:app, "Emacs"},
+        "✦-e" => {:sh, "PATH=/opt/homebrew/bin:$PATH emacsclient -c -a '' &"},
         "c" => {:app, "Brave Browser"},
         "s" => {:app, "Slack"},
         "a" => {:app, "Anki"},
         "b" => {:app, "Books"},
+        "t" => {:app, "Telegram Desktop"},
         "d" => {:app, "Dash"},
         "m" => {:sh, "pgrep mpv && open -a mpv || true"},
         "r" => %{
@@ -327,9 +368,12 @@ defmodule Karabinex do
       "✦-k" => %{
         "c" => {:quit, "Brave Browser"},
         "s" => {:quit, "Slack"},
-        "S-s" => {:sh, "killall -9 Slack"},
+        "✦-s" => {:sh, "killall -9 Slack"},
+        "✦-e" => {:sh, "killall -9 Emacs"},
         "a" => {:quit, "Anki"},
-        "b" => {:quit, "Books"}
+        "b" => {:quit, "Books"},
+        "t" => {:quit, "Telegram Desktop"},
+        "d" => {:quit, "Dash"}
       }
     }
   end
