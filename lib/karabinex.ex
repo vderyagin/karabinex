@@ -9,6 +9,25 @@ defmodule Karabinex do
                 control: false
               }
 
+    @type modifier ::
+            :command
+            | :shift
+            | :option
+            | :control
+
+    @type key_code_type ::
+            :regular
+            | :consumer
+            | :pointer
+
+    @type code :: {key_code_type(), String.t()}
+
+    @type t :: %__MODULE__{
+            raw: String.t(),
+            code: code(),
+            modifiers: %{modifier() => boolean()}
+          }
+
     def new(key) do
       %__MODULE__{raw: key}
       |> parse(key)
@@ -73,8 +92,39 @@ defmodule Karabinex do
     end
 
     def parse(%__MODULE__{} = key, key_code) do
+      # TODO: fix this, it loads data from json on every call
+      codes = key_codes()
+
+      code_type =
+        cond do
+          MapSet.member?(codes[:regular], key_code) -> :regular
+          MapSet.member?(codes[:consumer], key_code) -> :consumer
+          MapSet.member?(codes[:pointer], key_code) -> :pointer
+          true -> raise "key code not recognized: #{key_code}"
+        end
+
       key
-      |> set_code(key_code)
+      |> set_code({code_type, key_code})
+    end
+
+    def key_codes do
+      :code.priv_dir(:karabinex)
+      |> Path.join("/simple_modifications.json")
+      |> File.read!()
+      |> Jason.decode!()
+      |> Enum.reduce(%{}, fn
+        %{"data" => [%{"key_code" => code}]}, acc ->
+          Map.update(acc, :regular, MapSet.new(), &MapSet.put(&1, code))
+
+        %{"data" => [%{"consumer_key_code" => code}]}, acc ->
+          Map.update(acc, :consumer, MapSet.new(), &MapSet.put(&1, code))
+
+        %{"data" => [%{"pointing_button" => code}]}, acc ->
+          Map.update(acc, :pointer, MapSet.new(), &MapSet.put(&1, code))
+
+        _, acc ->
+          acc
+      end)
     end
   end
 
@@ -83,13 +133,13 @@ defmodule Karabinex do
       type: "basic"
     }
 
-    @base_key %{
-      modifiers: %{
-        mandatory: []
-      }
-    }
+    # @base_key %{
+    #   modifiers: %{
+    #     mandatory: []
+    #   }
+    # }
 
-    def enamble_keymap(key) do
+    def enable_keymap(key) do
       @base_manipulator
       |> Map.merge(%{
         from: %{},
@@ -179,7 +229,7 @@ defmodule Karabinex do
       parse_definition({key, {kind, arg, []}})
     end
 
-    def parse_definition({key, {kind, arg, opts}}) do
+    def parse_definition({_key, {kind, arg, opts}}) do
       [Command.new(kind, arg, opts)]
     end
   end
@@ -203,7 +253,7 @@ defmodule Karabinex do
       "✦-k" => %{
         "c" => {:quit, "Brave Browser"},
         "s" => {:quit, "Slack"},
-        "S" => {:sh, "killall -9 Slack"},
+        "S-s" => {:sh, "killall -9 Slack"},
         "a" => {:quit, "Anki"},
         "b" => {:quit, "Books"}
       }
