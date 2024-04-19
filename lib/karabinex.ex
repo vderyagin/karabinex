@@ -1,3 +1,4 @@
+# TODO: split into different types
 defmodule Karabinex do
   defmodule Key do
     defstruct raw: nil,
@@ -212,6 +213,8 @@ defmodule Karabinex do
       @base_manipulator
       |> Map.merge(Key.new(key) |> Key.from_object())
       |> Map.merge(%{
+        # TODO: implement different repeats
+        # TODO: implement conditionals
         to:
           if opts[:repeat] do
             [command_object(kind, arg)]
@@ -280,6 +283,7 @@ defmodule Karabinex do
       })
     end
 
+    # TODO: implement remapping
     def command_object(:app, arg) do
       command_object(:sh, "open -a '#{arg}'")
     end
