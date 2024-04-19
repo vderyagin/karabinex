@@ -111,38 +111,46 @@ defmodule Karabinex do
       :code.priv_dir(:karabinex)
       |> Path.join("/simple_modifications.json")
       |> File.read!()
-      |> Jason.decode!()
+      |> Jason.decode!(keys: :atoms)
       |> Enum.reduce(%{}, fn
-        %{"data" => [%{"key_code" => code}]}, acc ->
+        %{data: [%{key_code: code}]}, acc ->
           Map.update(acc, :regular, MapSet.new(), &MapSet.put(&1, code))
 
-        %{"data" => [%{"consumer_key_code" => code}]}, acc ->
+        %{data: [%{consumer_key_code: code}]}, acc ->
           Map.update(acc, :consumer, MapSet.new(), &MapSet.put(&1, code))
 
-        %{"data" => [%{"pointing_button" => code}]}, acc ->
+        %{data: [%{pointing_button: code}]}, acc ->
           Map.update(acc, :pointer, MapSet.new(), &MapSet.put(&1, code))
 
         _, acc ->
           acc
       end)
     end
+
+    def from_object(%__MODULE__{code: {:regular, code}, modifiers: modifiers}) do
+      %{
+        from: %{
+          key_code: code,
+          modifiers: %{
+            mandatory:
+              modifiers
+              |> Enum.filter(fn {_k, v} -> v end)
+              |> Enum.map(fn {k, _v} -> k end)
+          }
+        }
+      }
+    end
   end
 
   defmodule Manipulator do
     @base_manipulator %{
-      type: "basic"
+      type: :basic
     }
-
-    # @base_key %{
-    #   modifiers: %{
-    #     mandatory: []
-    #   }
-    # }
 
     def enable_keymap(key) do
       @base_manipulator
+      |> Map.merge(Key.new(key) |> Key.from_object())
       |> Map.merge(%{
-        from: %{},
         to: [
           %{
             set_variable: %{
@@ -158,7 +166,7 @@ defmodule Karabinex do
       @base_manipulator
       |> Map.merge(%{
         from: %{
-          any: "key_code"
+          any: :key_code
         },
         to: [
           %{
@@ -170,7 +178,7 @@ defmodule Karabinex do
         ],
         conditions: [
           %{
-            type: "variable_if",
+            type: :variable_if,
             name: prefix_var_name(key),
             value: 1
           }
