@@ -1,4 +1,7 @@
-default: build
+default: generate-config
+
+generate-config:
+    mix eval "Karabinex.write_config()"
 
 build:
     mix compile
