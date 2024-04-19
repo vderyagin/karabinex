@@ -366,7 +366,8 @@ defmodule Karabinex do
           "c" => {:raycast, "extensions/raycast/raycast/confetti", repeat: :key},
           "g" => {:raycast, "extensions/josephschmitt/gif-search/search"},
           "t" => {:raycast, "extensions/gebeto/translate/translate"},
-          "b" => {:raycast, "extensions/nhojb/brew/search"}
+          "b" => {:raycast, "extensions/nhojb/brew/search"},
+          "e" => {:raycast, "extensions/raycast/emoji-symbols/search-emoji-symbols"}
         }
       },
       "✦-k" => %{
