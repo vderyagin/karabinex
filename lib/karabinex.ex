@@ -246,38 +246,51 @@ defmodule Karabinex do
             {:if, any()}
             | {:repeat, :key | :keymap}
 
-    defstruct [:kind, :arg, :opts]
+    defstruct [:kind, :arg, :opts, :key, :prefix]
 
-    def new(kind, arg, opts \\ []), do: %__MODULE__{kind: kind, arg: arg, opts: opts}
+    def new(kind, arg, key, prefix, opts \\ []) do
+      %__MODULE__{
+        kind: kind,
+        arg: arg,
+        key: key,
+        prefix: prefix,
+        opts: opts
+      }
+    end
   end
 
   defmodule Keymap do
     @type spec :: %{String.t() => Command.spec() | spec()}
 
-    defstruct [:key]
+    defstruct [:key, prefix: []]
 
-    def new(key), do: %__MODULE__{key: key}
+    def new(key, prefix) do
+      %__MODULE__{
+        key: key,
+        prefix: prefix
+      }
+    end
   end
 
   defmodule Config do
-    def parse_definitions(defs) do
+    def parse_definitions(defs, prefix \\ []) do
       defs
-      |> Enum.flat_map(&parse_definition/1)
+      |> Enum.flat_map(&parse_definition(&1, prefix))
     end
 
-    def parse_definition({key, %{} = keymap_spec}) do
+    def parse_definition({key, %{} = keymap_spec}, prefix) do
       [
-        Keymap.new(key)
-        | parse_definitions(keymap_spec)
+        Keymap.new(key, prefix)
+        | parse_definitions(keymap_spec, prefix ++ [key])
       ]
     end
 
-    def parse_definition({key, {kind, arg}}) do
-      parse_definition({key, {kind, arg, []}})
+    def parse_definition({key, {kind, arg}}, prefix) do
+      parse_definition({key, {kind, arg, []}}, prefix)
     end
 
-    def parse_definition({_key, {kind, arg, opts}}) do
-      [Command.new(kind, arg, opts)]
+    def parse_definition({key, {kind, arg, opts}}, prefix) do
+      [Command.new(kind, arg, key, prefix, opts)]
     end
   end
 
@@ -305,5 +318,10 @@ defmodule Karabinex do
         "b" => {:quit, "Books"}
       }
     }
+  end
+
+  def test do
+    definitions()
+    |> Config.parse_definitions()
   end
 end
