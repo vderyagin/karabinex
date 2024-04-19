@@ -1,4 +1,3 @@
-# TODO: split into different types
 defmodule Karabinex do
   defmodule Key do
     defstruct raw: nil,
@@ -93,7 +92,6 @@ defmodule Karabinex do
     end
 
     def parse(%__MODULE__{raw: raw} = key, key_code) do
-      # TODO: fix this, it loads data from json on every call
       codes = key_codes()
 
       code_type =
@@ -213,8 +211,6 @@ defmodule Karabinex do
       @base_manipulator
       |> Map.merge(Key.new(key) |> Key.from_object())
       |> Map.merge(%{
-        # TODO: implement different repeats
-        # TODO: implement conditionals
         to:
           if opts[:repeat] do
             [command_object(kind, arg)]
@@ -283,7 +279,6 @@ defmodule Karabinex do
       })
     end
 
-    # TODO: implement remapping
     def command_object(:app, arg) do
       command_object(:sh, "open -a '#{arg}'")
     end
@@ -381,14 +376,6 @@ defmodule Karabinex do
         "d" => {:quit, "Dash"}
       }
     }
-  end
-
-  def test do
-    definitions()
-    |> Config.parse_definitions()
-    |> Enum.flat_map(&Manipulator.generate/1)
-    |> Jason.encode!(pretty: true)
-    |> IO.puts()
   end
 
   def json do
