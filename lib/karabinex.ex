@@ -156,6 +156,7 @@ defmodule Karabinex do
     @type kind ::
             :app
             | :quit
+            | :kill
             | :sh
             | :remap
             | :raycast
@@ -289,6 +290,10 @@ defmodule Karabinex do
 
     def command_object(:quit, arg) do
       command_object(:sh, "osascript -e 'quit app \"#{arg}\"'")
+    end
+
+    def command_object(:kill, arg) do
+      command_object(:sh, "killall -SIGKILL '#{arg}'")
     end
 
     def command_object(:sh, arg) do
