@@ -62,6 +62,8 @@ defmodule Karabinex.Key do
 
   def set_modifiers(%__MODULE__{} = key, []), do: key
 
+  def parse(%__MODULE__{} = key, "H-" <> rest), do: parse(key, "✦-" <> rest)
+
   def parse(%__MODULE__{} = key, "✦-" <> rest) do
     key
     |> set_modifiers([:command, :shift, :option, :control])
@@ -74,11 +76,15 @@ defmodule Karabinex.Key do
     |> parse(rest)
   end
 
+  def parse(%__MODULE__{} = key, "M-" <> rest), do: parse(key, "⌥-" <> rest)
+
   def parse(%__MODULE__{} = key, "⌥-" <> rest) do
     key
     |> set_modifier(:option)
     |> parse(rest)
   end
+
+  def parse(%__MODULE__{} = key, "^-" <> rest), do: parse(key, "C-" <> rest)
 
   def parse(%__MODULE__{} = key, "C-" <> rest) do
     key
