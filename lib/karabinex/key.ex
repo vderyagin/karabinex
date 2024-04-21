@@ -3,12 +3,7 @@ defmodule Karabinex.Key do
 
   defstruct raw: nil,
             code: nil,
-            modifiers: %{
-              command: false,
-              shift: false,
-              option: false,
-              control: false
-            }
+            modifiers: []
 
   @type modifier ::
           :command
@@ -26,7 +21,7 @@ defmodule Karabinex.Key do
   @type t :: %__MODULE__{
           raw: String.t(),
           code: code(),
-          modifiers: %{modifier() => boolean()}
+          modifiers: [modifier()]
         }
 
   def new(key) do
@@ -38,20 +33,24 @@ defmodule Karabinex.Key do
     %{key | code: code}
   end
 
-  def set_modifier(%__MODULE__{modifiers: %{command: false} = mods} = key, :command) do
-    %{key | modifiers: %{mods | command: true}}
+  def set_modifier(%__MODULE__{modifiers: modifiers} = key, :command) do
+    if :command in modifiers, do: raise("invalid key specification: #{key.raw}")
+    %{key | modifiers: [:command | modifiers]}
   end
 
-  def set_modifier(%__MODULE__{modifiers: %{shift: false} = mods} = key, :shift) do
-    %{key | modifiers: %{mods | shift: true}}
+  def set_modifier(%__MODULE__{modifiers: modifiers} = key, :shift) do
+    if :shift in modifiers, do: raise("invalid key specification: #{key.raw}")
+    %{key | modifiers: [:shift | modifiers]}
   end
 
-  def set_modifier(%__MODULE__{modifiers: %{option: false} = mods} = key, :option) do
-    %{key | modifiers: %{mods | option: true}}
+  def set_modifier(%__MODULE__{modifiers: modifiers} = key, :option) do
+    if :option in modifiers, do: raise("invalid key specification: #{key.raw}")
+    %{key | modifiers: [:option | modifiers]}
   end
 
-  def set_modifier(%__MODULE__{modifiers: %{control: false} = mods} = key, :control) do
-    %{key | modifiers: %{mods | control: true}}
+  def set_modifier(%__MODULE__{modifiers: modifiers} = key, :control) do
+    if :control in modifiers, do: raise("invalid key specification: #{key.raw}")
+    %{key | modifiers: [:control | modifiers]}
   end
 
   def set_modifiers(%__MODULE__{} = key, [first | rest]) do
@@ -113,28 +112,7 @@ defmodule Karabinex.Key do
     |> set_code({code_type, key_code})
   end
 
-  def from_object(%__MODULE__{code: {:regular, code}, modifiers: modifiers}) do
-    mandatory_modifiers =
-      modifiers
-      |> Enum.filter(fn {_k, v} -> v end)
-      |> Enum.map(fn {k, _v} -> k end)
-
-    %{
-      from:
-        %{
-          key_code: code
-        }
-        |> Map.merge(
-          if Enum.empty?(mandatory_modifiers) do
-            %{}
-          else
-            %{
-              modifiers: %{
-                mandatory: mandatory_modifiers
-              }
-            }
-          end
-        )
-    }
-  end
+  def code(%__MODULE__{code: {:regular, code}}), do: %{key_code: code}
+  def code(%__MODULE__{code: {:consumer, code}}), do: %{consumer_key_code: code}
+  def code(%__MODULE__{code: {:pointer, code}}), do: %{pointing_button: code}
 end

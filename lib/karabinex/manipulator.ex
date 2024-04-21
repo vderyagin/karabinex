@@ -9,16 +9,55 @@ defmodule Karabinex.Manipulator do
     type: :basic
   }
 
+  def virtual_modifiers(%Key{modifiers: modifiers}) do
+    Enum.map(
+      modifiers,
+      &%{
+        type: :variable_if,
+        name: &1,
+        value: 1
+      }
+    )
+  end
+
+  def concrete_modifiers(%Key{modifiers: []}), do: %{}
+
+  def concrete_modifiers(%Key{modifiers: modifiers}) do
+    %{
+      modifiers: %{
+        mandatory: modifiers
+      }
+    }
+  end
+
   def generate(%Keymap{key: key, prefix: prefix, commands: commands}) do
-    [
-      enable_keymap(key, prefix)
-      | commands |> Enum.flat_map(&generate/1)
-    ] ++ [disable_keymap(key, prefix)]
+    [enable_keymap(key, prefix)] ++
+      capture_modifiers(commands, prefix ++ [key]) ++
+      Enum.flat_map(commands, &generate/1) ++
+      [disable_keymap(key, prefix)]
+  end
+
+  def generate(%Command{kind: kind, arg: arg, key: key, prefix: []}) do
+    @base_manipulator
+    |> Map.merge(
+      %{
+        from: Key.code(key)
+      }
+      |> Map.merge(concrete_modifiers(key))
+    )
+    |> Map.merge(%{
+      to: [
+        command_object(kind, arg)
+      ]
+    })
+    |> List.wrap()
   end
 
   def generate(%Command{kind: kind, arg: arg, key: key, prefix: prefix, opts: opts}) do
     @base_manipulator
-    |> Map.merge(Key.new(key) |> Key.from_object())
+    |> Map.merge(%{
+      from: Key.code(key)
+    })
     |> Map.merge(%{
       to:
         if opts[:repeat] do
@@ -34,20 +73,27 @@ defmodule Karabinex.Manipulator do
             }
           ]
         end,
-      conditions: [
-        %{
-          type: :variable_if,
-          name: prefix_var_name(prefix),
-          value: 1
-        }
-      ]
+      conditions:
+        virtual_modifiers(key) ++
+          [
+            %{
+              type: :variable_if,
+              name: prefix_var_name(prefix),
+              value: 1
+            }
+          ]
     })
     |> List.wrap()
   end
 
   def enable_keymap(key, []) do
     @base_manipulator
-    |> Map.merge(Key.from_object(key))
+    |> Map.merge(
+      %{
+        from: Key.code(key)
+      }
+      |> Map.merge(concrete_modifiers(key))
+    )
     |> Map.merge(%{
       to: [
         %{
@@ -62,7 +108,9 @@ defmodule Karabinex.Manipulator do
 
   def enable_keymap(key, prefix) do
     @base_manipulator
-    |> Map.merge(Key.from_object(key))
+    |> Map.merge(%{
+      from: Key.code(key)
+    })
     |> Map.merge(%{
       to: [
         %{
@@ -78,13 +126,15 @@ defmodule Karabinex.Manipulator do
           }
         }
       ],
-      conditions: [
-        %{
-          type: :variable_if,
-          name: prefix_var_name(prefix),
-          value: 1
-        }
-      ]
+      conditions:
+        virtual_modifiers(key) ++
+          [
+            %{
+              type: :variable_if,
+              name: prefix_var_name(prefix),
+              value: 1
+            }
+          ]
     })
   end
 
@@ -106,6 +156,52 @@ defmodule Karabinex.Manipulator do
 
   def command_object(:sh, arg) do
     %{shell_command: arg}
+  end
+
+  def capture_modifiers(commands, map_prefix) do
+    commands
+    |> Enum.reduce([], fn
+      %Command{key: %Key{modifiers: modifiers}}, memo ->
+        modifiers ++ memo
+
+      _, memo ->
+        memo
+    end)
+    |> Enum.uniq()
+    |> Enum.flat_map(fn manipulator ->
+      [:left, :right]
+      |> Enum.map(fn side ->
+        @base_manipulator
+        |> Map.merge(%{
+          from: %{
+            key_code: "#{side}_#{manipulator}"
+          },
+          to: [
+            %{
+              set_variable: %{
+                name: manipulator,
+                value: 1
+              }
+            }
+          ],
+          to_after_key_up: [
+            %{
+              set_variable: %{
+                name: manipulator,
+                value: 0
+              }
+            }
+          ],
+          conditions: [
+            %{
+              type: :variable_if,
+              name: prefix_var_name(map_prefix),
+              value: 1
+            }
+          ]
+        })
+      end)
+    end)
   end
 
   def disable_keymap(key, prefix) do
