@@ -109,6 +109,8 @@ defmodule Karabinex.Manipulator do
   end
 
   def disable_keymap(key, prefix) do
+    var_name = prefix_var_name(prefix ++ [key])
+
     @base_manipulator
     |> Map.merge(%{
       from: %{
@@ -117,7 +119,7 @@ defmodule Karabinex.Manipulator do
       to: [
         %{
           set_variable: %{
-            name: prefix_var_name(prefix ++ [key]),
+            name: var_name,
             value: 0
           }
         }
@@ -125,7 +127,7 @@ defmodule Karabinex.Manipulator do
       conditions: [
         %{
           type: :variable_if,
-          name: prefix_var_name(prefix ++ [key]),
+          name: var_name,
           value: 1
         }
       ]
