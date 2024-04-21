@@ -1,4 +1,6 @@
 defmodule Karabinex.Command do
+  alias Karabinex.Key
+
   @type kind ::
           :app
           | :quit
@@ -21,8 +23,8 @@ defmodule Karabinex.Command do
     %__MODULE__{
       kind: kind,
       arg: arg,
-      key: key,
-      prefix: prefix,
+      key: Key.new(key),
+      prefix: Enum.map(prefix, &Key.new/1),
       opts: opts
     }
   end

@@ -47,7 +47,7 @@ defmodule Karabinex.Manipulator do
 
   def enable_keymap(key, []) do
     @base_manipulator
-    |> Map.merge(Key.new(key) |> Key.from_object())
+    |> Map.merge(Key.from_object(key))
     |> Map.merge(%{
       to: [
         %{
@@ -62,7 +62,7 @@ defmodule Karabinex.Manipulator do
 
   def enable_keymap(key, prefix) do
     @base_manipulator
-    |> Map.merge(Key.new(key) |> Key.from_object())
+    |> Map.merge(Key.from_object(key))
     |> Map.merge(%{
       to: [
         %{
@@ -135,7 +135,10 @@ defmodule Karabinex.Manipulator do
   end
 
   def prefix_var_name(keys) do
-    (Enum.join(keys, "_") <> "_keymap")
+    keys
+    |> Enum.map(&Map.get(&1, :raw))
+    |> Enum.join("_")
+    |> Kernel.<>("_keymap")
     |> String.replace("✦", "hyper")
     |> String.replace("⌥", "option")
     |> String.replace("⌘", "command")
