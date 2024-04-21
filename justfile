@@ -1,7 +1,7 @@
 default: generate-config
 
 generate-config:
-    mix eval "Application.ensure_all_started(:karabinex); Karabinex.write_config()"
+    mix eval "Karabinex.write_config()"
 
 build:
     mix compile

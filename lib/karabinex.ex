@@ -52,6 +52,7 @@ defmodule Karabinex do
   end
 
   def write_config do
+    {:ok, _} = Application.ensure_all_started(:karabinex)
     File.write!("./karabiner.json", json())
   end
 end
