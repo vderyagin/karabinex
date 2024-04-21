@@ -10,12 +10,12 @@ defmodule Karabinex.Manipulator do
   }
 
   def virtual_modifiers(%Key{modifiers: modifiers}) do
-    Enum.map(
-      modifiers,
+    [:control, :shift, :command, :option]
+    |> Enum.map(
       &%{
         type: :variable_if,
         name: &1,
-        value: 1
+        value: if(&1 in modifiers, do: 1, else: 0)
       }
     )
   end
@@ -39,12 +39,11 @@ defmodule Karabinex.Manipulator do
 
   def generate(%Command{kind: kind, arg: arg, key: key, prefix: []}) do
     @base_manipulator
-    |> Map.merge(
-      %{
-        from: Key.code(key)
-      }
-      |> Map.merge(concrete_modifiers(key))
-    )
+    |> Map.merge(%{
+      from:
+        Key.code(key)
+        |> Map.merge(concrete_modifiers(key))
+    })
     |> Map.merge(%{
       to: [
         command_object(kind, arg)
@@ -88,12 +87,11 @@ defmodule Karabinex.Manipulator do
 
   def enable_keymap(key, []) do
     @base_manipulator
-    |> Map.merge(
-      %{
-        from: Key.code(key)
-      }
-      |> Map.merge(concrete_modifiers(key))
-    )
+    |> Map.merge(%{
+      from:
+        Key.code(key)
+        |> Map.merge(concrete_modifiers(key))
+    })
     |> Map.merge(%{
       to: [
         %{
