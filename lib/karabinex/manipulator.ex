@@ -5,10 +5,6 @@ defmodule Karabinex.Manipulator do
     Command
   }
 
-  @base_manipulator %{
-    type: :basic
-  }
-
   def virtual_modifiers(%Key{modifiers: modifiers}) do
     [:control, :shift, :command, :option]
     |> Enum.map(
@@ -38,13 +34,10 @@ defmodule Karabinex.Manipulator do
   end
 
   def generate(%Command{kind: kind, arg: arg, key: key, prefix: []}) do
-    @base_manipulator
-    |> Map.merge(%{
+    make_manipulator(%{
       from:
         Key.code(key)
-        |> Map.merge(concrete_modifiers(key))
-    })
-    |> Map.merge(%{
+        |> Map.merge(concrete_modifiers(key)),
       to: [
         command_object(kind, arg)
       ]
@@ -53,11 +46,8 @@ defmodule Karabinex.Manipulator do
   end
 
   def generate(%Command{kind: kind, arg: arg, key: key, prefix: prefix, opts: opts}) do
-    @base_manipulator
-    |> Map.merge(%{
-      from: Key.code(key)
-    })
-    |> Map.merge(%{
+    make_manipulator(%{
+      from: Key.code(key),
       to:
         if opts[:repeat] do
           [command_object(kind, arg)]
@@ -86,13 +76,10 @@ defmodule Karabinex.Manipulator do
   end
 
   def enable_keymap(key, []) do
-    @base_manipulator
-    |> Map.merge(%{
+    make_manipulator(%{
       from:
         Key.code(key)
-        |> Map.merge(concrete_modifiers(key))
-    })
-    |> Map.merge(%{
+        |> Map.merge(concrete_modifiers(key)),
       to: [
         %{
           set_variable: %{
@@ -105,11 +92,8 @@ defmodule Karabinex.Manipulator do
   end
 
   def enable_keymap(key, prefix) do
-    @base_manipulator
-    |> Map.merge(%{
-      from: Key.code(key)
-    })
-    |> Map.merge(%{
+    make_manipulator(%{
+      from: Key.code(key),
       to: [
         %{
           set_variable: %{
@@ -159,7 +143,7 @@ defmodule Karabinex.Manipulator do
   def capture_modifiers(commands, map_prefix) do
     commands
     |> Enum.reduce([], fn
-      %Command{key: %Key{modifiers: modifiers}}, memo ->
+      %{key: %Key{modifiers: modifiers}}, memo ->
         modifiers ++ memo
 
       _, memo ->
@@ -205,8 +189,7 @@ defmodule Karabinex.Manipulator do
   def disable_keymap(key, prefix) do
     var_name = prefix_var_name(prefix ++ [key])
 
-    @base_manipulator
-    |> Map.merge(%{
+    make_manipulator(%{
       from: %{
         any: :key_code
       },
@@ -237,4 +220,6 @@ defmodule Karabinex.Manipulator do
     |> String.replace("⌥", "option")
     |> String.replace("⌘", "command")
   end
+
+  defp make_manipulator(properties), do: Map.merge(%{type: :basic}, properties)
 end
