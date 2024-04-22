@@ -150,17 +150,17 @@ defmodule Karabinex.Manipulator do
         memo
     end)
     |> Enum.uniq()
-    |> Enum.flat_map(fn manipulator ->
+    |> Enum.flat_map(fn modifier ->
       [:left, :right]
       |> Enum.map(
         &%{
           from: %{
-            key_code: "#{&1}_#{manipulator}"
+            key_code: "#{&1}_#{modifier}"
           },
           to: [
             %{
               set_variable: %{
-                name: manipulator,
+                name: modifier,
                 value: 1
               }
             }
@@ -168,7 +168,7 @@ defmodule Karabinex.Manipulator do
           to_after_key_up: [
             %{
               set_variable: %{
-                name: manipulator,
+                name: modifier,
                 value: 0
               }
             }
