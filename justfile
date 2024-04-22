@@ -15,6 +15,10 @@ format:
 repl:
     iex -S mix
 
+clean:
+    mix clean
+    rm -rf ./deps/ ./_build/
+
 key_codes_url := "https://github.com/pqrs-org/Karabiner-Elements/raw/main/src/apps/SettingsWindow/Resources/simple_modifications.json"
 
 fetch-key-codes:
