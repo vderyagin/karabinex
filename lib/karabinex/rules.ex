@@ -1,7 +1,7 @@
-defmodule Karabinex do
-  alias Karabinex.{Keymap, Config, Manipulator}
+defmodule Karabinex.Rules do
+  alias Karabinex.Keymap
 
-  @spec definitions :: Keymap.spec()
+  @spec rules :: Keymap.spec()
   def rules do
     %{}
   end

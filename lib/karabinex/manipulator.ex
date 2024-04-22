@@ -152,11 +152,10 @@ defmodule Karabinex.Manipulator do
     |> Enum.uniq()
     |> Enum.flat_map(fn manipulator ->
       [:left, :right]
-      |> Enum.map(fn side ->
-        @base_manipulator
-        |> Map.merge(%{
+      |> Enum.map(
+        &%{
           from: %{
-            key_code: "#{side}_#{manipulator}"
+            key_code: "#{&1}_#{manipulator}"
           },
           to: [
             %{
@@ -181,9 +180,10 @@ defmodule Karabinex.Manipulator do
               value: 1
             }
           ]
-        })
-      end)
+        }
+      )
     end)
+    |> Enum.map(&make_manipulator/1)
   end
 
   def disable_keymap(key, prefix) do

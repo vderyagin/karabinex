@@ -54,6 +54,7 @@ defmodule Karabinex.Key do
     %{key | modifiers: [:control | modifiers]}
   end
 
+  def parse(%__MODULE__{} = key, "H-" <> rest), do: parse(key, "✦-" <> rest)
   def parse(%__MODULE__{} = key, "✦-" <> rest), do: parse(key, "⌘-M-C-S-" <> rest)
 
   def parse(%__MODULE__{} = key, "⌘-" <> rest) do
