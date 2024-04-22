@@ -1,7 +1,10 @@
 default: generate-config
 
+export PATH := "/Library/Application Support/org.pqrs/Karabiner-Elements/bin:" + env_var("PATH")
+
 generate-config:
     mix eval "Karabinex.write_config()"
+    karabiner_cli --lint-complex-modifications karabiner.json
 
 build:
     mix compile
@@ -22,6 +25,7 @@ clean:
 key_codes_url := "https://github.com/pqrs-org/Karabiner-Elements/raw/main/src/apps/SettingsWindow/Resources/simple_modifications.json"
 
 fetch-key-codes:
+    rm -f ./priv/simple_modifications.json
     wget \
       --directory-prefix=./priv/ \
       {{key_codes_url}}
