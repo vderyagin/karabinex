@@ -1,7 +1,8 @@
 defmodule Karabinex.Keymap do
   alias Karabinex.{Command, Key}
 
-  @type spec :: %{String.t() => Command.spec() | spec()}
+  @type binding :: atom() | String.t()
+  @type spec :: %{binding() => Command.spec() | spec()}
 
   defstruct [:key, prefix: [], commands: []]
 
