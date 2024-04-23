@@ -113,6 +113,8 @@ defmodule Karabinex.Manipulator do
   end
 
   def capture_modifiers(commands, map_prefix) do
+    var_name = prefix_var_name(map_prefix)
+
     commands
     |> Enum.flat_map(fn %{key: %Key{modifiers: modifiers}} ->
       modifiers
@@ -130,10 +132,18 @@ defmodule Karabinex.Manipulator do
               key_code: "#{&1}_#{modifier}"
             }
           ],
+          to_after_key_up: [
+            %{
+              set_variable: %{
+                name: var_name,
+                value: 0
+              }
+            }
+          ],
           conditions: [
             %{
               type: :variable_if,
-              name: prefix_var_name(map_prefix),
+              name: var_name,
               value: 1
             }
           ]

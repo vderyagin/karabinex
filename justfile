@@ -1,6 +1,6 @@
 default: (generate-config "test") (generate-config "hyper")
 
-replace: (generate-config "test") (generate-config "hyper")
+replace: (replace-config "test") (replace-config "hyper")
 
 export PATH := "/Library/Application Support/org.pqrs/Karabiner-Elements/bin:" + env_var("PATH")
 
