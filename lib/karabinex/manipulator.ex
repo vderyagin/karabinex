@@ -114,12 +114,8 @@ defmodule Karabinex.Manipulator do
 
   def capture_modifiers(commands, map_prefix) do
     commands
-    |> Enum.reduce([], fn
-      %{key: %Key{modifiers: modifiers}}, memo ->
-        modifiers ++ memo
-
-      _, memo ->
-        memo
+    |> Enum.flat_map(fn %{key: %Key{modifiers: modifiers}} ->
+      modifiers
     end)
     |> Enum.uniq()
     |> Enum.flat_map(fn modifier ->
