@@ -1,7 +1,7 @@
 defmodule Karabinex do
   alias Karabinex.{Rules, Config, Manipulator}
 
-  def write_configs(definition_name) do
+  def write_config(definition_name) do
     {:ok, _} = Application.ensure_all_started(:karabinex)
 
     {description, definitions} = Rules.definition(definition_name)

@@ -5,7 +5,7 @@ replace: (replace-config "test") (replace-config "hyper")
 export PATH := "/Library/Application Support/org.pqrs/Karabiner-Elements/bin:" + env_var("PATH")
 
 generate-config NAME:
-    mix eval "Karabinex.write_configs(:{{NAME}})"
+    mix eval "Karabinex.write_config(:{{NAME}})"
     karabiner_cli \
       --lint-complex-modifications \
       {{NAME}}.json
