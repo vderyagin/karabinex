@@ -1,21 +1,23 @@
 defmodule Karabinex do
   alias Karabinex.{Rules, Config, Manipulator}
 
-  def write_config do
+  def write_configs(definition_name) do
     {:ok, _} = Application.ensure_all_started(:karabinex)
 
+    {description, definitions} = Rules.definition(definition_name)
+
     manipulators =
-      Rules.rules()
+      definitions
       |> Config.parse_definitions()
       |> Enum.flat_map(&Manipulator.generate/1)
 
     File.write!(
-      "./karabiner.json",
+      "#{definition_name}.json",
       %{
-        title: "Nested Emacs-like bindings",
+        title: description,
         rules: [
           %{
-            description: "Nested Emacs-like bindings",
+            description: description,
             manipulators: manipulators
           }
         ]

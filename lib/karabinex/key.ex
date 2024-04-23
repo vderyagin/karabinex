@@ -26,6 +26,7 @@ defmodule Karabinex.Key do
 
   def new(key) do
     raw_key = to_string(key)
+
     %__MODULE__{raw: raw_key}
     |> parse(raw_key)
   end

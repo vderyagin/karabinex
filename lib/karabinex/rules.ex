@@ -1,8 +1,15 @@
 defmodule Karabinex.Rules do
-  alias Karabinex.Keymap
+  def definition(:hyper) do
+    {
+      "Nested Emacs-like bindings",
+      %{}
+    }
+  end
 
-  @spec rules :: Keymap.spec()
-  def rules do
-    %{}
+  def definition(:test) do
+    {
+      "Testing things",
+      %{}
+    }
   end
 end

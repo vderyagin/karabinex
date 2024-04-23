@@ -1,10 +1,19 @@
-default: generate-config
+default: (generate-config "test") (generate-config "hyper")
+
+replace: (generate-config "test") (generate-config "hyper")
 
 export PATH := "/Library/Application Support/org.pqrs/Karabiner-Elements/bin:" + env_var("PATH")
 
-generate-config:
-    mix eval "Karabinex.write_config()"
-    karabiner_cli --lint-complex-modifications karabiner.json
+generate-config NAME:
+    mix eval "Karabinex.write_configs(:{{NAME}})"
+    karabiner_cli \
+      --lint-complex-modifications \
+      {{NAME}}.json
+
+replace-config NAME: (generate-config NAME)
+    cp -f \
+      {{NAME}}.json \
+      ~/.config/karabiner/assets/complex_modifications/{{NAME}}.json
 
 build:
     mix compile

@@ -5,49 +5,28 @@ defmodule Karabinex.Manipulator do
     Command
   }
 
-  def virtual_modifiers(%Key{modifiers: modifiers}) do
-    [:control, :shift, :command, :option]
-    |> Enum.map(
-      &%{
-        type: :variable_if,
-        name: &1,
-        value: if(&1 in modifiers, do: 1, else: 0)
-      }
-    )
-  end
-
-  def concrete_modifiers(%Key{modifiers: []}), do: %{}
-
-  def concrete_modifiers(%Key{modifiers: modifiers}) do
-    %{
-      modifiers: %{
-        mandatory: modifiers
-      }
-    }
-  end
-
-  def generate(%Keymap{key: key, prefix: prefix, commands: commands}) do
-    [enable_keymap(key, prefix)] ++
-      capture_modifiers(commands, prefix ++ [key]) ++
-      Enum.flat_map(commands, &generate/1) ++
-      [disable_keymap(key, prefix)]
+  def generate(%Keymap{key: key, prefix: prefix, commands: children}) do
+    [
+      enable_keymap(key, prefix),
+      children |> Enum.map(&generate/1),
+      children |> capture_modifiers(prefix ++ [key]),
+      disable_keymap(key, prefix)
+    ]
+    |> List.flatten()
   end
 
   def generate(%Command{kind: kind, arg: arg, key: key, prefix: []}) do
     make_manipulator(%{
-      from:
-        Key.code(key)
-        |> Map.merge(concrete_modifiers(key)),
-      to: [
-        command_object(kind, arg)
-      ]
+      from: from(key),
+      to: [command_object(kind, arg)]
     })
-    |> List.wrap()
   end
 
   def generate(%Command{kind: kind, arg: arg, key: key, prefix: prefix, opts: opts}) do
+    prefix_var = prefix_var_name(prefix)
+
     make_manipulator(%{
-      from: Key.code(key),
+      from: from(key),
       to:
         if opts[:repeat] do
           [command_object(kind, arg)]
@@ -56,30 +35,25 @@ defmodule Karabinex.Manipulator do
             command_object(kind, arg),
             %{
               set_variable: %{
-                name: prefix_var_name(prefix),
+                name: prefix_var,
                 value: 0
               }
             }
           ]
         end,
-      conditions:
-        virtual_modifiers(key) ++
-          [
-            %{
-              type: :variable_if,
-              name: prefix_var_name(prefix),
-              value: 1
-            }
-          ]
+      conditions: [
+        %{
+          type: :variable_if,
+          name: prefix_var,
+          value: 1
+        }
+      ]
     })
-    |> List.wrap()
   end
 
   def enable_keymap(key, []) do
     make_manipulator(%{
-      from:
-        Key.code(key)
-        |> Map.merge(concrete_modifiers(key)),
+      from: from(key),
       to: [
         %{
           set_variable: %{
@@ -93,7 +67,7 @@ defmodule Karabinex.Manipulator do
 
   def enable_keymap(key, prefix) do
     make_manipulator(%{
-      from: Key.code(key),
+      from: from(key),
       to: [
         %{
           set_variable: %{
@@ -108,15 +82,13 @@ defmodule Karabinex.Manipulator do
           }
         }
       ],
-      conditions:
-        virtual_modifiers(key) ++
-          [
-            %{
-              type: :variable_if,
-              name: prefix_var_name(prefix),
-              value: 1
-            }
-          ]
+      conditions: [
+        %{
+          type: :variable_if,
+          name: prefix_var_name(prefix),
+          value: 1
+        }
+      ]
     })
   end
 
@@ -159,18 +131,7 @@ defmodule Karabinex.Manipulator do
           },
           to: [
             %{
-              set_variable: %{
-                name: modifier,
-                value: 1
-              }
-            }
-          ],
-          to_after_key_up: [
-            %{
-              set_variable: %{
-                name: modifier,
-                value: 0
-              }
+              key_code: "#{&1}_#{modifier}"
             }
           ],
           conditions: [
@@ -222,4 +183,15 @@ defmodule Karabinex.Manipulator do
   end
 
   defp make_manipulator(properties), do: Map.merge(%{type: :basic}, properties)
+
+  defp from(%Key{modifiers: []} = key), do: Key.code(key)
+
+  defp from(%Key{modifiers: modifiers} = key) do
+    Key.code(key)
+    |> Map.merge(%{
+      modifiers: %{
+        mandatory: modifiers
+      }
+    })
+  end
 end
