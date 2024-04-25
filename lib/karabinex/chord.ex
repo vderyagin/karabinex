@@ -11,6 +11,7 @@ defmodule Karabinex.Chord do
            when chord.__struct__ == __MODULE__ and
                   is_map_key(chord, :keys) and
                   is_list(chord.keys) and
+                  is_map(hd(chord.keys)) and
                   tl(chord.keys) === []
 
   @spec new :: t()
