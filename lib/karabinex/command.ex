@@ -1,5 +1,7 @@
 defmodule Karabinex.Command do
-  alias Karabinex.Key
+  alias Karabinex.Chord
+
+  defstruct [:kind, :arg, :opts, :chord]
 
   @type kind ::
           :app
@@ -17,14 +19,18 @@ defmodule Karabinex.Command do
           {:if, any()}
           | {:repeat, :key | :keymap}
 
-  defstruct [:kind, :arg, :opts, :key, :prefix]
+  @type t :: %__MODULE__{
+          kind: kind(),
+          arg: String.t(),
+          opts: [option()],
+          chord: Chord.t()
+        }
 
-  def new(kind, arg, key, prefix, opts \\ []) do
+  def new(kind, arg, chord, opts \\ []) do
     %__MODULE__{
       kind: kind,
       arg: arg,
-      key: Key.new(key),
-      prefix: Enum.map(prefix, &Key.new/1),
+      chord: chord,
       opts: opts
     }
   end

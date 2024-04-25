@@ -7,9 +7,9 @@ defmodule Karabinex.Key do
 
   @type modifier ::
           :command
-          | :shift
           | :option
           | :control
+          | :shift
 
   @type key_code_type ::
           :regular
@@ -23,6 +23,8 @@ defmodule Karabinex.Key do
           code: code(),
           modifiers: [modifier()]
         }
+
+  @modifiers [:command, :option, :control, :shift]
 
   def new(key) do
     raw_key = to_string(key)
@@ -40,11 +42,6 @@ defmodule Karabinex.Key do
     %{key | modifiers: [:command | modifiers]}
   end
 
-  def set_modifier(%__MODULE__{modifiers: modifiers} = key, :shift) do
-    if :shift in modifiers, do: raise("invalid key specification: #{key.raw}")
-    %{key | modifiers: [:shift | modifiers]}
-  end
-
   def set_modifier(%__MODULE__{modifiers: modifiers} = key, :option) do
     if :option in modifiers, do: raise("invalid key specification: #{key.raw}")
     %{key | modifiers: [:option | modifiers]}
@@ -53,6 +50,11 @@ defmodule Karabinex.Key do
   def set_modifier(%__MODULE__{modifiers: modifiers} = key, :control) do
     if :control in modifiers, do: raise("invalid key specification: #{key.raw}")
     %{key | modifiers: [:control | modifiers]}
+  end
+
+  def set_modifier(%__MODULE__{modifiers: modifiers} = key, :shift) do
+    if :shift in modifiers, do: raise("invalid key specification: #{key.raw}")
+    %{key | modifiers: [:shift | modifiers]}
   end
 
   def parse(%__MODULE__{} = key, "H-" <> rest), do: parse(key, "✦-" <> rest)
@@ -104,4 +106,15 @@ defmodule Karabinex.Key do
   def code(%__MODULE__{code: {:regular, code}}), do: %{key_code: code}
   def code(%__MODULE__{code: {:consumer, code}}), do: %{consumer_key_code: code}
   def code(%__MODULE__{code: {:pointer, code}}), do: %{pointing_button: code}
+
+  def readable_name(%__MODULE__{code: {_kind, code}, modifiers: modifiers}) do
+    if Enum.all?(@modifiers, &(&1 in modifiers)) do
+      "hyper-"
+    else
+      modifiers
+      |> Enum.map(&"#{&1}-")
+      |> Enum.join()
+    end
+    |> Kernel.<>(code)
+  end
 end

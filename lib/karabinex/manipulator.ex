@@ -2,31 +2,33 @@ defmodule Karabinex.Manipulator do
   alias Karabinex.{
     Key,
     Keymap,
-    Command
+    Command,
+    Chord
   }
 
-  def generate(%Keymap{key: key, prefix: prefix, commands: children}) do
+  require Chord
+
+  def generate(%Keymap{chord: chord, children: children}) do
     [
-      enable_keymap(key, prefix),
+      chord |> enable_keymap(),
       children |> Enum.map(&generate/1),
-      children |> capture_modifiers(prefix ++ [key]),
-      disable_keymap(key, prefix)
+      children |> capture_modifiers(chord),
+      chord |> disable_keymap()
     ]
     |> List.flatten()
   end
 
-  def generate(%Command{kind: kind, arg: arg, key: key, prefix: []}) do
+  def generate(%Command{kind: kind, arg: arg, chord: chord})
+      when Chord.singleton?(chord) do
     make_manipulator(%{
-      from: from(key),
+      from: from(Chord.last(chord)),
       to: [command_object(kind, arg)]
     })
   end
 
-  def generate(%Command{kind: kind, arg: arg, key: key, prefix: prefix, opts: opts}) do
-    prefix_var = prefix_var_name(prefix)
-
+  def generate(%Command{kind: kind, arg: arg, chord: chord, opts: opts}) do
     make_manipulator(%{
-      from: from(key),
+      from: from(Chord.last(chord)),
       to:
         if opts[:repeat] do
           [command_object(kind, arg)]
@@ -35,7 +37,7 @@ defmodule Karabinex.Manipulator do
             command_object(kind, arg),
             %{
               set_variable: %{
-                name: prefix_var,
+                name: Chord.prefix_var_name(chord),
                 value: 0
               }
             }
@@ -44,20 +46,20 @@ defmodule Karabinex.Manipulator do
       conditions: [
         %{
           type: :variable_if,
-          name: prefix_var,
+          name: Chord.prefix_var_name(chord),
           value: 1
         }
       ]
     })
   end
 
-  def enable_keymap(key, []) do
+  def enable_keymap(chord) when Chord.singleton?(chord) do
     make_manipulator(%{
-      from: from(key),
+      from: from(Chord.last(chord)),
       to: [
         %{
           set_variable: %{
-            name: prefix_var_name([key]),
+            name: Chord.var_name(chord),
             value: 1
           }
         }
@@ -65,19 +67,19 @@ defmodule Karabinex.Manipulator do
     })
   end
 
-  def enable_keymap(key, prefix) do
+  def enable_keymap(chord) do
     make_manipulator(%{
-      from: from(key),
+      from: from(Chord.last(chord)),
       to: [
         %{
           set_variable: %{
-            name: prefix_var_name(prefix),
-            value: 0
+            name: Chord.var_name(chord),
+            value: 1
           }
         },
         %{
           set_variable: %{
-            name: prefix_var_name(prefix ++ [key]),
+            name: Chord.prefix_var_name(chord),
             value: 1
           }
         }
@@ -85,7 +87,7 @@ defmodule Karabinex.Manipulator do
       conditions: [
         %{
           type: :variable_if,
-          name: prefix_var_name(prefix),
+          name: Chord.prefix_var_name(chord),
           value: 1
         }
       ]
@@ -112,12 +114,10 @@ defmodule Karabinex.Manipulator do
     %{shell_command: arg}
   end
 
-  def capture_modifiers(commands, map_prefix) do
-    var_name = prefix_var_name(map_prefix)
-
+  def capture_modifiers(commands, chord) do
     commands
-    |> Enum.flat_map(fn %{key: %Key{modifiers: modifiers}} ->
-      modifiers
+    |> Enum.flat_map(fn %{chord: chord} ->
+      Chord.last(chord).modifiers
     end)
     |> Enum.uniq()
     |> Enum.flat_map(fn modifier ->
@@ -135,7 +135,7 @@ defmodule Karabinex.Manipulator do
           to_after_key_up: [
             %{
               set_variable: %{
-                name: var_name,
+                name: Chord.var_name(chord),
                 value: 0
               }
             }
@@ -143,7 +143,7 @@ defmodule Karabinex.Manipulator do
           conditions: [
             %{
               type: :variable_if,
-              name: var_name,
+              name: Chord.var_name(chord),
               value: 1
             }
           ]
@@ -153,9 +153,7 @@ defmodule Karabinex.Manipulator do
     |> Enum.map(&make_manipulator/1)
   end
 
-  def disable_keymap(key, prefix) do
-    var_name = prefix_var_name(prefix ++ [key])
-
+  def disable_keymap(chord) do
     make_manipulator(%{
       from: %{
         any: :key_code
@@ -163,7 +161,7 @@ defmodule Karabinex.Manipulator do
       to: [
         %{
           set_variable: %{
-            name: var_name,
+            name: Chord.var_name(chord),
             value: 0
           }
         }
@@ -171,21 +169,11 @@ defmodule Karabinex.Manipulator do
       conditions: [
         %{
           type: :variable_if,
-          name: var_name,
+          name: Chord.var_name(chord),
           value: 1
         }
       ]
     })
-  end
-
-  def prefix_var_name(keys) do
-    keys
-    |> Enum.map(&Map.get(&1, :raw))
-    |> Enum.join("_")
-    |> Kernel.<>("_keymap")
-    |> String.replace("✦", "hyper")
-    |> String.replace("⌥", "option")
-    |> String.replace("⌘", "command")
   end
 
   defp make_manipulator(properties), do: Map.merge(%{type: :basic}, properties)

@@ -1,16 +1,20 @@
 defmodule Karabinex.Keymap do
-  alias Karabinex.{Command, Key}
+  alias Karabinex.{Command, Chord}
+
+  defstruct [:chord, children: []]
 
   @type binding :: atom() | String.t()
   @type spec :: %{binding() => Command.spec() | spec()}
 
-  defstruct [:key, prefix: [], commands: []]
+  @type t :: %__MODULE__{
+          chord: Chord.t(),
+          children: [t() | Command.t()]
+        }
 
-  def new(key, prefix, commands) do
+  def new(chord, children) do
     %__MODULE__{
-      key: Key.new(key),
-      prefix: Enum.map(prefix, &Key.new/1),
-      commands: commands
+      chord: chord,
+      children: children
     }
   end
 end

@@ -1,20 +1,21 @@
 defmodule Karabinex.Config do
-  alias Karabinex.{Keymap, Command}
+  alias Karabinex.{Key, Keymap, Command, Chord}
 
-  def parse_definitions(defs, prefix \\ []) do
-    defs
-    |> Enum.map(&parse_definition(&1, prefix))
+  def parse_definitions(defs, prefix_chord \\ Chord.new()) do
+    Enum.map(defs, &parse_definition(&1, prefix_chord))
   end
 
-  def parse_definition({key, %{} = keymap_spec}, prefix) do
-    Keymap.new(key, prefix, parse_definitions(keymap_spec, prefix ++ [key]))
+  def parse_definition({key, %{} = keymap_spec}, prefix_chord) do
+    chord = Chord.append(prefix_chord, Key.new(key))
+    Keymap.new(chord, parse_definitions(keymap_spec, chord))
   end
 
-  def parse_definition({key, {kind, arg}}, prefix) do
-    parse_definition({key, {kind, arg, []}}, prefix)
+  def parse_definition({key, {kind, arg}}, prefix_chord) do
+    parse_definition({key, {kind, arg, []}}, prefix_chord)
   end
 
-  def parse_definition({key, {kind, arg, opts}}, prefix) do
-    Command.new(kind, arg, key, prefix, opts)
+  def parse_definition({key, {kind, arg, opts}}, prefix_chord) do
+    chord = Chord.append(prefix_chord, Key.new(key))
+    Command.new(kind, arg, chord, opts)
   end
 end
