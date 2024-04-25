@@ -20,17 +20,17 @@ defmodule Karabinex.Command do
           | {:repeat, :key | :keymap}
 
   @type t :: %__MODULE__{
+          chord: Chord.t(),
           kind: kind(),
           arg: String.t(),
-          opts: [option()],
-          chord: Chord.t()
+          opts: [option()]
         }
 
-  def new(kind, arg, chord, opts \\ []) do
+  def new(chord, kind, arg, opts \\ []) do
     %__MODULE__{
+      chord: chord,
       kind: kind,
       arg: arg,
-      chord: chord,
       opts: opts
     }
   end

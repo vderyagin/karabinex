@@ -6,8 +6,9 @@ defmodule Karabinex.Config do
   end
 
   def parse_definition({key, %{} = keymap_spec}, prefix_chord) do
-    chord = Chord.append(prefix_chord, Key.new(key))
-    Keymap.new(chord, parse_definitions(keymap_spec, chord))
+    prefix_chord
+    |> Chord.append(Key.new(key))
+    Keymap.new(parse_definitions(keymap_spec, chord))
   end
 
   def parse_definition({key, {kind, arg}}, prefix_chord) do
@@ -15,7 +16,8 @@ defmodule Karabinex.Config do
   end
 
   def parse_definition({key, {kind, arg, opts}}, prefix_chord) do
-    chord = Chord.append(prefix_chord, Key.new(key))
-    Command.new(kind, arg, chord, opts)
+    prefix_chord
+    |> Chord.append(Key.new(key))
+    |> Command.new(kind, arg, opts)
   end
 end

@@ -15,9 +15,7 @@ defmodule Karabinex.Chord do
                   tl(chord.keys) == []
 
   @spec new :: t()
-  def new do
-    %__MODULE__{}
-  end
+  def new, do: %__MODULE__{}
 
   @spec append(t(), Key.t()) :: t()
   def append(%__MODULE__{keys: keys} = chord, key) do
