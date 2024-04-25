@@ -12,7 +12,7 @@ defmodule Karabinex.Chord do
                   is_map_key(chord, :keys) and
                   is_list(chord.keys) and
                   is_map(hd(chord.keys)) and
-                  tl(chord.keys) === []
+                  tl(chord.keys) == []
 
   @spec new :: t()
   def new do
