@@ -1,10 +1,15 @@
 defmodule Karabinex do
-  alias Karabinex.{Rules, Config, Manipulator}
+  alias Karabinex.{Config, Manipulator}
 
-  def write_config(definition_name) do
+  def write_config do
     {:ok, _} = Application.ensure_all_started(:karabinex)
 
-    {description, definitions} = Rules.definition(definition_name)
+    opts = [file: "rules.exs"]
+
+    {{description, definitions}, _binding} =
+      File.read!(opts[:file])
+      |> Code.string_to_quoted!(opts)
+      |> Code.eval_quoted([], opts)
 
     manipulators =
       definitions
@@ -12,7 +17,7 @@ defmodule Karabinex do
       |> Enum.flat_map(&Manipulator.generate/1)
 
     File.write!(
-      "#{definition_name}.json",
+      "karabinex.json",
       %{
         title: description,
         rules: [
