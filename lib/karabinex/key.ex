@@ -24,8 +24,6 @@ defmodule Karabinex.Key do
           modifiers: [modifier()]
         }
 
-  @modifiers [:command, :option, :control, :shift]
-
   def new(key) do
     raw_key = to_string(key)
 
@@ -110,12 +108,17 @@ defmodule Karabinex.Key do
   def code(%__MODULE__{code: {:pointer, code}}), do: %{pointing_button: code}
 
   def readable_name(%__MODULE__{code: {_kind, code}, modifiers: modifiers}) do
-    if Enum.all?(@modifiers, &(&1 in modifiers)) do
-      "hyper-"
-    else
-      modifiers
-      |> Enum.map(&"#{&1}-")
-      |> Enum.join()
+    cond do
+      Enum.all?([:command, :option, :control, :shift], &(&1 in modifiers)) ->
+        "hyper-"
+
+      Enum.all?([:option, :control, :shift], &(&1 in modifiers)) ->
+        "meh-"
+
+      true ->
+        modifiers
+        |> Enum.map(&"#{&1}-")
+        |> Enum.join()
     end
     |> Kernel.<>(code)
   end
