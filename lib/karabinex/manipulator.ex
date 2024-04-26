@@ -80,7 +80,7 @@ defmodule Karabinex.Manipulator do
         %{
           set_variable: %{
             name: Chord.prefix_var_name(chord),
-            value: 1
+            value: 0
           }
         }
       ],
