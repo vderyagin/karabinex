@@ -20,14 +20,12 @@ defmodule Karabinex.Manipulator do
 
   def generate(%Command{kind: kind, arg: arg, chord: chord})
       when Chord.singleton?(chord) do
-    make_manipulator(%{
-      from: from(Chord.last(chord)),
-      to: [command_object(kind, arg)]
-    })
+    %{type: :basic, from: from(Chord.last(chord)), to: [command_object(kind, arg)]}
   end
 
   def generate(%Command{kind: kind, arg: arg, chord: chord, opts: opts}) do
-    make_manipulator(%{
+    %{
+      type: :basic,
       from: from(Chord.last(chord)),
       to:
         if opts[:repeat] do
@@ -50,11 +48,12 @@ defmodule Karabinex.Manipulator do
           value: 1
         }
       ]
-    })
+    }
   end
 
   def enable_keymap(chord) when Chord.singleton?(chord) do
-    make_manipulator(%{
+    %{
+      type: :basic,
       from: from(Chord.last(chord)),
       to: [
         %{
@@ -64,11 +63,12 @@ defmodule Karabinex.Manipulator do
           }
         }
       ]
-    })
+    }
   end
 
   def enable_keymap(chord) do
-    make_manipulator(%{
+    %{
+      type: :basic,
       from: from(Chord.last(chord)),
       to: [
         %{
@@ -91,7 +91,7 @@ defmodule Karabinex.Manipulator do
           value: 1
         }
       ]
-    })
+    }
   end
 
   def command_object(:app, arg) do
@@ -123,6 +123,7 @@ defmodule Karabinex.Manipulator do
     |> Enum.flat_map(&["left_#{&1}", "right_#{&1}"])
     |> Enum.map(
       &%{
+        type: :basic,
         from: %{
           key_code: &1
         },
@@ -148,11 +149,11 @@ defmodule Karabinex.Manipulator do
         ]
       }
     )
-    |> Enum.map(&make_manipulator/1)
   end
 
   def disable_keymap(chord) do
-    make_manipulator(%{
+    %{
+      type: :basic,
       from: %{
         any: :key_code
       },
@@ -171,10 +172,8 @@ defmodule Karabinex.Manipulator do
           value: 1
         }
       ]
-    })
+    }
   end
-
-  defp make_manipulator(properties), do: Map.merge(%{type: :basic}, properties)
 
   defp from(%Key{modifiers: []} = key), do: Key.code(key)
 
