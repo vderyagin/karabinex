@@ -8,128 +8,93 @@ defmodule Karabinex.Manipulator do
 
   require Chord
 
-  def generate(%Keymap{chord: chord, children: children}) do
-    [
-      chord |> enable_keymap(),
-      children |> Enum.map(&generate/1),
-      children |> capture_modifiers(chord),
-      chord |> disable_keymap()
-    ]
-    |> List.flatten()
-  end
+  defmodule EnableKeymap do
+    alias Karabinex.{Chord, Manipulator}
 
-  def generate(%Command{kind: kind, arg: arg, chord: chord})
-      when Chord.singleton?(chord) do
-    %{type: :basic, from: from(Chord.last(chord)), to: [command_object(kind, arg)]}
-  end
-
-  def generate(%Command{kind: kind, arg: arg, chord: chord, opts: opts}) do
-    %{
-      type: :basic,
-      from: from(Chord.last(chord)),
-      to:
-        if opts[:repeat] do
-          [command_object(kind, arg)]
-        else
-          [
-            command_object(kind, arg),
-            %{
-              set_variable: %{
-                name: Chord.prefix_var_name(chord),
-                value: 0
-              }
+    def new(chord) when Chord.singleton?(chord) do
+      %{
+        type: :basic,
+        from: Manipulator.from(Chord.last(chord)),
+        to: [
+          %{
+            set_variable: %{
+              name: Chord.var_name(chord),
+              value: 1
             }
-          ]
-        end,
-      conditions: [
-        %{
-          type: :variable_if,
-          name: Chord.prefix_var_name(chord),
-          value: 1
-        }
-      ]
-    }
-  end
-
-  def enable_keymap(chord) when Chord.singleton?(chord) do
-    %{
-      type: :basic,
-      from: from(Chord.last(chord)),
-      to: [
-        %{
-          set_variable: %{
-            name: Chord.var_name(chord),
-            value: 1
           }
-        }
-      ]
-    }
-  end
+        ]
+      }
+    end
 
-  def enable_keymap(chord) do
-    %{
-      type: :basic,
-      from: from(Chord.last(chord)),
-      to: [
-        %{
-          set_variable: %{
-            name: Chord.var_name(chord),
-            value: 1
+    def new(chord) do
+      %{
+        type: :basic,
+        from: Manipulator.from(Chord.last(chord)),
+        to: [
+          %{
+            set_variable: %{
+              name: Chord.var_name(chord),
+              value: 1
+            }
+          },
+          %{
+            set_variable: %{
+              name: Chord.prefix_var_name(chord),
+              value: 0
+            }
           }
-        },
-        %{
-          set_variable: %{
+        ],
+        conditions: [
+          %{
+            type: :variable_if,
             name: Chord.prefix_var_name(chord),
-            value: 0
+            value: 1
           }
-        }
-      ],
-      conditions: [
-        %{
-          type: :variable_if,
-          name: Chord.prefix_var_name(chord),
-          value: 1
-        }
-      ]
-    }
+        ]
+      }
+    end
   end
 
-  def command_object(:app, arg) do
-    command_object(:sh, "open -a '#{arg}'")
-  end
+  defmodule DisableKeymap do
+    alias Karabinex.Chord
 
-  def command_object(:raycast, arg) do
-    command_object(:sh, "open raycast://#{arg}")
-  end
-
-  def command_object(:quit, arg) do
-    command_object(:sh, "osascript -e 'quit app \"#{arg}\"'")
-  end
-
-  def command_object(:kill, arg) do
-    command_object(:sh, "killall -SIGKILL '#{arg}'")
-  end
-
-  def command_object(:sh, arg) do
-    %{shell_command: arg}
-  end
-
-  def capture_modifiers(commands, chord) do
-    commands
-    |> Enum.flat_map(fn %{chord: chord} ->
-      Chord.last(chord).modifiers
-    end)
-    |> Enum.uniq()
-    |> Enum.flat_map(&["left_#{&1}", "right_#{&1}"])
-    |> Enum.map(
-      &%{
+    def new(chord) do
+      %{
         type: :basic,
         from: %{
-          key_code: &1
+          any: :key_code
         },
         to: [
           %{
-            key_code: &1
+            set_variable: %{
+              name: Chord.var_name(chord),
+              value: 0
+            }
+          }
+        ],
+        conditions: [
+          %{
+            type: :variable_if,
+            name: Chord.var_name(chord),
+            value: 1
+          }
+        ]
+      }
+    end
+  end
+
+  defmodule CaptureModifier do
+    alias Karabinex.Chord
+
+    def new(modifier_key_code, chord) do
+      %{
+        type: :basic,
+        from: %{
+          key_code: modifier_key_code
+        },
+        to: [
+          %{
+            key_code: modifier_key_code
           }
         ],
         to_after_key_up: [
@@ -148,36 +113,92 @@ defmodule Karabinex.Manipulator do
           }
         ]
       }
-    )
+    end
   end
 
-  def disable_keymap(chord) do
-    %{
-      type: :basic,
-      from: %{
-        any: :key_code
-      },
-      to: [
-        %{
-          set_variable: %{
-            name: Chord.var_name(chord),
-            value: 0
+  defmodule InvokeCommand do
+    alias Karabinex.{Command, Chord, Manipulator}
+
+    require Chord
+
+    def new(%Command{kind: kind, arg: arg, chord: chord})
+        when Chord.singleton?(chord) do
+      %{type: :basic, from: Manipulator.from(Chord.last(chord)), to: [command_object(kind, arg)]}
+    end
+
+    def new(%Command{kind: kind, arg: arg, chord: chord, opts: opts}) do
+      %{
+        type: :basic,
+        from: Manipulator.from(Chord.last(chord)),
+        to:
+          if opts[:repeat] do
+            [command_object(kind, arg)]
+          else
+            [
+              command_object(kind, arg),
+              %{
+                set_variable: %{
+                  name: Chord.prefix_var_name(chord),
+                  value: 0
+                }
+              }
+            ]
+          end,
+        conditions: [
+          %{
+            type: :variable_if,
+            name: Chord.prefix_var_name(chord),
+            value: 1
           }
-        }
-      ],
-      conditions: [
-        %{
-          type: :variable_if,
-          name: Chord.var_name(chord),
-          value: 1
-        }
-      ]
-    }
+        ]
+      }
+    end
+
+    def command_object(:app, arg) do
+      command_object(:sh, "open -a '#{arg}'")
+    end
+
+    def command_object(:raycast, arg) do
+      command_object(:sh, "open raycast://#{arg}")
+    end
+
+    def command_object(:quit, arg) do
+      command_object(:sh, "osascript -e 'quit app \"#{arg}\"'")
+    end
+
+    def command_object(:kill, arg) do
+      command_object(:sh, "killall -SIGKILL '#{arg}'")
+    end
+
+    def command_object(:sh, arg) do
+      %{shell_command: arg}
+    end
   end
 
-  defp from(%Key{modifiers: []} = key), do: Key.code(key)
+  def generate(%Keymap{chord: chord, children: children} = keymap) do
+    [
+      chord |> EnableKeymap.new(),
+      children |> Enum.map(&generate/1),
+      keymap |> get_child_modifiers() |> Enum.map(&CaptureModifier.new(&1, chord)),
+      chord |> DisableKeymap.new()
+    ]
+    |> List.flatten()
+  end
 
-  defp from(%Key{modifiers: modifiers} = key) do
+  def generate(%Command{} = c), do: InvokeCommand.new(c)
+
+  def get_child_modifiers(%Keymap{children: children}) do
+    children
+    |> Enum.flat_map(fn %{chord: chord} ->
+      Chord.last(chord).modifiers
+    end)
+    |> Enum.uniq()
+    |> Enum.flat_map(&["left_#{&1}", "right_#{&1}"])
+  end
+
+  def from(%Key{modifiers: []} = key), do: Key.code(key)
+
+  def from(%Key{modifiers: modifiers} = key) do
     Key.code(key)
     |> Map.merge(%{
       modifiers: %{
