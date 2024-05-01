@@ -120,36 +120,34 @@ defmodule Karabinex.Manipulator do
       Chord.last(chord).modifiers
     end)
     |> Enum.uniq()
-    |> Enum.flat_map(fn modifier ->
-      [:left, :right]
-      |> Enum.map(
-        &%{
-          from: %{
-            key_code: "#{&1}_#{modifier}"
-          },
-          to: [
-            %{
-              key_code: "#{&1}_#{modifier}"
-            }
-          ],
-          to_after_key_up: [
-            %{
-              set_variable: %{
-                name: Chord.var_name(chord),
-                value: 0
-              }
-            }
-          ],
-          conditions: [
-            %{
-              type: :variable_if,
+    |> Enum.flat_map(&["left_#{&1}", "right_#{&1}"])
+    |> Enum.map(
+      &%{
+        from: %{
+          key_code: &1
+        },
+        to: [
+          %{
+            key_code: &1
+          }
+        ],
+        to_after_key_up: [
+          %{
+            set_variable: %{
               name: Chord.var_name(chord),
-              value: 1
+              value: 0
             }
-          ]
-        }
-      )
-    end)
+          }
+        ],
+        conditions: [
+          %{
+            type: :variable_if,
+            name: Chord.var_name(chord),
+            value: 1
+          }
+        ]
+      }
+    )
     |> Enum.map(&make_manipulator/1)
   end
 
