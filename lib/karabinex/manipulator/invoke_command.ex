@@ -12,24 +12,34 @@ defmodule Karabinex.Manipulator.InvokeCommand do
     }
   end
 
-  def new(%Command{kind: kind, arg: arg, chord: chord, opts: opts}) do
+  def new(%Command{kind: kind, arg: arg, chord: chord, repeat: nil}) do
     %{
       type: :basic,
       from: Manipulator.make_from(Chord.last(chord)),
-      to:
-        if opts[:repeat] do
-          [command_object(kind, arg)]
-        else
-          [
-            command_object(kind, arg),
-            %{
-              set_variable: %{
-                name: Chord.prefix_var_name(chord),
-                value: 0
-              }
-            }
-          ]
-        end,
+      to: [
+        command_object(kind, arg),
+        %{
+          set_variable: %{
+            name: Chord.prefix_var_name(chord),
+            value: 0
+          }
+        }
+      ],
+      conditions: [
+        %{
+          type: :variable_if,
+          name: Chord.prefix_var_name(chord),
+          value: 1
+        }
+      ]
+    }
+  end
+
+  def new(%Command{kind: kind, arg: arg, chord: chord}) do
+    %{
+      type: :basic,
+      from: Manipulator.make_from(Chord.last(chord)),
+      to: [command_object(kind, arg)],
       conditions: [
         %{
           type: :variable_if,
