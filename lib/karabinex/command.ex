@@ -1,7 +1,7 @@
 defmodule Karabinex.Command do
   alias Karabinex.Chord
 
-  defstruct [:kind, :arg, :chord, :repeat]
+  defstruct [:kind, :arg, :chord, repeat: false]
 
   @type kind ::
           :app
@@ -16,14 +16,14 @@ defmodule Karabinex.Command do
           | {kind(), String.t(), [option()]}
 
   @type option ::
-          {:if, any()}
-          | {:repeat, :key | :keymap}
+          {:if, map()}
+          | {:repeat, boolean()}
 
   @type t :: %__MODULE__{
           chord: Chord.t(),
           kind: kind(),
           arg: String.t(),
-          repeat: :key | :keymap | nil
+          repeat: boolean()
         }
 
   def new(chord, kind, arg, opts \\ []) do
@@ -35,13 +35,8 @@ defmodule Karabinex.Command do
     |> add_opts(opts)
   end
 
-  def add_opts(%__MODULE__{} = command, [{:repeat, :key} | rest]) do
-    %{command | repeat: :key}
-    |> add_opts(rest)
-  end
-
-  def add_opts(%__MODULE__{} = command, [{:repeat, :keymap} | rest]) do
-    %{command | repeat: :keymap}
+  def add_opts(%__MODULE__{} = command, [{:repeat, value} | rest]) do
+    %{command | repeat: value}
     |> add_opts(rest)
   end
 

@@ -12,7 +12,22 @@ defmodule Karabinex.Manipulator.InvokeCommand do
     }
   end
 
-  def new(%Command{kind: kind, arg: arg, chord: chord, repeat: nil}) do
+  def new(%Command{kind: kind, arg: arg, chord: chord, repeat: true}) do
+    %{
+      type: :basic,
+      from: Manipulator.make_from(Chord.last(chord)),
+      to: [command_object(kind, arg)],
+      conditions: [
+        %{
+          type: :variable_if,
+          name: Chord.prefix_var_name(chord),
+          value: 1
+        }
+      ]
+    }
+  end
+
+  def new(%Command{kind: kind, arg: arg, chord: chord, repeat: false}) do
     %{
       type: :basic,
       from: Manipulator.make_from(Chord.last(chord)),
@@ -25,21 +40,6 @@ defmodule Karabinex.Manipulator.InvokeCommand do
           }
         }
       ],
-      conditions: [
-        %{
-          type: :variable_if,
-          name: Chord.prefix_var_name(chord),
-          value: 1
-        }
-      ]
-    }
-  end
-
-  def new(%Command{kind: kind, arg: arg, chord: chord}) do
-    %{
-      type: :basic,
-      from: Manipulator.make_from(Chord.last(chord)),
-      to: [command_object(kind, arg)],
       conditions: [
         %{
           type: :variable_if,

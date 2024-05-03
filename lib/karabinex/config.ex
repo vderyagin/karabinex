@@ -15,8 +15,18 @@ defmodule Karabinex.Config do
   end
 
   def parse_definition({key, {kind, arg, opts}}, prefix) do
-    prefix
-    |> Chord.append(Key.new(key))
-    |> Command.new(kind, arg, opts)
+    chord = prefix |> Chord.append(Key.new(key))
+
+    case opts[:repeat] do
+      :key ->
+        new_opts = opts |> Keyword.merge(repeat: :keymap)
+        parse_definition({key, %{key => {kind, arg, new_opts}}}, prefix)
+
+      :keymap ->
+        Command.new(chord, kind, arg, opts |> Keyword.merge(repeat: true))
+
+      _ ->
+        Command.new(chord, kind, arg, opts)
+    end
   end
 end
