@@ -6,8 +6,7 @@ defmodule Karabinex.Manipulator.DisableKeymap do
   def new(chord) do
     var_name = Chord.var_name(chord)
 
-    :any
-    |> manipulate()
+    manipulate(:any)
     |> if_variable(var_name)
     |> unset_variable(var_name)
   end

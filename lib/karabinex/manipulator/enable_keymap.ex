@@ -15,7 +15,7 @@ defmodule Karabinex.Manipulator.EnableKeymap do
     Chord.last(chord)
     |> manipulate()
     |> if_variable(Chord.prefix_var_name(chord))
-    |> set_variable(Chord.var_name(chord))
     |> unset_variable(Chord.prefix_var_name(chord))
+    |> set_variable(Chord.var_name(chord))
   end
 end

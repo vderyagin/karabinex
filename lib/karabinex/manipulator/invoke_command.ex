@@ -25,8 +25,8 @@ defmodule Karabinex.Manipulator.InvokeCommand do
     Chord.last(chord)
     |> manipulate()
     |> if_variable(var_name)
-    |> run_shell_command(command(kind, arg))
     |> unset_variable(var_name)
+    |> run_shell_command(command(kind, arg))
   end
 
   defp command(:app, arg), do: "open -a '#{arg}'"
