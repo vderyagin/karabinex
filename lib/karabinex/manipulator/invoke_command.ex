@@ -1,72 +1,37 @@
 defmodule Karabinex.Manipulator.InvokeCommand do
   alias Karabinex.{Manipulator, Chord, Command}
 
+  import Manipulator.DSL
+
   require Chord
 
   def new(%Command{kind: kind, arg: arg, chord: chord})
       when Chord.singleton?(chord) do
-    %{
-      type: :basic,
-      from: Manipulator.make_from(Chord.last(chord)),
-      to: [command_object(kind, arg)]
-    }
+    Chord.last(chord)
+    |> manipulate()
+    |> run_shell_command(command(kind, arg))
   end
 
   def new(%Command{kind: kind, arg: arg, chord: chord, repeat: true}) do
-    %{
-      type: :basic,
-      from: Manipulator.make_from(Chord.last(chord)),
-      to: [command_object(kind, arg)],
-      conditions: [
-        %{
-          type: :variable_if,
-          name: Chord.prefix_var_name(chord),
-          value: 1
-        }
-      ]
-    }
+    Chord.last(chord)
+    |> manipulate()
+    |> if_variable(Chord.prefix_var_name(chord))
+    |> run_shell_command(command(kind, arg))
   end
 
   def new(%Command{kind: kind, arg: arg, chord: chord, repeat: false}) do
-    %{
-      type: :basic,
-      from: Manipulator.make_from(Chord.last(chord)),
-      to: [
-        command_object(kind, arg),
-        %{
-          set_variable: %{
-            name: Chord.prefix_var_name(chord),
-            value: 0
-          }
-        }
-      ],
-      conditions: [
-        %{
-          type: :variable_if,
-          name: Chord.prefix_var_name(chord),
-          value: 1
-        }
-      ]
-    }
+    var_name = Chord.prefix_var_name(chord)
+
+    Chord.last(chord)
+    |> manipulate()
+    |> if_variable(var_name)
+    |> run_shell_command(command(kind, arg))
+    |> unset_variable(var_name)
   end
 
-  defp command_object(:app, arg) do
-    command_object(:sh, "open -a '#{arg}'")
-  end
-
-  defp command_object(:raycast, arg) do
-    command_object(:sh, "open raycast://#{arg}")
-  end
-
-  defp command_object(:quit, arg) do
-    command_object(:sh, "osascript -e 'quit app \"#{arg}\"'")
-  end
-
-  defp command_object(:kill, arg) do
-    command_object(:sh, "killall -SIGKILL '#{arg}'")
-  end
-
-  defp command_object(:sh, arg) do
-    %{shell_command: arg}
-  end
+  defp command(:app, arg), do: "open -a '#{arg}'"
+  defp command(:raycast, arg), do: "open raycast://#{arg}"
+  defp command(:quit, arg), do: "osascript -e 'quit app \"#{arg}\"'"
+  defp command(:kill, arg), do: "killall -SIGKILL '#{arg}'"
+  defp command(:sh, arg), do: arg
 end
