@@ -1,7 +1,7 @@
 defmodule Karabinex.Keymap do
   alias Karabinex.{Command, Chord}
 
-  defstruct [:chord, children: []]
+  defstruct [:chord, :hook, children: []]
 
   @type binding :: atom() | String.t()
   @type spec :: %{binding() => Command.spec() | spec()}
@@ -16,5 +16,9 @@ defmodule Karabinex.Keymap do
       chord: chord,
       children: children
     }
+  end
+
+  def add_hook(%__MODULE__{} = keymap, %Command{} = hook) do
+    %{keymap | hook: hook}
   end
 end

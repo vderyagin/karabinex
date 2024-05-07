@@ -29,9 +29,9 @@ defmodule Karabinex.Manipulator.InvokeCommand do
     |> run_shell_command(command(kind, arg))
   end
 
-  defp command(:app, arg), do: "open -a '#{arg}'"
-  defp command(:raycast, arg), do: "open raycast://#{arg}"
-  defp command(:quit, arg), do: "osascript -e 'quit app \"#{arg}\"'"
-  defp command(:kill, arg), do: "killall -SIGKILL '#{arg}'"
-  defp command(:sh, arg), do: arg
+  def command(:app, arg), do: "open -a '#{arg}'"
+  def command(:raycast, arg), do: "open raycast://#{arg}"
+  def command(:quit, arg), do: "osascript -e 'quit app \"#{arg}\"'"
+  def command(:kill, arg), do: "killall -SIGKILL '#{arg}'"
+  def command(:sh, arg), do: arg
 end

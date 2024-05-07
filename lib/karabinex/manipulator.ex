@@ -13,9 +13,9 @@ defmodule Karabinex.Manipulator do
     InvokeCommand
   }
 
-  def generate(%Keymap{chord: chord, children: children} = keymap) do
+  def generate(%Keymap{chord: chord, children: children, hook: hook} = keymap) do
     [
-      chord |> EnableKeymap.new(),
+      chord |> EnableKeymap.new(hook),
       children |> Enum.map(&generate/1),
       keymap |> get_child_modifiers() |> Enum.map(&CaptureModifier.new(&1, chord)),
       chord |> DisableKeymap.new()
