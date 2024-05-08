@@ -5,6 +5,8 @@ defmodule Karabinex.Manipulator.EnableKeymap do
 
   require Chord
 
+  def new(chord, hook \\ nil)
+
   def new(chord, nil) when Chord.singleton?(chord) do
     Chord.last(chord)
     |> manipulate()
@@ -21,7 +23,7 @@ defmodule Karabinex.Manipulator.EnableKeymap do
 
   def new(chord, %Command{kind: kind, arg: arg}) do
     chord
-    |> new(nil)
+    |> new()
     |> run_shell_command(Manipulator.InvokeCommand.command(kind, arg))
   end
 end
