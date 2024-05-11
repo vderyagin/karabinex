@@ -1,15 +1,21 @@
 defmodule Karabinex.Manipulator.CaptureModifier do
-  alias Karabinex.{Manipulator, Chord}
+  alias Karabinex.{ToManipulator, Manipulator, Chord}
 
   import Manipulator.DSL
 
-  def new(modifier_key_code, chord) do
-    var_name = Chord.var_name(chord)
+  defstruct [:modifier, :chord]
 
-    %{key_code: modifier_key_code}
-    |> manipulate()
-    |> remap(%{key_code: modifier_key_code})
-    |> if_variable(var_name)
-    |> unset_variable_after_key_up(var_name)
+  def new(modifier, chord), do: %__MODULE__{modifier: modifier, chord: chord}
+
+  defimpl ToManipulator do
+    def manipulator(%Manipulator.CaptureModifier{modifier: modifier, chord: chord}) do
+      var_name = Chord.var_name(chord)
+
+      %{key_code: modifier}
+      |> manipulate()
+      |> remap(%{key_code: modifier})
+      |> if_variable(var_name)
+      |> unset_variable_after_key_up(var_name)
+    end
   end
 end

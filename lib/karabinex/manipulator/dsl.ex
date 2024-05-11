@@ -25,6 +25,7 @@ defmodule Karabinex.Manipulator.DSL do
   def from(%{} = m, :any) do
     Map.put(m, :from, %{any: :key_code})
   end
+
   def from(%{} = m, %{key_code: key_code}) do
     Map.put(m, :from, %{key_code: key_code})
   end
@@ -32,6 +33,7 @@ defmodule Karabinex.Manipulator.DSL do
   def remap(%{to: to} = m, clause) when is_list(to) do
     update_in(m.to, &(&1 ++ [clause]))
   end
+
   def remap(%{} = m, clause) do
     m
     |> Map.put(:to, [])
@@ -107,4 +109,12 @@ defmodule Karabinex.Manipulator.DSL do
   end
 
   def unless_variable(%{} = m, var_name), do: if_variable(m, var_name, 0)
+
+  def unless_variables(%{} = m, []), do: m
+
+  def unless_variables(%{} = m, [var_name | rest]) do
+    m
+    |> unless_variable(var_name)
+    |> unless_variables(rest)
+  end
 end

@@ -1,3 +1,7 @@
+defprotocol Karabinex.ToManipulator do
+  def manipulator(data)
+end
+
 defmodule Karabinex.Manipulator do
   alias Karabinex.{
     Key,
@@ -13,12 +17,12 @@ defmodule Karabinex.Manipulator do
     InvokeCommand
   }
 
-  def generate(%Keymap{chord: chord, children: children, hook: hook} = keymap) do
+  def generate(%Keymap{children: children, chord: chord} = keymap) do
     [
-      chord |> EnableKeymap.new(hook),
+      EnableKeymap.new(keymap),
       children |> Enum.map(&generate/1),
       keymap |> get_child_modifiers() |> Enum.map(&CaptureModifier.new(&1, chord)),
-      chord |> DisableKeymap.new()
+      DisableKeymap.new(keymap)
     ]
     |> List.flatten()
   end

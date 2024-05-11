@@ -20,6 +20,7 @@ defmodule Karabinex.Config do
     case opts[:repeat] do
       :key ->
         new_opts = opts |> Keyword.merge(repeat: :keymap)
+
         {key, %{key => {kind, arg, new_opts}}}
         |> parse_definition(prefix)
         |> Keymap.add_hook(Command.new(chord, kind, arg, opts))
