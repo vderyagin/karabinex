@@ -17,18 +17,18 @@ defmodule Karabinex.Chord do
   @spec new :: t()
   def new, do: %__MODULE__{}
 
-  @spec append(t(), Key.t()) :: t()
+  # @spec append(t(), Key.t()) :: t()
   def append(%__MODULE__{keys: keys} = chord, key) do
     %{chord | keys: keys ++ [key]}
   end
 
-  @spec last(t()) :: Key.t()
+  # @spec last(t()) :: Key.t()
   def last(%__MODULE__{keys: keys}), do: List.last(keys)
 
-  @spec prefix(t()) :: t()
+  # @spec prefix(t()) :: t()
   def prefix(%__MODULE__{keys: keys}), do: %__MODULE__{keys: Enum.drop(keys, -1)}
 
-  @spec var_name(t()) :: String.t()
+  # @spec var_name(t()) :: String.t()
   def var_name(%__MODULE__{keys: keys}) do
     "karabinex_"
     |> Kernel.<>(
@@ -39,7 +39,7 @@ defmodule Karabinex.Chord do
     |> Kernel.<>("_map")
   end
 
-  @spec prefix_var_name(t()) :: String.t()
+  # @spec prefix_var_name(t()) :: String.t()
   def prefix_var_name(chord) when not singleton?(chord) do
     chord
     |> prefix()
