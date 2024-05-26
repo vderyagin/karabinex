@@ -30,82 +30,36 @@ defmodule Karabinex.Manipulator.DSL do
     Map.put(m, :from, %{key_code: key_code})
   end
 
-  def remap(%{to: to} = m, clause) when is_list(to) do
-    update_in(m.to, &(&1 ++ [clause]))
-  end
-
   def remap(%{} = m, clause) do
-    m
-    |> Map.put(:to, [])
-    |> remap(clause)
-  end
-
-  def run_shell_command(%{to: to} = m, cmd) when is_list(to) do
-    update_in(m.to, &(&1 ++ [%{shell_command: cmd}]))
+    append_clause(m, :to, clause)
   end
 
   def run_shell_command(%{} = m, cmd) do
-    m
-    |> Map.put(:to, [])
-    |> run_shell_command(cmd)
+    append_clause(m, :to, %{shell_command: cmd})
   end
 
-  def set_variable(m, var_name, value \\ 1)
-
-  def set_variable(%{to: to} = m, var_name, value) when is_list(to) do
-    clause =
-      %{
-        set_variable: %{
-          name: var_name,
-          value: value
-        }
+  def set_variable(%{} = m, var_name, value \\ 1) do
+    append_clause(m, :to, %{
+      set_variable: %{
+        name: var_name,
+        value: value
       }
-
-    update_in(m.to, &(&1 ++ [clause]))
-  end
-
-  def set_variable(%{} = m, var_name, value) do
-    m
-    |> Map.put(:to, [])
-    |> set_variable(var_name, value)
+    })
   end
 
   def unset_variable(%{} = m, var_name), do: set_variable(m, var_name, 0)
 
-  def unset_variable_after_key_up(%{to_after_key_up: to} = m, var_name) when is_list(to) do
-    clause =
-      %{
-        set_variable: %{
-          name: var_name,
-          value: 0
-        }
+  def unset_variable_after_key_up(m, var_name) do
+    append_clause(m, :to_after_key_up, %{
+      set_variable: %{
+        name: var_name,
+        value: 0
       }
-
-    update_in(m.to_after_key_up, &(&1 ++ [clause]))
+    })
   end
 
-  def unset_variable_after_key_up(%{} = m, var_name) do
-    m
-    |> Map.put(:to_after_key_up, [])
-    |> unset_variable_after_key_up(var_name)
-  end
-
-  def if_variable(m, var_name, value \\ 1)
-
-  def if_variable(%{conditions: conditions} = m, var_name, value) when is_list(conditions) do
-    clause = %{
-      type: :variable_if,
-      name: var_name,
-      value: value
-    }
-
-    update_in(m.conditions, &(&1 ++ [clause]))
-  end
-
-  def if_variable(%{} = m, var_name, value) do
-    m
-    |> Map.put(:conditions, [])
-    |> if_variable(var_name, value)
+  def if_variable(%{} = m, var_name, value \\ 1) do
+    append_clause(m, :conditions, %{type: :variable_if, name: var_name, value: value})
   end
 
   def unless_variable(%{} = m, var_name), do: if_variable(m, var_name, 0)
@@ -116,5 +70,13 @@ defmodule Karabinex.Manipulator.DSL do
     m
     |> unless_variable(var_name)
     |> unless_variables(rest)
+  end
+
+  defp append_clause(%{} = m, key, clause) do
+    if Map.has_key?(m, key) do
+      update_in(m, [key], &(&1 ++ [clause]))
+    else
+      Map.put(m, key, [clause])
+    end
   end
 end
