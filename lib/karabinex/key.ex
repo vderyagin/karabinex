@@ -20,10 +20,11 @@ defmodule Karabinex.Key do
 
   @type t :: %__MODULE__{
           raw: String.t(),
-          code: code(),
+          code: code() | nil,
           modifiers: [modifier()]
         }
 
+  @spec new(atom() | String.t()) :: t()
   def new(key) do
     raw_key = to_string(key)
 
@@ -31,10 +32,12 @@ defmodule Karabinex.Key do
     |> parse(raw_key)
   end
 
+  @spec set_code(t(), code()) :: t()
   def set_code(%__MODULE__{code: nil} = key, code) do
     %{key | code: code}
   end
 
+  @spec set_modifier(t(), modifier()) :: t()
   def set_modifier(%__MODULE__{modifiers: modifiers} = key, :command) do
     if :command in modifiers, do: raise("invalid key specification: #{key.raw}")
     %{key | modifiers: [:command | modifiers]}
@@ -55,6 +58,7 @@ defmodule Karabinex.Key do
     %{key | modifiers: [:shift | modifiers]}
   end
 
+  @spec parse(t(), String.t()) :: t()
   def parse(%__MODULE__{} = key, "H-" <> rest), do: parse(key, "✦-" <> rest)
   def parse(%__MODULE__{} = key, "✦-" <> rest), do: parse(key, "⌘-M-C-S-" <> rest)
 
@@ -107,6 +111,7 @@ defmodule Karabinex.Key do
   def code(%__MODULE__{code: {:consumer, code}}), do: %{consumer_key_code: code}
   def code(%__MODULE__{code: {:pointer, code}}), do: %{pointing_button: code}
 
+  @spec readable_name(t()) :: String.t()
   def readable_name(%__MODULE__{code: {_kind, code}, modifiers: modifiers}) do
     cond do
       Enum.all?([:command, :option, :control, :shift], &(&1 in modifiers)) ->

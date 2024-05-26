@@ -11,6 +11,7 @@ defmodule Karabinex.Keymap do
           children: [t() | Command.t()]
         }
 
+  @spec new(Chord.t(), [t() | Command.t()]) :: t()
   def new(chord, children) do
     %__MODULE__{
       chord: chord,
@@ -18,6 +19,7 @@ defmodule Karabinex.Keymap do
     }
   end
 
+  @spec add_hook(t(), Command.t()) :: t()
   def add_hook(%__MODULE__{} = keymap, %Command{} = hook) do
     %{keymap | hook: hook}
   end
