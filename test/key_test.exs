@@ -3,6 +3,22 @@ defmodule Karabinex.KeyTest do
 
   alias Karabinex.Key
 
+  describe "has_modifiers? guard" do
+    require Key
+
+    test "detects plain key" do
+      refute Key.has_modifiers?(Key.new("x"))
+    end
+
+    test "detects key with single modifier" do
+      assert Key.has_modifiers?(Key.new("M-x"))
+    end
+
+    test "detects key with multiple modifiers" do
+      assert Key.has_modifiers?(Key.new("Meh-x"))
+    end
+  end
+
   describe "key definition parsing" do
     test "parses simple keys" do
       assert Key.parse(%Key{}, "x") == %Key{code: {:regular, "x"}}

@@ -28,7 +28,10 @@ defmodule Karabinex.Key do
            when key.__struct__ == __MODULE__ and
                   is_map_key(key, :modifiers) and
                   is_map(key.modifiers) and
-                  map_size(key.modifiers) == 0
+                  key.modifiers.__struct__ == MapSet and
+                  is_map_key(key.modifiers, :map) and
+                  is_map(key.modifiers.map) and
+                  map_size(key.modifiers.map) > 0
 
   @spec new(atom() | String.t()) :: t()
   def new(key) do
