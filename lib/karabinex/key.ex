@@ -3,7 +3,7 @@ defmodule Karabinex.Key do
 
   defstruct raw: nil,
             code: nil,
-            modifiers: []
+            modifiers: MapSet.new()
 
   @type modifier ::
           :command
@@ -21,8 +21,14 @@ defmodule Karabinex.Key do
   @type t :: %__MODULE__{
           raw: String.t(),
           code: code() | nil,
-          modifiers: [modifier()]
+          modifiers: MapSet.t(modifier())
         }
+
+  defguard has_modifiers?(key)
+           when key.__struct__ == __MODULE__ and
+                  is_map_key(key, :modifiers) and
+                  is_map(key.modifiers) and
+                  map_size(key.modifiers) == 0
 
   @spec new(atom() | String.t()) :: t()
   def new(key) do
@@ -38,24 +44,12 @@ defmodule Karabinex.Key do
   end
 
   @spec set_modifier(t(), modifier()) :: t()
-  def set_modifier(%__MODULE__{modifiers: modifiers} = key, :command) do
-    if :command in modifiers, do: raise("invalid key specification: #{key.raw}")
-    %{key | modifiers: [:command | modifiers]}
-  end
+  defp set_modifier(%__MODULE__{modifiers: modifiers} = key, modifier) do
+    if MapSet.member?(modifiers, modifier) do
+      raise("invalid key specification: #{key.raw}")
+    end
 
-  def set_modifier(%__MODULE__{modifiers: modifiers} = key, :option) do
-    if :option in modifiers, do: raise("invalid key specification: #{key.raw}")
-    %{key | modifiers: [:option | modifiers]}
-  end
-
-  def set_modifier(%__MODULE__{modifiers: modifiers} = key, :control) do
-    if :control in modifiers, do: raise("invalid key specification: #{key.raw}")
-    %{key | modifiers: [:control | modifiers]}
-  end
-
-  def set_modifier(%__MODULE__{modifiers: modifiers} = key, :shift) do
-    if :shift in modifiers, do: raise("invalid key specification: #{key.raw}")
-    %{key | modifiers: [:shift | modifiers]}
+    %{key | modifiers: MapSet.put(modifiers, modifier)}
   end
 
   @spec parse(t(), String.t()) :: t()
@@ -114,10 +108,10 @@ defmodule Karabinex.Key do
   @spec readable_name(t()) :: String.t()
   def readable_name(%__MODULE__{code: {_kind, code}, modifiers: modifiers}) do
     cond do
-      Enum.all?([:command, :option, :control, :shift], &(&1 in modifiers)) ->
+      MapSet.equal?(modifiers, MapSet.new([:command, :option, :control, :shift])) ->
         "hyper-"
 
-      Enum.all?([:option, :control, :shift], &(&1 in modifiers)) ->
+      MapSet.equal?(modifiers, MapSet.new([:option, :control, :shift])) ->
         "meh-"
 
       true ->
