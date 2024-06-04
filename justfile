@@ -14,7 +14,8 @@ replace-config: generate-config
       ~/.config/karabiner/assets/complex_modifications/karabinex.json
 
 build:
-    mix compile
+    mix deps.get
+    mix compile --warnings-as-errors
 
 typecheck:
     mix dialyzer
@@ -22,12 +23,21 @@ typecheck:
 format:
     mix format
 
+format-check:
+    mix format --check-formatted
+
 repl:
     iex -S mix
 
 clean:
     mix clean
     rm -rf ./deps/ ./_build/
+
+test:
+    mix test
+
+# run approximately the same stuff that is run in CI
+ci: build format-check test typecheck
 
 key_codes_url := "https://github.com/pqrs-org/Karabiner-Elements/raw/main/src/apps/SettingsWindow/Resources/simple_modifications.json"
 
