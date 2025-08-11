@@ -49,13 +49,20 @@ defmodule Karabinex.Manipulator.DSL do
     })
   end
 
-  def unset_variable(%{} = m, var_name), do: set_variable(m, var_name, 0)
+  def unset_variable(%{} = m, var_name) do
+    append_clause(m, :to, %{
+      set_variable: %{
+        name: var_name,
+        type: "unset"
+      }
+    })
+  end
 
   def unset_variable_after_key_up(m, var_name) do
     append_clause(m, :to_after_key_up, %{
       set_variable: %{
         name: var_name,
-        value: 0
+        type: "unset"
       }
     })
   end
