@@ -17,6 +17,12 @@ build:
     mix deps.get
     mix compile --warnings-as-errors
 
+outdated-deps:
+    mix hex.outdated
+
+update-deps:
+    mix deps.update --all
+
 typecheck:
     mix dialyzer
 
