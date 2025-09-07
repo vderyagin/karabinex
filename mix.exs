@@ -5,7 +5,7 @@ defmodule Karabinex.MixProject do
     [
       app: :karabinex,
       version: "0.1.0",
-      elixir: "~> 1.16",
+      elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       deps: [
         {:jason, "~> 1.4"},
