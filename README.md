@@ -48,7 +48,7 @@ The `rules.exs` file contains a tuple with a description and a map of keybinding
 ### Modifier Aliases
 
 | Alias        | Modifier                                   |
-|--------------+--------------------------------------------|
+|--------------|-------------------------------------------|
 | `M-` or `⌥-` | Option                                     |
 | `C-` or `^-` | Control                                    |
 | `S-`         | Shift                                      |
@@ -59,7 +59,7 @@ The `rules.exs` file contains a tuple with a description and a map of keybinding
 ### Command Types
 
 | Command                        | Description                         |
-|--------------------------------+-------------------------------------|
+|--------------------------------|-------------------------------------|
 | `{:app, "App Name"}`           | Launch or focus an application      |
 | `{:sh, "command"}`             | Execute a shell command             |
 | `{:quit, "App Name"}`          | Gracefully quit an application      |
@@ -173,7 +173,7 @@ All combined in a single config:
 ## Just Commands
 
 | Command               | Description                                     |
-|-----------------------+-------------------------------------------------|
+|-----------------------|-------------------------------------------------|
 | `just`                | Generate config and lint with karabiner_cli     |
 | `just replace-config` | Generate and copy to Karabiner config directory |
 | `just build`          | Compile with warnings as errors                 |
