@@ -107,4 +107,60 @@ defmodule Karabinex.KeyTest do
       end
     end
   end
+
+  describe "code/1" do
+    test "returns key_code map for regular key" do
+      key = Key.new("x")
+
+      assert Key.code(key) == %{key_code: "x"}
+    end
+
+    test "returns key_code map for key with modifiers" do
+      key = Key.new("M-a")
+
+      assert Key.code(key) == %{key_code: "a"}
+    end
+
+    test "returns key_code for special keys" do
+      assert Key.code(Key.new("escape")) == %{key_code: "escape"}
+      assert Key.code(Key.new("return_or_enter")) == %{key_code: "return_or_enter"}
+      assert Key.code(Key.new("spacebar")) == %{key_code: "spacebar"}
+    end
+  end
+
+  describe "readable_name/1" do
+    test "returns key code for plain key" do
+      key = Key.new("x")
+
+      assert Key.readable_name(key) == "x"
+    end
+
+    test "includes single modifier in name" do
+      key = Key.new("M-x")
+
+      assert Key.readable_name(key) =~ "option"
+      assert Key.readable_name(key) =~ "x"
+    end
+
+    test "returns hyper- prefix for all four modifiers" do
+      key = Key.new("H-x")
+
+      assert Key.readable_name(key) == "hyper-x"
+    end
+
+    test "returns meh- prefix for option+control+shift" do
+      key = Key.new("Meh-x")
+
+      assert Key.readable_name(key) == "meh-x"
+    end
+
+    test "includes multiple modifiers when not hyper or meh" do
+      key = Key.new("C-S-x")
+
+      result = Key.readable_name(key)
+      assert result =~ "control"
+      assert result =~ "shift"
+      assert result =~ "x"
+    end
+  end
 end
