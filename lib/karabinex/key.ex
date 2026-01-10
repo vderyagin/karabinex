@@ -104,13 +104,23 @@ defmodule Karabinex.Key do
   def code(%__MODULE__{code: {:consumer, code}}), do: %{consumer_key_code: code}
   def code(%__MODULE__{code: {:pointer, code}}), do: %{pointing_button: code}
 
+  @spec hyper?(t()) :: boolean
+  def hyper?(%__MODULE__{modifiers: modifiers}) do
+    MapSet.equal?(modifiers, MapSet.new([:command, :option, :control, :shift]))
+  end
+
+  @spec super?(t()) :: boolean
+  def super?(%__MODULE__{modifiers: modifiers}) do
+    MapSet.equal?(modifiers, MapSet.new([:option, :control, :shift]))
+  end
+
   @spec readable_name(t()) :: String.t()
-  def readable_name(%__MODULE__{code: {_kind, code}, modifiers: modifiers}) do
+  def readable_name(%__MODULE__{code: {_kind, code}, modifiers: modifiers} = key) do
     cond do
-      MapSet.equal?(modifiers, MapSet.new([:command, :option, :control, :shift])) ->
+      hyper?(key) ->
         "hyper-"
 
-      MapSet.equal?(modifiers, MapSet.new([:option, :control, :shift])) ->
+      super?(key) ->
         "meh-"
 
       true ->
