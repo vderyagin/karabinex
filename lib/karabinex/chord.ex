@@ -23,10 +23,10 @@ defmodule Karabinex.Chord do
   end
 
   @spec last(t()) :: Key.t()
-  def last(%__MODULE__{keys: keys}), do: List.last(keys)
+  def last(%__MODULE__{keys: [_ | _] = keys}), do: List.last(keys)
 
   @spec prefix(t()) :: t()
-  def prefix(%__MODULE__{keys: keys}), do: %__MODULE__{keys: Enum.drop(keys, -1)}
+  def prefix(%__MODULE__{keys: [_ | _] = keys}), do: %__MODULE__{keys: Enum.drop(keys, -1)}
 
   @spec var_name(t()) :: String.t()
   def var_name(%__MODULE__{keys: keys}) do
