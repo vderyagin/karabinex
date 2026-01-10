@@ -1,5 +1,5 @@
 defmodule Karabinex do
-  alias Karabinex.{Config, Manipulator}
+  alias Karabinex.{Config, Manipulator, ToManipulator}
 
   def write_config do
     {:ok, _} = Application.ensure_all_started(:karabinex)
@@ -15,22 +15,8 @@ defmodule Karabinex do
       definitions
       |> Config.parse_definitions()
       |> Enum.flat_map(&Manipulator.generate/1)
-
-    keymap_chords =
-      manipulators
-      |> Enum.filter(&match?(%Manipulator.EnableKeymap{}, &1))
-      |> Enum.map(fn %{keymap: %{chord: chord}} -> chord end)
-
-    manipulators =
-      manipulators
-      |> Enum.map(fn
-        %Manipulator.EnableKeymap{} = ek ->
-          Manipulator.EnableKeymap.register_other_chords(ek, keymap_chords)
-
-        m ->
-          m
-      end)
-      |> Enum.map(&Karabinex.ToManipulator.manipulator/1)
+      |> capture_other_chords()
+      |> Enum.map(&ToManipulator.manipulator/1)
 
     File.write!(
       "karabinex.json",
@@ -45,5 +31,21 @@ defmodule Karabinex do
       }
       |> Jason.encode!(pretty: true)
     )
+  end
+
+  defp capture_other_chords(manipulators) do
+    keymap_chords =
+      manipulators
+      |> Enum.filter(&match?(%Manipulator.EnableKeymap{}, &1))
+      |> Enum.map(fn %{keymap: %{chord: chord}} -> chord end)
+
+    manipulators
+    |> Enum.map(fn
+      %Manipulator.EnableKeymap{} = ek ->
+        Manipulator.EnableKeymap.register_other_chords(ek, keymap_chords)
+
+      m ->
+        m
+    end)
   end
 end
