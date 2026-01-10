@@ -105,12 +105,12 @@ defmodule Karabinex.Key do
   def code(%__MODULE__{code: {:pointer, code}}), do: %{pointing_button: code}
 
   @spec hyper?(t()) :: boolean
-  def hyper?(%__MODULE__{modifiers: modifiers}) do
+  defp hyper?(%__MODULE__{modifiers: modifiers}) do
     MapSet.equal?(modifiers, MapSet.new([:command, :option, :control, :shift]))
   end
 
   @spec super?(t()) :: boolean
-  def super?(%__MODULE__{modifiers: modifiers}) do
+  defp super?(%__MODULE__{modifiers: modifiers}) do
     MapSet.equal?(modifiers, MapSet.new([:option, :control, :shift]))
   end
 
