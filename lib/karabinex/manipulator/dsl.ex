@@ -1,27 +1,25 @@
 defmodule Karabinex.Manipulator.DSL do
   alias Karabinex.Key
 
-  require Key
-
   def manipulate(key) do
     from(%{type: :basic}, key)
   end
 
-  def from(%{} = m, %Key{modifiers: modifiers} = key) when Key.has_modifiers?(key) do
-    Map.put(
-      m,
-      :from,
-      Key.code(key)
-      |> Map.merge(%{
-        modifiers: %{
-          mandatory: MapSet.to_list(modifiers)
-        }
-      })
-    )
-  end
-
-  def from(%{} = m, %Key{} = key) do
-    Map.put(m, :from, Key.code(key))
+  def from(%{} = m, %Key{modifiers: modifiers} = key) do
+    if Key.has_modifiers?(key) do
+      Map.put(
+        m,
+        :from,
+        Key.code(key)
+        |> Map.merge(%{
+          modifiers: %{
+            mandatory: MapSet.to_list(modifiers)
+          }
+        })
+      )
+    else
+      Map.put(m, :from, Key.code(key))
+    end
   end
 
   def from(%{} = m, :any) do

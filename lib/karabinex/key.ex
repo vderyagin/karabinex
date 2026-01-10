@@ -24,20 +24,16 @@ defmodule Karabinex.Key do
           modifiers: MapSet.t(modifier())
         }
 
-  defguard has_modifiers?(key)
-           when key.__struct__ == __MODULE__ and
-                  is_map_key(key, :modifiers) and
-                  is_map(key.modifiers) and
-                  key.modifiers.__struct__ == MapSet and
-                  is_map_key(key.modifiers, :map) and
-                  is_map(key.modifiers.map) and
-                  map_size(key.modifiers.map) > 0
+  @spec has_modifiers?(t()) :: boolean()
+  def has_modifiers?(%__MODULE__{modifiers: modifiers}) do
+    MapSet.size(modifiers) > 0
+  end
 
   @spec new(atom() | String.t()) :: t()
   def new(key) do
     raw_key = to_string(key)
 
-    %__MODULE__{raw: raw_key}
+    struct(__MODULE__, raw: raw_key, modifiers: MapSet.new())
     |> parse(raw_key)
   end
 

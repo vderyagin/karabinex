@@ -24,8 +24,7 @@ defmodule Karabinex.MixProject do
         :extra_return,
         :missing_return,
         :underspecs,
-        :unknown,
-        :no_opaque
+        :unknown
       ]
     ]
   end

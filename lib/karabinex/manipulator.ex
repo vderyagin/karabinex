@@ -17,8 +17,6 @@ defmodule Karabinex.Manipulator do
     InvokeCommand
   }
 
-  require Key
-
   def generate(%Keymap{children: children, chord: chord} = keymap) do
     [
       EnableKeymap.new(keymap),
@@ -40,14 +38,16 @@ defmodule Karabinex.Manipulator do
     |> Enum.flat_map(&["left_#{&1}", "right_#{&1}"])
   end
 
-  def make_from(%Key{modifiers: modifiers} = key) when Key.has_modifiers?(key) do
-    Key.code(key)
-    |> Map.merge(%{
-      modifiers: %{
-        mandatory: MapSet.to_list(modifiers)
-      }
-    })
+  def make_from(%Key{modifiers: modifiers} = key) do
+    if Key.has_modifiers?(key) do
+      Key.code(key)
+      |> Map.merge(%{
+        modifiers: %{
+          mandatory: MapSet.to_list(modifiers)
+        }
+      })
+    else
+      Key.code(key)
+    end
   end
-
-  def make_from(%Key{} = key), do: Key.code(key)
 end

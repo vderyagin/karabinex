@@ -4,8 +4,6 @@ defmodule Karabinex.KeyTest do
   alias Karabinex.Key
 
   describe "has_modifiers? guard" do
-    require Key
-
     test "detects plain key" do
       refute Key.has_modifiers?(Key.new("x"))
     end
