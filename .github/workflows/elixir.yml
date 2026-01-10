@@ -75,7 +75,7 @@ jobs:
         with:
           name: build
       - name: Run tests
-        run: mix test
+        run: mix test --no-deps-check
 
   typecheck:
     name: Run typecheck
@@ -93,4 +93,4 @@ jobs:
         with:
           name: build
       - name: Run typechecking
-        run: mix dialyzer
+        run: mix dialyzer --no-check
