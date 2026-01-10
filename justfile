@@ -18,7 +18,7 @@ build:
     mix compile --warnings-as-errors
 
 outdated-deps:
-    mix hex.outdated
+    mix hex.outdated --all
 
 update-deps:
     mix deps.update --all
