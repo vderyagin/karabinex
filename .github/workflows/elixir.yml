@@ -12,8 +12,8 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    name: Build, test, check format, check types
+  setup:
+    name: Setup and compile
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -32,9 +32,65 @@ jobs:
         run: mix deps.get
       - name: Compile
         run: mix compile --force --warnings-as-errors --verbose
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: |
+            deps/
+            _build/
+            mix.lock
+
+  format:
+    name: Check formatting
+    runs-on: ubuntu-24.04
+    needs: setup
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Elixir
+        uses: erlef/setup-beam@v1.18.2
+        with:
+          elixir-version: '1.19.5'
+          otp-version: '28.3'
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
       - name: Run formatting checker
         run: mix format --check-formatted
+
+  test:
+    name: Run tests
+    runs-on: ubuntu-24.04
+    needs: setup
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Elixir
+        uses: erlef/setup-beam@v1.18.2
+        with:
+          elixir-version: '1.19.5'
+          otp-version: '28.3'
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
       - name: Run tests
         run: mix test
+
+  typecheck:
+    name: Run typecheck
+    runs-on: ubuntu-24.04
+    needs: setup
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Elixir
+        uses: erlef/setup-beam@v1.18.2
+        with:
+          elixir-version: '1.19.5'
+          otp-version: '28.3'
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
       - name: Run typechecking
         run: mix dialyzer
