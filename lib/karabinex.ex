@@ -11,13 +11,7 @@ defmodule Karabinex do
       |> Code.string_to_quoted!(opts)
       |> Code.eval_quoted([], opts)
 
-    manipulators =
-      definitions
-      |> Config.preprocess()
-      |> Config.parse_definitions()
-      |> Enum.flat_map(&Manipulator.generate/1)
-      |> capture_other_chords()
-      |> Enum.map(&ToManipulator.manipulator/1)
+    manipulators = definitions |> to_manipulators()
 
     File.write!(
       "karabinex.json",
@@ -32,6 +26,16 @@ defmodule Karabinex do
       }
       |> Jason.encode!(pretty: true)
     )
+  end
+
+  @spec to_manipulators(map()) :: list()
+  def to_manipulators(config_definitions) do
+    config_definitions
+    |> Config.preprocess()
+    |> Config.parse_definitions()
+    |> Enum.flat_map(&Manipulator.generate/1)
+    |> capture_other_chords()
+    |> Enum.map(&ToManipulator.manipulator/1)
   end
 
   defp capture_other_chords(manipulators) do
