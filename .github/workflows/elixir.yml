@@ -38,6 +38,26 @@ jobs:
             deps/
             mix.lock
 
+  compile:
+    name: Compile (dev)
+    runs-on: ubuntu-24.04
+    needs: setup
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Elixir
+        uses: erlef/setup-beam@v1.18.2
+        with:
+          elixir-version: '1.19.5'
+          otp-version: '28.3'
+      - name: Download dependencies artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: deps
+      - name: Install dependencies
+        run: mix deps.get
+      - name: Compile
+        run: mix compile --force --warnings-as-errors --verbose
+
   format:
     name: Check formatting
     runs-on: ubuntu-24.04
