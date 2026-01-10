@@ -12,6 +12,7 @@ defmodule Karabinex.Manipulator.InvokeCommand do
   def command(:quit, arg), do: "osascript -e 'quit app \"#{arg}\"'"
   def command(:kill, arg), do: "killall -SIGKILL '#{arg}'"
   def command(:sh, arg), do: arg
+  def command(:remap, _arg), do: raise("remapping is not implemented yet")
 
   def new(%Command{} = cmd), do: %__MODULE__{command: cmd}
 
