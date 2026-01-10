@@ -13,6 +13,7 @@ defmodule Karabinex do
 
     manipulators =
       definitions
+      |> Config.preprocess()
       |> Config.parse_definitions()
       |> Enum.flat_map(&Manipulator.generate/1)
       |> capture_other_chords()
