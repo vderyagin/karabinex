@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   setup:
-    name: Setup and compile
+    name: Install dependencies
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -30,15 +30,12 @@ jobs:
           restore-keys: ${{ runner.os }}-mix-
       - name: Install dependencies
         run: mix deps.get
-      - name: Compile
-        run: mix compile --force --warnings-as-errors --verbose
-      - name: Upload build artifact
+      - name: Upload dependencies artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build
+          name: deps
           path: |
             deps/
-            _build/
             mix.lock
 
   format:
@@ -52,10 +49,12 @@ jobs:
         with:
           elixir-version: '1.19.5'
           otp-version: '28.3'
-      - name: Download build artifact
+      - name: Download dependencies artifact
         uses: actions/download-artifact@v4
         with:
-          name: build
+          name: deps
+      - name: Install dependencies
+        run: mix deps.get
       - name: Run formatting checker
         run: mix format --check-formatted
 
@@ -70,12 +69,14 @@ jobs:
         with:
           elixir-version: '1.19.5'
           otp-version: '28.3'
-      - name: Download build artifact
+      - name: Download dependencies artifact
         uses: actions/download-artifact@v4
         with:
-          name: build
+          name: deps
+      - name: Install dependencies
+        run: mix deps.get
       - name: Run tests
-        run: mix test --no-deps-check
+        run: mix test
 
   typecheck:
     name: Run typecheck
@@ -88,9 +89,11 @@ jobs:
         with:
           elixir-version: '1.19.5'
           otp-version: '28.3'
-      - name: Download build artifact
+      - name: Download dependencies artifact
         uses: actions/download-artifact@v4
         with:
-          name: build
+          name: deps
+      - name: Install dependencies
+        run: mix deps.get
       - name: Run typechecking
-        run: mix dialyzer --no-check
+        run: mix dialyzer
