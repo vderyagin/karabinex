@@ -8,7 +8,8 @@ defmodule Karabinex.Keymap do
 
   @type t :: %__MODULE__{
           chord: Chord.t(),
-          children: [t() | Command.t()]
+          children: [t() | Command.t()],
+          hook: Command.t() | nil
         }
 
   @spec new(Chord.t(), [t() | Command.t()]) :: t()
