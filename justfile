@@ -2,8 +2,10 @@ default: generate-config
 
 export PATH := "/Library/Application Support/org.pqrs/Karabiner-Elements/bin:" + env_var("PATH")
 
-generate-config:
+generate-config: && lint-config
     mix eval "Karabinex.write_config()"
+
+lint-config:
     karabiner_cli \
       --lint-complex-modifications \
       karabinex.json
@@ -13,14 +15,16 @@ replace-config: generate-config
       karabinex.json \
       ~/.config/karabiner/assets/complex_modifications/karabinex.json
 
-build:
-    mix deps.get
+build: deps
     mix compile --warnings-as-errors
 
-outdated-deps:
+deps:
+    mix deps.get
+
+deps-outdated:
     mix hex.outdated --all
 
-update-deps:
+deps-update:
     mix deps.update --all
 
 typecheck:
