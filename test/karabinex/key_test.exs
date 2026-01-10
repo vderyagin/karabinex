@@ -75,4 +75,36 @@ defmodule Karabinex.KeyTest do
       assert MapSet.equal?(MapSet.new([:shift, :option, :control, :command]), modifiers)
     end
   end
+
+  describe "duplicate modifier detection" do
+    test "raises on duplicate modifier M-M-x" do
+      assert_raise RuntimeError, ~r/invalid key specification/i, fn ->
+        Key.new("M-M-x")
+      end
+    end
+
+    test "raises on duplicate modifier with different notation ⌥-M-x" do
+      assert_raise RuntimeError, ~r/invalid key specification/i, fn ->
+        Key.new("⌥-M-x")
+      end
+    end
+
+    test "raises on Meh-M-x (Meh already includes option)" do
+      assert_raise RuntimeError, ~r/invalid key specification/i, fn ->
+        Key.new("Meh-M-x")
+      end
+    end
+
+    test "raises on H-M-x (Hyper already includes option)" do
+      assert_raise RuntimeError, ~r/invalid key specification/i, fn ->
+        Key.new("H-M-x")
+      end
+    end
+
+    test "raises on H-C-x (Hyper already includes control)" do
+      assert_raise RuntimeError, ~r/invalid key specification/i, fn ->
+        Key.new("H-C-x")
+      end
+    end
+  end
 end

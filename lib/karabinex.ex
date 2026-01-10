@@ -1,5 +1,5 @@
 defmodule Karabinex do
-  alias Karabinex.{Config, Manipulator, ToManipulator}
+  alias Karabinex.{Config, Manipulator, ToManipulator, Validator}
 
   def write_config do
     {:ok, _} = Application.ensure_all_started(:karabinex)
@@ -31,6 +31,7 @@ defmodule Karabinex do
   @spec to_manipulators(map()) :: list()
   def to_manipulators(config_definitions) do
     config_definitions
+    |> Validator.validate!()
     |> Config.preprocess()
     |> Config.parse_definitions()
     |> Enum.flat_map(&Manipulator.generate/1)
