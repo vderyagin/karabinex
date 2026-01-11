@@ -10,6 +10,8 @@ defmodule Karabinex.Config do
     |> Map.new()
   end
 
+  @spec validate_no_conflicting_expansions!([{term(), term()}]) ::
+          [{term(), term()}] | no_return()
   defp validate_no_conflicting_expansions!(expanded) do
     expanded
     |> Enum.map(&to_string(elem(&1, 0)))
@@ -22,6 +24,7 @@ defmodule Karabinex.Config do
     end)
   end
 
+  @spec expand_compound_key({atom() | String.t(), term()}) :: {atom() | String.t(), term()}
   defp expand_compound_key({key, value}) do
     key_str = to_string(key)
 
@@ -34,6 +37,8 @@ defmodule Karabinex.Config do
     end
   end
 
+  @spec preprocess_definition({atom() | String.t(), term()}) ::
+          {atom() | String.t(), term()} | no_return()
   defp preprocess_definition({key, %{} = nested}) do
     {key, preprocess(nested)}
   end
@@ -65,7 +70,8 @@ defmodule Karabinex.Config do
     Enum.map(defs, &parse_definition(&1, prefix))
   end
 
-  @spec parse_definition({atom(), map() | Command.spec()}, Chord.t()) :: Keymap.t() | Command.t()
+  @spec parse_definition({atom(), map() | Command.spec()}, Chord.t()) ::
+          Keymap.t() | Command.t() | no_return()
   def parse_definition({key, %{__hook__: {kind, arg}} = keymap_spec}, prefix) do
     chord = Chord.append(prefix, Key.new(key))
     children_spec = Map.delete(keymap_spec, :__hook__)

@@ -100,6 +100,7 @@ defmodule Karabinex.Manipulator.DSL do
     |> unless_variables(rest)
   end
 
+  @spec append_clause(manipulator(), atom(), map()) :: manipulator()
   defp append_clause(%{} = m, key, clause) do
     if Map.has_key?(m, key) do
       update_in(m, [key], &(&1 ++ [clause]))

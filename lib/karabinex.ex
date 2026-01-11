@@ -40,6 +40,7 @@ defmodule Karabinex do
     |> Enum.map(&ToManipulator.manipulator/1)
   end
 
+  @spec capture_other_chords([struct()]) :: [struct()]
   defp capture_other_chords(manipulators) do
     manipulators
     |> Enum.filter(&match?(%Manipulator.EnableKeymap{}, &1))

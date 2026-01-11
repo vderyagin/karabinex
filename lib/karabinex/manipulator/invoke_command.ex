@@ -9,7 +9,7 @@ defmodule Karabinex.Manipulator.InvokeCommand do
 
   @type t :: %__MODULE__{command: Command.t()}
 
-  @spec command(Command.kind(), String.t()) :: String.t()
+  @spec command(Command.kind(), String.t()) :: String.t() | no_return()
   def command(:app, arg), do: "open -a '#{arg}'"
   def command(:raycast, arg), do: "open raycast://#{arg}"
   def command(:quit, arg), do: "osascript -e 'quit app \"#{arg}\"'"

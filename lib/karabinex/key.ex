@@ -42,7 +42,7 @@ defmodule Karabinex.Key do
     %{key | code: code}
   end
 
-  @spec set_modifier(t(), modifier()) :: t()
+  @spec set_modifier(t(), modifier()) :: t() | no_return()
   defp set_modifier(%__MODULE__{modifiers: modifiers} = key, modifier) do
     if MapSet.member?(modifiers, modifier) do
       raise("invalid key specification: #{key.raw}")
@@ -51,7 +51,7 @@ defmodule Karabinex.Key do
     %{key | modifiers: MapSet.put(modifiers, modifier)}
   end
 
-  @spec parse(t(), String.t()) :: t()
+  @spec parse(t(), String.t()) :: t() | no_return()
   def parse(%__MODULE__{} = key, "H-" <> rest), do: parse(key, "✦-" <> rest)
   def parse(%__MODULE__{} = key, "✦-" <> rest), do: parse(key, "⌘-M-C-S-" <> rest)
 
