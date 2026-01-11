@@ -1,6 +1,7 @@
 defmodule Karabinex do
   alias Karabinex.{Config, Manipulator, ToManipulator, Validator}
 
+  @spec write_config() :: :ok
   def write_config do
     {:ok, _} = Application.ensure_all_started(:karabinex)
 

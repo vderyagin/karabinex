@@ -5,6 +5,9 @@ defmodule Karabinex.Manipulator.DisableKeymap do
 
   defstruct [:keymap]
 
+  @type t :: %__MODULE__{keymap: Keymap.t()}
+
+  @spec new(Keymap.t()) :: t()
   def new(%Keymap{} = km), do: %__MODULE__{keymap: km}
 
   defimpl ToManipulator do

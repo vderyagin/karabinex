@@ -100,6 +100,7 @@ defmodule Karabinex.Key do
     |> set_code({code_type, key_code})
   end
 
+  @spec code(t()) :: map()
   def code(%__MODULE__{code: {:regular, code}}), do: %{key_code: code}
   def code(%__MODULE__{code: {:consumer, code}}), do: %{consumer_key_code: code}
   def code(%__MODULE__{code: {:pointer, code}}), do: %{pointing_button: code}

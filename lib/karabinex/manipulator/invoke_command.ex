@@ -7,6 +7,9 @@ defmodule Karabinex.Manipulator.InvokeCommand do
 
   defstruct [:command]
 
+  @type t :: %__MODULE__{command: Command.t()}
+
+  @spec command(Command.kind(), String.t()) :: String.t()
   def command(:app, arg), do: "open -a '#{arg}'"
   def command(:raycast, arg), do: "open raycast://#{arg}"
   def command(:quit, arg), do: "osascript -e 'quit app \"#{arg}\"'"
@@ -14,6 +17,7 @@ defmodule Karabinex.Manipulator.InvokeCommand do
   def command(:sh, arg), do: arg
   def command(:remap, _arg), do: raise("remapping is not implemented yet")
 
+  @spec new(Command.t()) :: t()
   def new(%Command{} = cmd), do: %__MODULE__{command: cmd}
 
   defimpl ToManipulator do

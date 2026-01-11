@@ -26,6 +26,7 @@ defmodule Karabinex.Command do
           repeat: boolean()
         }
 
+  @spec new(Chord.t(), kind(), String.t(), [option()]) :: t()
   def new(chord, kind, arg, opts \\ []) do
     %__MODULE__{
       chord: chord,
@@ -35,6 +36,7 @@ defmodule Karabinex.Command do
     |> add_opts(opts)
   end
 
+  @spec add_opts(t(), [option()]) :: t()
   def add_opts(%__MODULE__{} = command, [{:repeat, value} | rest]) do
     %{command | repeat: value}
     |> add_opts(rest)

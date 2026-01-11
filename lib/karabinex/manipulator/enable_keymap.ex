@@ -8,8 +8,15 @@ defmodule Karabinex.Manipulator.EnableKeymap do
 
   defstruct [:keymap, other_chords: []]
 
+  @type t :: %__MODULE__{
+          keymap: Keymap.t(),
+          other_chords: [Chord.t()]
+        }
+
+  @spec new(Keymap.t()) :: t()
   def new(%Keymap{} = km), do: %__MODULE__{keymap: km}
 
+  @spec register_other_chords(t(), [Chord.t()]) :: t()
   def register_other_chords(%__MODULE__{keymap: %Keymap{chord: chord}} = ek, chords)
       when Chord.singleton?(chord) do
     %{ek | other_chords: chords}

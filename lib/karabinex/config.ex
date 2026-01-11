@@ -1,6 +1,7 @@
 defmodule Karabinex.Config do
   alias Karabinex.{Key, Keymap, Command, Chord}
 
+  @spec preprocess(map()) :: map()
   def preprocess(defs) do
     defs
     |> Enum.map(&expand_compound_key/1)
@@ -59,10 +60,12 @@ defmodule Karabinex.Config do
     {key, {kind, arg}}
   end
 
+  @spec parse_definitions(map(), Chord.t()) :: [Keymap.t() | Command.t()]
   def parse_definitions(defs, prefix \\ Chord.new()) do
     Enum.map(defs, &parse_definition(&1, prefix))
   end
 
+  @spec parse_definition({atom(), map() | Command.spec()}, Chord.t()) :: Keymap.t() | Command.t()
   def parse_definition({key, %{__hook__: {kind, arg}} = keymap_spec}, prefix) do
     chord = Chord.append(prefix, Key.new(key))
     children_spec = Map.delete(keymap_spec, :__hook__)

@@ -5,6 +5,12 @@ defmodule Karabinex.Manipulator.CaptureModifier do
 
   defstruct [:modifier, :chord]
 
+  @type t :: %__MODULE__{
+          modifier: String.t(),
+          chord: Chord.t()
+        }
+
+  @spec new(String.t(), Chord.t()) :: t()
   def new(modifier, chord), do: %__MODULE__{modifier: modifier, chord: chord}
 
   defimpl ToManipulator do

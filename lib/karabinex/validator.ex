@@ -4,6 +4,7 @@ defmodule Karabinex.Validator do
   @valid_kinds [:app, :quit, :kill, :sh, :remap, :raycast]
   @valid_opts [:repeat]
 
+  @spec validate!(map()) :: map() | no_return()
   def validate!(defs) do
     validate_definitions!(defs, _depth = 0)
     defs
