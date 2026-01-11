@@ -3,6 +3,68 @@ defmodule Karabinex.ConfigTest do
 
   alias Karabinex.{Config, Chord, Command, Keymap}
 
+  describe "compound key expansion" do
+    test "expands space-separated keys into nested maps" do
+      input = %{"C-c C-x": %{e: {:app, "Emacs"}}}
+
+      expected = %{"C-c" => %{"C-x" => %{e: {:app, "Emacs"}}}}
+
+      assert Config.preprocess(input) == expected
+    end
+
+    test "handles multiple spaces (3+ keys)" do
+      input = %{"C-c C-x C-e": {:app, "Emacs"}}
+
+      expected = %{"C-c" => %{"C-x" => %{"C-e" => {:app, "Emacs"}}}}
+
+      assert Config.preprocess(input) == expected
+    end
+
+    test "preserves non-compound keys" do
+      input = %{a: {:app, "Emacs"}}
+      assert Config.preprocess(input) == %{a: {:app, "Emacs"}}
+    end
+
+    test "works with string keys" do
+      input = %{"C-c C-x" => %{e: {:app, "Emacs"}}}
+
+      expected = %{"C-c" => %{"C-x" => %{e: {:app, "Emacs"}}}}
+
+      assert Config.preprocess(input) == expected
+    end
+
+    test "combines with repeat: :key preprocessing" do
+      input = %{"C-c C-x": {:raycast, "confetti", repeat: :key}}
+
+      expected = %{
+        "C-c" => %{
+          "C-x" => %{
+            :__hook__ => {:raycast, "confetti"},
+            "C-x" => {:raycast, "confetti", repeat: :keymap}
+          }
+        }
+      }
+
+      assert Config.preprocess(input) == expected
+    end
+
+    test "handles compound keys inside nested maps" do
+      input = %{
+        "Meh-x": %{
+          "C-c C-x": %{e: {:app, "Emacs"}}
+        }
+      }
+
+      expected = %{
+        "Meh-x": %{
+          "C-c" => %{"C-x" => %{e: {:app, "Emacs"}}}
+        }
+      }
+
+      assert Config.preprocess(input) == expected
+    end
+  end
+
   describe "preprocess/1" do
     test "leaves plain commands unchanged" do
       input = %{a: {:app, "Emacs"}}

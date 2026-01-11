@@ -3,8 +3,21 @@ defmodule Karabinex.Config do
 
   def preprocess(defs) do
     defs
+    |> Enum.map(&expand_compound_key/1)
     |> Enum.map(&preprocess_definition/1)
     |> Map.new()
+  end
+
+  defp expand_compound_key({key, value}) do
+    key_str = to_string(key)
+
+    case String.split(key_str, " ", parts: 2) do
+      [first, rest] ->
+        expand_compound_key({first, %{rest => value}})
+
+      [_single] ->
+        {key, value}
+    end
   end
 
   defp preprocess_definition({key, %{} = nested}) do

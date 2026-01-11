@@ -66,6 +66,34 @@ The `rules.exs` file contains a tuple with a description and a map of keybinding
 | `{:kill, "App Name"}`          | Force kill an application (SIGKILL) |
 | `{:raycast, "extension/path"}` | Trigger a Raycast extension         |
 
+### Compound Key Bindings
+
+For convenience, you can specify multi-key sequences as a single space-separated key:
+
+```elixir
+%{
+  "C-c C-x": %{
+    e: {:app, "Emacs"},
+    c: {:app, "Brave Browser"}
+  }
+}
+```
+
+This is equivalent to:
+
+```elixir
+%{
+  "C-c": %{
+    "C-x": %{
+      e: {:app, "Emacs"},
+      c: {:app, "Brave Browser"}
+    }
+  }
+}
+```
+
+This works with any number of keys: `"C-c C-x C-e"` expands to three levels of nesting.
+
 ### Examples
 
 Basic app launching under `Meh-x`:
