@@ -63,6 +63,28 @@ defmodule Karabinex.ConfigTest do
 
       assert Config.preprocess(input) == expected
     end
+
+    test "raises when compound key expansion creates duplicate keys" do
+      input = %{
+        "C-x C-e": {:app, "Emacs"},
+        "C-x": %{a: {:app, "Slack"}}
+      }
+
+      assert_raise RuntimeError, ~r/duplicate keys.*C-x/i, fn ->
+        Config.preprocess(input)
+      end
+    end
+
+    test "raises when multiple compound keys expand to same prefix" do
+      input = %{
+        "C-x C-e": {:app, "Emacs"},
+        "C-x C-a": {:app, "Slack"}
+      }
+
+      assert_raise RuntimeError, ~r/duplicate keys.*C-x/i, fn ->
+        Config.preprocess(input)
+      end
+    end
   end
 
   describe "preprocess/1" do

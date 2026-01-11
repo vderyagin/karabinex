@@ -4,8 +4,21 @@ defmodule Karabinex.Config do
   def preprocess(defs) do
     defs
     |> Enum.map(&expand_compound_key/1)
+    |> validate_no_conflicting_expansions!()
     |> Enum.map(&preprocess_definition/1)
     |> Map.new()
+  end
+
+  defp validate_no_conflicting_expansions!(expanded) do
+    expanded
+    |> Enum.map(&to_string(elem(&1, 0)))
+    |> Enum.frequencies()
+    |> Enum.filter(fn {_k, v} -> v > 1 end)
+    |> Enum.map(fn {k, _} -> k end)
+    |> then(fn
+      [] -> expanded
+      dups -> raise "Compound key expansion creates duplicate keys: #{Enum.join(dups, ", ")}"
+    end)
   end
 
   defp expand_compound_key({key, value}) do
