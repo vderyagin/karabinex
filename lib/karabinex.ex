@@ -7,7 +7,7 @@ defmodule Karabinex do
 
     opts = [file: "rules.exs"]
 
-    {{description, definitions}, _binding} =
+    {definitions, _binding} =
       File.read!(opts[:file])
       |> Code.string_to_quoted!(opts)
       |> Code.eval_quoted([], opts)
@@ -17,10 +17,10 @@ defmodule Karabinex do
     File.write!(
       "karabinex.json",
       %{
-        title: description,
+        title: "karabinex bindings",
         rules: [
           %{
-            description: description,
+            description: "karabinex bindings",
             manipulators: manipulators
           }
         ]
