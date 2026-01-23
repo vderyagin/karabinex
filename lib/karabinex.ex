@@ -14,22 +14,17 @@ defmodule Karabinex do
 
     File.write!(
       "karabinex.json",
-      generate_config(definitions)
+      %{
+        title: "karabinex bindings",
+        rules: [
+          %{
+            description: "karabinex bindings",
+            manipulators: to_manipulators(definitions)
+          }
+        ]
+      }
       |> Jason.encode!(pretty: true)
     )
-  end
-
-  @spec generate_config(map()) :: map()
-  def generate_config(definitions) do
-    %{
-      title: "karabinex bindings",
-      rules: [
-        %{
-          description: "karabinex bindings",
-          manipulators: to_manipulators(definitions)
-        }
-      ]
-    }
   end
 
   @spec to_manipulators(map()) :: list()
