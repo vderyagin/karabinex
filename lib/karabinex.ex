@@ -12,21 +12,24 @@ defmodule Karabinex do
       |> Code.string_to_quoted!(opts)
       |> Code.eval_quoted([], opts)
 
-    manipulators = definitions |> to_manipulators()
-
     File.write!(
       "karabinex.json",
-      %{
-        title: "karabinex bindings",
-        rules: [
-          %{
-            description: "karabinex bindings",
-            manipulators: manipulators
-          }
-        ]
-      }
+      generate_config(definitions)
       |> Jason.encode!(pretty: true)
     )
+  end
+
+  @spec generate_config(map()) :: map()
+  def generate_config(definitions) do
+    %{
+      title: "karabinex bindings",
+      rules: [
+        %{
+          description: "karabinex bindings",
+          manipulators: to_manipulators(definitions)
+        }
+      ]
+    }
   end
 
   @spec to_manipulators(map()) :: list()
