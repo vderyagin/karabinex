@@ -6,7 +6,7 @@ An Elixir DSL for generating [Karabiner-Elements](https://karabiner-elements.pqr
 
 1. Clone the repository
 2. Run `mix deps.get` to install dependencies
-3. Edit `rules.exs` with your keybinding configuration
+3. Edit `rules.json` with your keybinding configuration
 4. Run `just` to generate and lint `karabinex.json`
 5. Run `just replace-config` to copy to Karabiner's complex modifications directory
 6. Enable the rules in Karabiner-Elements preferences
@@ -30,15 +30,15 @@ If you press an unbound key mid-sequence, the keymap deactivates and nothing hap
 
 ## Configuration
 
-The `rules.exs` file contains a map of keybindings:
+The `rules.json` file contains a map of keybindings:
 
-```elixir
-%{
-  "Meh-x": %{
-    e: {:app, "Emacs"},
-    c: {:app, "Brave Browser"},
-    s: {:app, "Slack"},
-    t: {:app, "Terminal"}
+```json
+{
+  "Meh-x": {
+    "e": { "app": "Emacs" },
+    "c": { "app": "Brave Browser" },
+    "s": { "app": "Slack" },
+    "t": { "app": "Terminal" }
   }
 }
 ```
@@ -56,35 +56,36 @@ The `rules.exs` file contains a map of keybindings:
 
 ### Command Types
 
-| Command                        | Description                         |
-|--------------------------------|-------------------------------------|
-| `{:app, "App Name"}`           | Launch or focus an application      |
-| `{:sh, "command"}`             | Execute a shell command             |
-| `{:quit, "App Name"}`          | Gracefully quit an application      |
-| `{:kill, "App Name"}`          | Force kill an application (SIGKILL) |
-| `{:raycast, "extension/path"}` | Trigger a Raycast extension         |
+| Command                                | Description                         |
+|----------------------------------------|-------------------------------------|
+| `{ "app": "App Name" }`                | Launch or focus an application      |
+| `{ "sh": "command" }`                  | Execute a shell command             |
+| `{ "quit": "App Name" }`               | Gracefully quit an application      |
+| `{ "kill": "App Name" }`               | Force kill an application (SIGKILL) |
+| `{ "raycast": "extension/path" }`      | Trigger a Raycast extension         |
+| `{ "raycast": "...", "repeat": "key" }`| Repeatable keymap hook (repeat key) |
 
 ### Compound Key Bindings
 
 For convenience, you can specify multi-key sequences as a single space-separated key:
 
-```elixir
-%{
-  "C-c C-x": %{
-    e: {:app, "Emacs"},
-    c: {:app, "Brave Browser"}
+```json
+{
+  "C-c C-x": {
+    "e": { "app": "Emacs" },
+    "c": { "app": "Brave Browser" }
   }
 }
 ```
 
 This is equivalent to:
 
-```elixir
-%{
-  "C-c": %{
-    "C-x": %{
-      e: {:app, "Emacs"},
-      c: {:app, "Brave Browser"}
+```json
+{
+  "C-c": {
+    "C-x": {
+      "e": { "app": "Emacs" },
+      "c": { "app": "Brave Browser" }
     }
   }
 }
@@ -96,13 +97,13 @@ This works with any number of keys: `"C-c C-x C-e"` expands to three levels of n
 
 Basic app launching under `Meh-x`:
 
-```elixir
-%{
-  "Meh-x": %{
-    e: {:app, "Emacs"},
-    c: {:app, "Brave Browser"},
-    s: {:app, "Slack"},
-    t: {:app, "Terminal"}
+```json
+{
+  "Meh-x": {
+    "e": { "app": "Emacs" },
+    "c": { "app": "Brave Browser" },
+    "s": { "app": "Slack" },
+    "t": { "app": "Terminal" }
   }
 }
 ```
@@ -112,13 +113,13 @@ Basic app launching under `Meh-x`:
 
 App killing under `Meh-k` (use same letters as launching):
 
-```elixir
-%{
-  "Meh-k": %{
-    s: {:quit, "Slack"},
-    "Meh-s": {:kill, "Slack"},
-    e: {:quit, "Emacs"},
-    "Meh-e": {:kill, "Emacs"}
+```json
+{
+  "Meh-k": {
+    "s": { "quit": "Slack" },
+    "Meh-s": { "kill": "Slack" },
+    "e": { "quit": "Emacs" },
+    "Meh-e": { "kill": "Emacs" }
   }
 }
 ```
@@ -128,11 +129,11 @@ App killing under `Meh-k` (use same letters as launching):
 
 Shell commands:
 
-```elixir
-%{
-  "Meh-x": %{
-    "Meh-e": {:sh, "emacsclient -c -a '' &"},
-    m: {:sh, "pgrep mpv && open -a mpv || true"}
+```json
+{
+  "Meh-x": {
+    "Meh-e": { "sh": "emacsclient -c -a '' &" },
+    "m": { "sh": "pgrep mpv && open -a mpv || true" }
   }
 }
 ```
@@ -141,15 +142,15 @@ Shell commands:
 
 Deeply nested Raycast commands:
 
-```elixir
-%{
-  "Meh-x": %{
-    r: %{
-      g: {:raycast, "extensions/josephschmitt/gif-search/search"},
-      e: {:raycast, "extensions/raycast/emoji-symbols/search-emoji-symbols"},
-      t: {:raycast, "extensions/gebeto/translate/translate"},
-      b: {:raycast, "extensions/nhojb/brew/search"},
-      n: {:raycast, "extensions/raycast/github/notifications"}
+```json
+{
+  "Meh-x": {
+    "r": {
+      "g": { "raycast": "extensions/josephschmitt/gif-search/search" },
+      "e": { "raycast": "extensions/raycast/emoji-symbols/search-emoji-symbols" },
+      "t": { "raycast": "extensions/gebeto/translate/translate" },
+      "b": { "raycast": "extensions/nhojb/brew/search" },
+      "n": { "raycast": "extensions/raycast/github/notifications" }
     }
   }
 }
@@ -161,22 +162,22 @@ Deeply nested Raycast commands:
 
 All combined in a single config:
 
-```elixir
-%{
-  "Meh-x": %{
-    e: {:app, "Emacs"},
-    "Meh-e": {:sh, "emacsclient -c -a '' &"},
-    s: {:app, "Slack"},
-    r: %{
-      g: {:raycast, "extensions/josephschmitt/gif-search/search"},
-      e: {:raycast, "extensions/raycast/emoji-symbols/search-emoji-symbols"}
+```json
+{
+  "Meh-x": {
+    "e": { "app": "Emacs" },
+    "Meh-e": { "sh": "emacsclient -c -a '' &" },
+    "s": { "app": "Slack" },
+    "r": {
+      "g": { "raycast": "extensions/josephschmitt/gif-search/search" },
+      "e": { "raycast": "extensions/raycast/emoji-symbols/search-emoji-symbols" }
     }
   },
-  "Meh-k": %{
-    s: {:quit, "Slack"},
-    "Meh-s": {:kill, "Slack"},
-    e: {:quit, "Emacs"},
-    "Meh-e": {:kill, "Emacs"}
+  "Meh-k": {
+    "s": { "quit": "Slack" },
+    "Meh-s": { "kill": "Slack" },
+    "e": { "quit": "Emacs" },
+    "Meh-e": { "kill": "Emacs" }
   }
 }
 ```

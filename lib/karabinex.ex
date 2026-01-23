@@ -5,12 +5,10 @@ defmodule Karabinex do
   def write_config do
     {:ok, _} = Application.ensure_all_started(:karabinex)
 
-    opts = [file: "rules.exs"]
-
-    {definitions, _binding} =
-      File.read!(opts[:file])
-      |> Code.string_to_quoted!(opts)
-      |> Code.eval_quoted([], opts)
+    definitions =
+      "rules.json"
+      |> File.read!()
+      |> Karabinex.JsonConfig.parse_json!()
 
     File.write!(
       "karabinex.json",
