@@ -7,7 +7,7 @@ An Elixir DSL for generating [Karabiner-Elements](https://karabiner-elements.pqr
 1. Clone the repository
 2. Run `mix deps.get` to install dependencies
 3. Edit `rules.json` with your keybinding configuration
-4. Run `just` to generate and lint `karabinex.json`
+4. Run `just generate-config` to generate and lint `karabinex.json`
 5. Run `just replace-config` to copy to Karabiner's complex modifications directory
 6. Enable the rules in Karabiner-Elements preferences
 7. Subsequent changes will be applied immediately after running `just replace-config`
@@ -181,14 +181,3 @@ All combined in a single config:
   }
 }
 ```
-
-## Just Commands
-
-| Command               | Description                                     |
-|-----------------------|-------------------------------------------------|
-| `just`                | Generate config and lint with karabiner_cli     |
-| `just replace-config` | Generate and copy to Karabiner config directory |
-| `just build`          | Compile with warnings as errors                 |
-| `just test`           | Run tests                                       |
-| `just typecheck`      | Run dialyzer                                    |
-| `just ci`             | Run all checks (build, format, test, typecheck) |
