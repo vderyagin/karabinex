@@ -1,4 +1,4 @@
-default: generate-config
+default: build format-check test typecheck
 
 export PATH := "/Library/Application Support/org.pqrs/Karabiner-Elements/bin:" + env_var("PATH")
 
@@ -46,9 +46,6 @@ clean:
 
 test:
     mix test
-
-# run approximately the same stuff that is run in CI
-ci: build format-check test typecheck
 
 key_codes_url := "https://github.com/pqrs-org/Karabiner-Elements/raw/main/src/apps/SettingsWindow/Resources/simple_modifications.json"
 
