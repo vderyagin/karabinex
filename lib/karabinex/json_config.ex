@@ -17,7 +17,6 @@ defmodule Karabinex.JsonConfig do
   }
 
   @reserved_key_names MapSet.new(Map.keys(@command_keys) ++ ["repeat"])
-  @top_level_keys MapSet.new(["bindings", "version"])
 
   @spec parse_json!(String.t()) :: bindings()
   def parse_json!(json) do
@@ -28,53 +27,16 @@ defmodule Karabinex.JsonConfig do
 
   @spec parse_map!(json_map()) :: bindings()
   def parse_map!(%{} = data) do
-    {bindings, version} = extract_bindings!(data)
-    validate_version!(version)
-    parse_keymap!(bindings, [])
+    if map_size(data) == 0 do
+      %{}
+    else
+      parse_keymap!(data, [])
+    end
   end
 
   def parse_map!(_data) do
     raise "JSON config must be an object"
   end
-
-  @spec extract_bindings!(json_map()) :: {json_map(), integer() | nil}
-  defp extract_bindings!(%{"bindings" => bindings} = root) when is_map(bindings) do
-    validate_top_level_keys!(root)
-    {bindings, Map.get(root, "version")}
-  end
-
-  defp extract_bindings!(%{"bindings" => _}) do
-    raise "bindings must be an object"
-  end
-
-  defp extract_bindings!(%{} = root) do
-    if Map.has_key?(root, "version") do
-      raise "Missing bindings"
-    else
-      raise "Missing bindings"
-    end
-  end
-
-  @spec validate_top_level_keys!(json_map()) :: :ok | no_return()
-  defp validate_top_level_keys!(root) do
-    unknown =
-      root
-      |> Map.keys()
-      |> Enum.reject(&MapSet.member?(@top_level_keys, &1))
-
-    if unknown == [] do
-      :ok
-    else
-      raise "Unknown top-level keys: #{Enum.join(unknown, ", ")}"
-    end
-  end
-
-  @spec validate_version!(nil | pos_integer()) :: :ok
-  defp validate_version!(nil), do: :ok
-
-  defp validate_version!(version) when is_integer(version) and version > 0, do: :ok
-
-  defp validate_version!(version), do: raise("Invalid version: #{inspect(version)}")
 
   @spec parse_keymap!(json_map(), [String.t()]) :: bindings()
   defp parse_keymap!(%{} = map, path) do

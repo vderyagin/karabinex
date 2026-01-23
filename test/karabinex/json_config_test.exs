@@ -6,10 +6,8 @@ defmodule Karabinex.JsonConfigTest do
   describe "parse_map!/1" do
     test "parses command object with sh" do
       input = %{
-        "bindings" => %{
-          "Meh-x" => %{
-            "sh" => "echo lol"
-          }
+        "Meh-x" => %{
+          "sh" => "echo lol"
         }
       }
 
@@ -20,12 +18,10 @@ defmodule Karabinex.JsonConfigTest do
 
     test "parses nested keymaps" do
       input = %{
-        "bindings" => %{
-          "Meh-x" => %{
-            "r" => %{
-              "g" => %{
-                "raycast" => "foo/bar"
-              }
+        "Meh-x" => %{
+          "r" => %{
+            "g" => %{
+              "raycast" => "foo/bar"
             }
           }
         }
@@ -42,11 +38,9 @@ defmodule Karabinex.JsonConfigTest do
 
     test "parses repeat key" do
       input = %{
-        "bindings" => %{
-          "Meh-x" => %{
-            "raycast" => "foo/bar",
-            "repeat" => "key"
-          }
+        "Meh-x" => %{
+          "raycast" => "foo/bar",
+          "repeat" => "key"
         }
       }
 
@@ -57,11 +51,9 @@ defmodule Karabinex.JsonConfigTest do
 
     test "parses repeat keymap" do
       input = %{
-        "bindings" => %{
-          "Meh-x" => %{
-            "raycast" => "foo/bar",
-            "repeat" => "keymap"
-          }
+        "Meh-x" => %{
+          "raycast" => "foo/bar",
+          "repeat" => "keymap"
         }
       }
 
@@ -72,11 +64,9 @@ defmodule Karabinex.JsonConfigTest do
 
     test "raises on multiple command keys" do
       input = %{
-        "bindings" => %{
-          "Meh-x" => %{
-            "sh" => "echo lol",
-            "app" => "Emacs"
-          }
+        "Meh-x" => %{
+          "sh" => "echo lol",
+          "app" => "Emacs"
         }
       }
 
@@ -87,11 +77,9 @@ defmodule Karabinex.JsonConfigTest do
 
     test "raises on unknown command fields" do
       input = %{
-        "bindings" => %{
-          "Meh-x" => %{
-            "sh" => "echo lol",
-            "extra" => "nope"
-          }
+        "Meh-x" => %{
+          "sh" => "echo lol",
+          "extra" => "nope"
         }
       }
 
@@ -102,11 +90,9 @@ defmodule Karabinex.JsonConfigTest do
 
     test "raises on invalid repeat" do
       input = %{
-        "bindings" => %{
-          "Meh-x" => %{
-            "raycast" => "foo/bar",
-            "repeat" => "nope"
-          }
+        "Meh-x" => %{
+          "raycast" => "foo/bar",
+          "repeat" => "nope"
         }
       }
 
@@ -117,10 +103,8 @@ defmodule Karabinex.JsonConfigTest do
 
     test "raises on reserved key in keymap" do
       input = %{
-        "bindings" => %{
-          "repeat" => %{
-            "sh" => "echo lol"
-          }
+        "repeat" => %{
+          "sh" => "echo lol"
         }
       }
 
@@ -129,10 +113,10 @@ defmodule Karabinex.JsonConfigTest do
       end
     end
 
-    test "raises when bindings missing" do
-      input = %{"version" => 1}
+    test "raises when input is not an object" do
+      input = []
 
-      assert_raise RuntimeError, ~r/Missing bindings/, fn ->
+      assert_raise RuntimeError, ~r/object/, fn ->
         JsonConfig.parse_map!(input)
       end
     end
@@ -140,7 +124,7 @@ defmodule Karabinex.JsonConfigTest do
 
   describe "parse_json!/1" do
     test "parses JSON string" do
-      json = ~s({"bindings":{"Meh-x":{"sh":"echo lol"}}})
+      json = ~s({"Meh-x":{"sh":"echo lol"}})
 
       assert JsonConfig.parse_json!(json) == %{
                "Meh-x" => {:sh, "echo lol"}
