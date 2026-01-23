@@ -48,7 +48,7 @@ defmodule Karabinex.KarabinerConfig do
 
   @spec replace_rules_in_config(json_map(), rules()) :: json_map()
   def replace_rules_in_config(%{"profiles" => profiles} = config, new_rules)
-       when is_list(profiles) do
+      when is_list(profiles) do
     updated_profiles = Enum.map(profiles, &replace_rules_in_profile(&1, new_rules))
     %{config | "profiles" => updated_profiles}
   end

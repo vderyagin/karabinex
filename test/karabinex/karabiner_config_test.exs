@@ -11,7 +11,10 @@ defmodule Karabinex.KarabinerConfigTest do
             "name" => "default",
             "complex_modifications" => %{
               "rules" => [
-                %{"description" => "karabinex bindings", "manipulators" => [%{"type" => "basic"}]},
+                %{
+                  "description" => "karabinex bindings",
+                  "manipulators" => [%{"type" => "basic"}]
+                },
                 %{"description" => "other", "manipulators" => [%{"type" => "basic"}]}
               ]
             }
@@ -105,6 +108,7 @@ defmodule Karabinex.KarabinerConfigTest do
           }
         ]
       }
+
       new_rules = [%{"manipulators" => []}]
 
       assert_raise RuntimeError, ~r/missing descriptions/i, fn ->
