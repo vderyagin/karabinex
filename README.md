@@ -10,6 +10,7 @@ An Elixir DSL for generating [Karabiner-Elements](https://karabiner-elements.pqr
 4. Run `just` to generate and lint `karabinex.json`
 5. Run `just replace-config` to copy to Karabiner's complex modifications directory
 6. Enable the rules in Karabiner-Elements preferences
+7. Subsequent changes will be applied immediately after running `just replace-config`
 
 ## How It Works
 
@@ -29,18 +30,15 @@ If you press an unbound key mid-sequence, the keymap deactivates and nothing hap
 
 ## Configuration
 
-The `rules.exs` file contains a tuple with a description and a map of keybindings:
+The `rules.exs` file contains a map of keybindings:
 
 ```elixir
-{
-  "My keybindings",
-  %{
-    "Meh-x": %{
-      e: {:app, "Emacs"},
-      c: {:app, "Brave Browser"},
-      s: {:app, "Slack"},
-      t: {:app, "Terminal"}
-    }
+%{
+  "Meh-x": %{
+    e: {:app, "Emacs"},
+    c: {:app, "Brave Browser"},
+    s: {:app, "Slack"},
+    t: {:app, "Terminal"}
   }
 }
 ```
@@ -99,15 +97,12 @@ This works with any number of keys: `"C-c C-x C-e"` expands to three levels of n
 Basic app launching under `Meh-x`:
 
 ```elixir
-{
-  "App launcher",
-  %{
-    "Meh-x": %{
-      e: {:app, "Emacs"},
-      c: {:app, "Brave Browser"},
-      s: {:app, "Slack"},
-      t: {:app, "Terminal"}
-    }
+%{
+  "Meh-x": %{
+    e: {:app, "Emacs"},
+    c: {:app, "Brave Browser"},
+    s: {:app, "Slack"},
+    t: {:app, "Terminal"}
   }
 }
 ```
@@ -118,15 +113,12 @@ Basic app launching under `Meh-x`:
 App killing under `Meh-k` (use same letters as launching):
 
 ```elixir
-{
-  "App killer",
-  %{
-    "Meh-k": %{
-      s: {:quit, "Slack"},
-      "Meh-s": {:kill, "Slack"},
-      e: {:quit, "Emacs"},
-      "Meh-e": {:kill, "Emacs"}
-    }
+%{
+  "Meh-k": %{
+    s: {:quit, "Slack"},
+    "Meh-s": {:kill, "Slack"},
+    e: {:quit, "Emacs"},
+    "Meh-e": {:kill, "Emacs"}
   }
 }
 ```
@@ -137,13 +129,10 @@ App killing under `Meh-k` (use same letters as launching):
 Shell commands:
 
 ```elixir
-{
-  "Shell commands",
-  %{
-    "Meh-x": %{
-      "Meh-e": {:sh, "emacsclient -c -a '' &"},
-      m: {:sh, "pgrep mpv && open -a mpv || true"}
-    }
+%{
+  "Meh-x": %{
+    "Meh-e": {:sh, "emacsclient -c -a '' &"},
+    m: {:sh, "pgrep mpv && open -a mpv || true"}
   }
 }
 ```
@@ -153,17 +142,14 @@ Shell commands:
 Deeply nested Raycast commands:
 
 ```elixir
-{
-  "Raycast",
-  %{
-    "Meh-x": %{
-      r: %{
-        g: {:raycast, "extensions/josephschmitt/gif-search/search"},
-        e: {:raycast, "extensions/raycast/emoji-symbols/search-emoji-symbols"},
-        t: {:raycast, "extensions/gebeto/translate/translate"},
-        b: {:raycast, "extensions/nhojb/brew/search"},
-        n: {:raycast, "extensions/raycast/github/notifications"}
-      }
+%{
+  "Meh-x": %{
+    r: %{
+      g: {:raycast, "extensions/josephschmitt/gif-search/search"},
+      e: {:raycast, "extensions/raycast/emoji-symbols/search-emoji-symbols"},
+      t: {:raycast, "extensions/gebeto/translate/translate"},
+      b: {:raycast, "extensions/nhojb/brew/search"},
+      n: {:raycast, "extensions/raycast/github/notifications"}
     }
   }
 }
@@ -176,24 +162,21 @@ Deeply nested Raycast commands:
 All combined in a single config:
 
 ```elixir
-{
-  "My keybindings",
-  %{
-    "Meh-x": %{
-      e: {:app, "Emacs"},
-      "Meh-e": {:sh, "emacsclient -c -a '' &"},
-      s: {:app, "Slack"},
-      r: %{
-        g: {:raycast, "extensions/josephschmitt/gif-search/search"},
-        e: {:raycast, "extensions/raycast/emoji-symbols/search-emoji-symbols"}
-      }
-    },
-    "Meh-k": %{
-      s: {:quit, "Slack"},
-      "Meh-s": {:kill, "Slack"},
-      e: {:quit, "Emacs"},
-      "Meh-e": {:kill, "Emacs"}
+%{
+  "Meh-x": %{
+    e: {:app, "Emacs"},
+    "Meh-e": {:sh, "emacsclient -c -a '' &"},
+    s: {:app, "Slack"},
+    r: %{
+      g: {:raycast, "extensions/josephschmitt/gif-search/search"},
+      e: {:raycast, "extensions/raycast/emoji-symbols/search-emoji-symbols"}
     }
+  },
+  "Meh-k": %{
+    s: {:quit, "Slack"},
+    "Meh-s": {:kill, "Slack"},
+    e: {:quit, "Emacs"},
+    "Meh-e": {:kill, "Emacs"}
   }
 }
 ```
