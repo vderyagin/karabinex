@@ -14,6 +14,7 @@ replace-config: generate-config
     cp -f \
       karabinex.json \
       ~/.config/karabiner/assets/complex_modifications/karabinex.json
+    mix eval "Karabinex.KarabinerConfig.update()"
 
 build: deps
     mix compile --warnings-as-errors
