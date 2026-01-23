@@ -26,5 +26,5 @@ karabinex-*.tar
 /tmp/
 
 # generated configs
-/*.json
-/rules.exs
+/karabinex.json
+/rules.json
