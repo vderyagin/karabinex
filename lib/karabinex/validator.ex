@@ -1,7 +1,7 @@
 defmodule Karabinex.Validator do
   alias Karabinex.{Key, Command}
 
-  @valid_kinds [:app, :quit, :kill, :sh, :remap, :raycast]
+  @valid_kinds [:app, :quit, :kill, :sh, :raycast]
   @valid_opts [:repeat]
 
   @spec validate!(map()) :: map() | no_return()

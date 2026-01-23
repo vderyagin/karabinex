@@ -21,7 +21,6 @@ defmodule Karabinex.CommandTest do
       assert %Command{kind: :quit} = Command.new(chord, :quit, "Safari")
       assert %Command{kind: :kill} = Command.new(chord, :kill, "Firefox")
       assert %Command{kind: :sh} = Command.new(chord, :sh, "echo hello")
-      assert %Command{kind: :remap} = Command.new(chord, :remap, "escape")
       assert %Command{kind: :raycast} = Command.new(chord, :raycast, "confetti")
     end
   end

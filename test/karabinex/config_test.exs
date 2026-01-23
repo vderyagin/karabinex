@@ -131,7 +131,7 @@ defmodule Karabinex.ConfigTest do
     end
 
     test "raises when repeat: :key combined with other options" do
-      input = %{a: {:app, "Emacs", repeat: :key, if: %{foo: "bar"}}}
+      input = %{a: {:app, "Emacs", repeat: :key, foo: :bar}}
 
       assert_raise RuntimeError, ~r/repeat: :key cannot be combined/, fn ->
         Config.preprocess(input)

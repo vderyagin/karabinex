@@ -34,12 +34,6 @@ defmodule Karabinex.Manipulator.InvokeCommandTest do
 
       assert result == "echo hello"
     end
-
-    test "raises for :remap" do
-      assert_raise RuntimeError, ~r/not implemented/i, fn ->
-        InvokeCommand.command(:remap, "escape")
-      end
-    end
   end
 
   describe "new/1" do

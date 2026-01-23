@@ -8,16 +8,13 @@ defmodule Karabinex.Command do
           | :quit
           | :kill
           | :sh
-          | :remap
           | :raycast
 
   @type spec ::
           {kind(), String.t()}
           | {kind(), String.t(), [option()]}
 
-  @type option ::
-          {:if, map()}
-          | {:repeat, boolean()}
+  @type option :: {:repeat, boolean()}
 
   @type t :: %__MODULE__{
           chord: Chord.t(),
