@@ -1,4 +1,4 @@
-default: lint format typecheck test
+default: lint format-check typecheck test
 
 export PATH := "/Library/Application Support/org.pqrs/Karabiner-Elements/bin:" + env_var("PATH")
 
@@ -22,10 +22,10 @@ lint:
 lint-fix:
     bun run lint-fix
 
-format-fix:
+format:
     bun run format
 
-format:
+format-check:
     bun run format-check
 
 test:
