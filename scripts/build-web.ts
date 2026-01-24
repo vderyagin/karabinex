@@ -1,4 +1,4 @@
-import { readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import htmlnano from "htmlnano";
 import { transform } from "lightningcss";
@@ -35,6 +35,7 @@ if (!jsOutput) {
   throw new Error("build produced no JS output");
 }
 
+mkdirSync(webDir, { recursive: true });
 const js = await jsOutput.text();
 writeFileSync(bundledJsPath, js);
 
