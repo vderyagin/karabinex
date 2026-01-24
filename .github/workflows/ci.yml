@@ -10,6 +10,8 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 jobs:
   lint:
@@ -59,3 +61,18 @@ jobs:
       - uses: ./.github/actions/setup-bun
       - name: Build web assets
         run: bun run build-web
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+  deploy-pages:
+    name: Deploy Pages
+    runs-on: ubuntu-24.04
+    needs:
+      - build-web
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
