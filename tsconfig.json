@@ -15,5 +15,5 @@
     "noImplicitOverride": true,
     "types": ["bun-types"]
   },
-  "include": ["src/**/*", "tests/**/*", "test/**/*"]
+  "include": ["src/**/*", "test/**/*"]
 }

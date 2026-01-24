@@ -8,10 +8,10 @@
     "lint-config": "bun run scripts/lint-config.ts",
     "replace-config": "bun run scripts/replace-config.ts",
     "typecheck": "tsc --noEmit",
-    "lint": "biome check ./src ./tests",
-    "lint-fix": "biome check --write ./src ./tests",
-    "format": "biome format --write ./src ./tests",
-    "format-check": "biome format ./src ./tests"
+    "lint": "biome check ./src ./test",
+    "lint-fix": "biome check --write ./src ./test",
+    "format": "biome format --write ./src ./test",
+    "format-check": "biome format ./src ./test"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.12",
