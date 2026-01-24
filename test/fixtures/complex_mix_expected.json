@@ -11,10 +11,7 @@
     ],
     "from": {
       "modifiers": {
-        "mandatory": [
-          "control",
-          "shift"
-        ]
+        "mandatory": ["control", "shift"]
       },
       "key_code": "x"
     },
@@ -76,9 +73,7 @@
     ],
     "from": {
       "modifiers": {
-        "mandatory": [
-          "option"
-        ]
+        "mandatory": ["option"]
       },
       "key_code": "z"
     },
@@ -303,9 +298,7 @@
     ],
     "from": {
       "modifiers": {
-        "mandatory": [
-          "option"
-        ]
+        "mandatory": ["option"]
       },
       "key_code": "a"
     },
@@ -367,9 +360,7 @@
     ],
     "from": {
       "modifiers": {
-        "mandatory": [
-          "control"
-        ]
+        "mandatory": ["control"]
       },
       "key_code": "c"
     },
@@ -396,9 +387,7 @@
     ],
     "from": {
       "modifiers": {
-        "mandatory": [
-          "shift"
-        ]
+        "mandatory": ["shift"]
       },
       "key_code": "i"
     },

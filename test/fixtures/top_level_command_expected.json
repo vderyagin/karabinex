@@ -8,9 +8,7 @@
     ],
     "from": {
       "modifiers": {
-        "mandatory": [
-          "option"
-        ]
+        "mandatory": ["option"]
       },
       "key_code": "a"
     }

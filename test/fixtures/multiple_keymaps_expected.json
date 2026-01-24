@@ -11,9 +11,7 @@
     ],
     "from": {
       "modifiers": {
-        "mandatory": [
-          "option"
-        ]
+        "mandatory": ["option"]
       },
       "key_code": "a"
     },
@@ -87,9 +85,7 @@
     ],
     "from": {
       "modifiers": {
-        "mandatory": [
-          "option"
-        ]
+        "mandatory": ["option"]
       },
       "key_code": "d"
     },
