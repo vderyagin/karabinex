@@ -1,4 +1,4 @@
 import keyCodesData from "../../data/simple_modifications.json";
-import { parseKeyCodes, type KeyCodes } from "../keyCodes";
+import { type KeyCodes, parseKeyCodes } from "../keyCodes";
 
 export const embeddedKeyCodes: KeyCodes = parseKeyCodes(keyCodesData);

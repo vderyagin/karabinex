@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Karabinex Web</title>
+    <link rel="stylesheet" href="./karabinex-web.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <div class="eyebrow">Karabinex</div>
+        <h1>Rules to Karabiner Config</h1>
+        <div class="subtitle">
+          Paste your keymap rules on the left and generate a ready-to-import
+          complex modifications file on the right.
+        </div>
+      </header>
+
+      <section class="panel">
+        <div class="fields">
+          <div>
+            <label for="rules">Input rules.json</label>
+            <textarea id="rules">
+{
+  "Meh-x": {
+    "e": { "app": "Emacs" },
+    "t": { "app": "Terminal" }
+  }
+}
+            </textarea>
+          </div>
+          <div>
+            <label for="output">Output karabinex.json</label>
+            <textarea id="output" readonly></textarea>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="buttons">
+            <button class="primary" id="transform">Transform</button>
+            <button class="secondary" id="copy">Copy output</button>
+          </div>
+          <div id="status" data-state="ok">Ready.</div>
+        </div>
+      </section>
+    </main>
+    <script src="./karabinex-web.js"></script>
+  </body>
+</html>

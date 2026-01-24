@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { parseKeyCodes, type KeyCodes } from "./keyCodes";
+import { type KeyCodes, parseKeyCodes } from "./keyCodes";
 
 export function loadKeyCodesFromFile(path: string): KeyCodes {
   const data = JSON.parse(readFileSync(path, "utf8"));

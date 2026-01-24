@@ -22,7 +22,9 @@ describe("buildConfig", () => {
     const json = buildConfigJson(rulesJson, { keyCodes });
     expect(json.endsWith("\n")).toBe(true);
 
-    const parsed = JSON.parse(json) as { rules?: Array<{ manipulators?: unknown[] }> };
+    const parsed = JSON.parse(json) as {
+      rules?: Array<{ manipulators?: unknown[] }>;
+    };
     expect(parsed.rules?.[0]?.manipulators?.length).toBeGreaterThan(0);
   });
 });
