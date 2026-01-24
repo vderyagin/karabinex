@@ -55,7 +55,7 @@ try {
       collapseWhitespace: "all",
       minifyCss: false,
       minifyJs: false,
-      minifySvg: false,
+      minifySvg: {},
     }),
   ]).process(htmlSource, { from: sourceHtmlPath });
 
