@@ -2,6 +2,8 @@
 
 A tool for generating [Karabiner-Elements](https://karabiner-elements.pqrs.org/) complex modifications configuration.
 
+Try it in browser: https://vderyagin.github.io/karabinex
+
 ## Usage
 
 1. Clone the repository
