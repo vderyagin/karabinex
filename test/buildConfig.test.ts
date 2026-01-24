@@ -3,7 +3,7 @@ import { parseKeyCodes } from "../src/keyCodes";
 import { buildConfig, buildConfigJson } from "../src/web/buildConfig";
 
 const keyCodes = parseKeyCodes([{ data: [{ key_code: "a" }] }]);
-const rulesJson = JSON.stringify({ a: { app: "Notes" } });
+const rulesJson = JSON.stringify({ "Meh-a": { app: "Notes" } });
 
 describe("buildConfig", () => {
   test("builds config with custom metadata", () => {

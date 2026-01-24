@@ -21,4 +21,11 @@ describe("transform", () => {
     );
     expect(hasEnable).toBe(true);
   });
+
+  test("expands compound keys before validation", () => {
+    const defs = parseJsonConfig(
+      JSON.stringify({ "C-c C-c": { sh: "echo hi" } }),
+    );
+    expect(() => toManipulators(defs, makeKeyCodes())).not.toThrow();
+  });
 });
