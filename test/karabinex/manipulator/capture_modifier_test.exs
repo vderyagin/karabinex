@@ -62,6 +62,15 @@ defmodule Karabinex.Manipulator.CaptureModifierTest do
              end)
     end
 
+    test "does not unset variable after key up when disabled" do
+      chord = Chord.new() |> Chord.append(Key.new("x"))
+      cm = CaptureModifier.new("left_option", chord, false)
+
+      result = ToManipulator.manipulator(cm)
+
+      refute Map.has_key?(result, :to_after_key_up)
+    end
+
     test "works with multi-key chord" do
       chord =
         Chord.new()
