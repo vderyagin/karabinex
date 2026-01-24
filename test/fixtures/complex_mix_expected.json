@@ -1,0 +1,1064 @@
+[
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_control-shift-x_map",
+          "value": 1
+        }
+      }
+    ],
+    "from": {
+      "modifiers": {
+        "mandatory": [
+          "control",
+          "shift"
+        ]
+      },
+      "key_code": "x"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_control-shift-x_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_control-shift-x_w_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_d_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_g_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_g_h_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_j_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_j_k_map",
+        "type": "variable_if",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_control-shift-x_map",
+          "type": "unset"
+        }
+      },
+      {
+        "shell_command": "open -a 'Mail'"
+      }
+    ],
+    "from": {
+      "modifiers": {
+        "mandatory": [
+          "option"
+        ]
+      },
+      "key_code": "z"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_control-shift-x_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_control-shift-x_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_control-shift-x_w_map",
+          "value": 1
+        }
+      },
+      {
+        "shell_command": "open raycast://confetti"
+      }
+    ],
+    "from": {
+      "key_code": "w"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_control-shift-x_w_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_d_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_g_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_g_h_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_j_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_j_k_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_control-shift-x_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "shell_command": "open raycast://confetti"
+      }
+    ],
+    "from": {
+      "key_code": "w"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_control-shift-x_w_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_control-shift-x_w_map",
+          "type": "unset"
+        }
+      }
+    ],
+    "from": {
+      "any": "key_code"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_control-shift-x_w_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_control-shift-x_map",
+          "type": "unset"
+        }
+      },
+      {
+        "shell_command": "echo top2"
+      }
+    ],
+    "from": {
+      "key_code": "y"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_control-shift-x_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "key_code": "left_option"
+      }
+    ],
+    "from": {
+      "key_code": "left_option"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_control-shift-x_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ],
+    "to_after_key_up": [
+      {
+        "set_variable": {
+          "name": "karabinex_control-shift-x_map",
+          "type": "unset"
+        }
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "key_code": "right_option"
+      }
+    ],
+    "from": {
+      "key_code": "right_option"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_control-shift-x_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ],
+    "to_after_key_up": [
+      {
+        "set_variable": {
+          "name": "karabinex_control-shift-x_map",
+          "type": "unset"
+        }
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_control-shift-x_map",
+          "type": "unset"
+        }
+      }
+    ],
+    "from": {
+      "any": "key_code"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_control-shift-x_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "value": 1
+        }
+      }
+    ],
+    "from": {
+      "modifiers": {
+        "mandatory": [
+          "option"
+        ]
+      },
+      "key_code": "a"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_control-shift-x_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_control-shift-x_w_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_d_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_g_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_g_h_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_j_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_j_k_map",
+        "type": "variable_if",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "type": "unset"
+        }
+      },
+      {
+        "shell_command": "echo hi"
+      }
+    ],
+    "from": {
+      "modifiers": {
+        "mandatory": [
+          "control"
+        ]
+      },
+      "key_code": "c"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "type": "unset"
+        }
+      },
+      {
+        "shell_command": "open -a 'Books'"
+      }
+    ],
+    "from": {
+      "modifiers": {
+        "mandatory": [
+          "shift"
+        ]
+      },
+      "key_code": "i"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "type": "unset"
+        }
+      },
+      {
+        "shell_command": "open -a 'Safari'"
+      }
+    ],
+    "from": {
+      "key_code": "b"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_d_map",
+          "value": 1
+        }
+      }
+    ],
+    "from": {
+      "key_code": "d"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_control-shift-x_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_control-shift-x_w_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_d_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_g_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_g_h_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_j_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_j_k_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_d_map",
+          "type": "unset"
+        }
+      },
+      {
+        "shell_command": "osascript -e 'quit app \"Notes\"'"
+      }
+    ],
+    "from": {
+      "key_code": "e"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_d_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "shell_command": "open raycast://confetti"
+      }
+    ],
+    "from": {
+      "key_code": "f"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_d_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_d_map",
+          "type": "unset"
+        }
+      }
+    ],
+    "from": {
+      "any": "key_code"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_d_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_g_map",
+          "value": 1
+        }
+      }
+    ],
+    "from": {
+      "key_code": "g"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_control-shift-x_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_control-shift-x_w_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_d_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_g_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_g_h_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_j_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_j_k_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_g_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_g_h_map",
+          "value": 1
+        }
+      },
+      {
+        "shell_command": "killall -SIGKILL 'Slack'"
+      }
+    ],
+    "from": {
+      "key_code": "h"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_control-shift-x_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_control-shift-x_w_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_d_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_g_h_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_j_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_j_k_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_g_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "shell_command": "killall -SIGKILL 'Slack'"
+      }
+    ],
+    "from": {
+      "key_code": "h"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_g_h_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_g_h_map",
+          "type": "unset"
+        }
+      }
+    ],
+    "from": {
+      "any": "key_code"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_g_h_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_g_map",
+          "type": "unset"
+        }
+      }
+    ],
+    "from": {
+      "any": "key_code"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_g_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_j_map",
+          "value": 1
+        }
+      }
+    ],
+    "from": {
+      "key_code": "j"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_control-shift-x_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_control-shift-x_w_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_d_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_g_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_g_h_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_j_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_j_k_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_j_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_j_k_map",
+          "value": 1
+        }
+      }
+    ],
+    "from": {
+      "key_code": "k"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_control-shift-x_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_control-shift-x_w_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_d_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_g_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_g_h_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_j_k_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_j_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_j_k_map",
+          "type": "unset"
+        }
+      },
+      {
+        "shell_command": "echo deep"
+      }
+    ],
+    "from": {
+      "key_code": "l"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_j_k_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_j_k_map",
+          "type": "unset"
+        }
+      }
+    ],
+    "from": {
+      "any": "key_code"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_j_k_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_j_map",
+          "type": "unset"
+        }
+      }
+    ],
+    "from": {
+      "any": "key_code"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_j_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "key_code": "left_control"
+      }
+    ],
+    "from": {
+      "key_code": "left_control"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ],
+    "to_after_key_up": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "type": "unset"
+        }
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "key_code": "right_control"
+      }
+    ],
+    "from": {
+      "key_code": "right_control"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ],
+    "to_after_key_up": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "type": "unset"
+        }
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "key_code": "left_shift"
+      }
+    ],
+    "from": {
+      "key_code": "left_shift"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ],
+    "to_after_key_up": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "type": "unset"
+        }
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "key_code": "right_shift"
+      }
+    ],
+    "from": {
+      "key_code": "right_shift"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ],
+    "to_after_key_up": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "type": "unset"
+        }
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "type": "unset"
+        }
+      }
+    ],
+    "from": {
+      "any": "key_code"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  }
+]

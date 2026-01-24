@@ -1,0 +1,47 @@
+{
+  "M-a": {
+    "b": {
+      "app": "Safari"
+    },
+    "C-c": {
+      "sh": "echo hi"
+    },
+    "d": {
+      "e": {
+        "quit": "Notes"
+      },
+      "f": {
+        "raycast": "confetti",
+        "repeat": "keymap"
+      }
+    },
+    "g": {
+      "h": {
+        "kill": "Slack",
+        "repeat": "key"
+      }
+    },
+    "S-i": {
+      "app": "Books"
+    },
+    "j": {
+      "k": {
+        "l": {
+          "sh": "echo deep"
+        }
+      }
+    }
+  },
+  "C-S-x": {
+    "y": {
+      "sh": "echo top2"
+    },
+    "M-z": {
+      "app": "Mail"
+    },
+    "w": {
+      "raycast": "confetti",
+      "repeat": "key"
+    }
+  }
+}

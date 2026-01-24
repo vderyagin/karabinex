@@ -1,0 +1,131 @@
+[
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "value": 1
+        }
+      }
+    ],
+    "from": {
+      "modifiers": {
+        "mandatory": [
+          "option"
+        ]
+      },
+      "key_code": "a"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_b_map",
+        "type": "variable_if",
+        "value": 0
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_b_map",
+          "value": 1
+        }
+      }
+    ],
+    "from": {
+      "key_code": "b"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_b_map",
+        "type": "variable_if",
+        "value": 0
+      },
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_b_map",
+          "type": "unset"
+        }
+      },
+      {
+        "shell_command": "open raycast://confetti"
+      }
+    ],
+    "from": {
+      "key_code": "c"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_b_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_b_map",
+          "type": "unset"
+        }
+      }
+    ],
+    "from": {
+      "any": "key_code"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_b_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "type": "basic",
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "type": "unset"
+        }
+      }
+    ],
+    "from": {
+      "any": "key_code"
+    },
+    "conditions": [
+      {
+        "name": "karabinex_option-a_map",
+        "type": "variable_if",
+        "value": 1
+      }
+    ]
+  }
+]
