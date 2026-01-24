@@ -16,9 +16,12 @@ function expandCompoundKey([key, value]: [string, Binding]): [string, Binding] {
   const parts = keyStr.split(" ", 2);
 
   if (parts.length === 2) {
-    const [first, rest] = parts;
-    const nested = new KeymapDefClass(new Map([[rest, value]]));
-    return expandCompoundKey([first, nested]);
+    const first = parts[0];
+    const rest = parts[1];
+    if (first && rest) {
+      const nested = new KeymapDefClass(new Map([[rest, value]]));
+      return expandCompoundKey([first, nested]);
+    }
   }
 
   return [key, value];

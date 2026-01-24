@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { Key } from "../../src/key";
-import { makeKeyCodes } from "../testUtils";
+import { Key } from "../src/key";
+import { makeKeyCodes } from "./testUtils";
 
 describe("key", () => {
   test("parses modifiers and code", () => {

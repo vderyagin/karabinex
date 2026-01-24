@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { Chord } from "../../src/chord";
-import { Command } from "../../src/command";
-import { Keymap } from "../../src/keymap";
+import { Chord } from "../src/chord";
+import { Command } from "../src/command";
+import { Keymap } from "../src/keymap";
 
 describe("keymap", () => {
   test("adds hook", () => {

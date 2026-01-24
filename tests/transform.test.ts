@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { parseJsonConfig } from "../../src/jsonConfig";
-import { toManipulators } from "../../src/transform";
-import { makeKeyCodes } from "../testUtils";
+import { parseJsonConfig } from "../src/jsonConfig";
+import { toManipulators } from "../src/transform";
+import { makeKeyCodes } from "./testUtils";
 
 describe("transform", () => {
   test("generates manipulators", () => {
@@ -12,10 +12,11 @@ describe("transform", () => {
     expect(manipulators.length).toBeGreaterThan(0);
 
     const hasEnable = manipulators.some(
-      (m) =>
+      (m: { to?: unknown }) =>
         Array.isArray(m.to) &&
         m.to.some(
-          (clause) => (clause as { set_variable?: unknown }).set_variable,
+          (clause: unknown) =>
+            (clause as { set_variable?: unknown }).set_variable,
         ),
     );
     expect(hasEnable).toBe(true);

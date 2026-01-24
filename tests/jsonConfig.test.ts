@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { parseJsonConfig, parseJsonValue } from "../../src/jsonConfig";
+import { parseJsonConfig, parseJsonValue } from "../src/jsonConfig";
 
 describe("jsonConfig", () => {
   test("parses command bindings", () => {

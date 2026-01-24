@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { Chord } from "../../src/chord";
-import { Key } from "../../src/key";
-import { makeKeyCodes } from "../testUtils";
+import { Chord } from "../src/chord";
+import { Key } from "../src/key";
+import { makeKeyCodes } from "./testUtils";
 
 describe("chord", () => {
   test("append, last, prefix", () => {

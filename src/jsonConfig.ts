@@ -78,7 +78,11 @@ function parseBinding(value: unknown, path: string[]): Binding {
   }
 
   if (keys.length === 1) {
-    return parseCommand(value, keys[0], path);
+    const commandKey = keys[0];
+    if (!commandKey) {
+      throw new Error(`Missing command key at ${pathLabel(path)}`);
+    }
+    return parseCommand(value, commandKey, path);
   }
 
   throw new Error(`Multiple command keys at ${pathLabel(path)}`);
@@ -108,6 +112,11 @@ function parseCommand(
   }
 
   const kind = commandKeys[commandKey];
+  if (!kind) {
+    throw new Error(
+      `Unknown command key ${JSON.stringify(commandKey)} at ${pathLabel(path)}`,
+    );
+  }
   if (repeat === undefined) {
     return { kind, arg };
   }

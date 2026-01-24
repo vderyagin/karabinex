@@ -16,10 +16,11 @@ export class Chord {
   }
 
   last(): Key {
-    if (this.keys.length === 0) {
+    const last = this.keys[this.keys.length - 1];
+    if (!last) {
       throw new Error("Chord has no keys");
     }
-    return this.keys[this.keys.length - 1];
+    return last;
   }
 
   prefix(): Chord {

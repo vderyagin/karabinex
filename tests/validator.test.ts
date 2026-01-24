@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { KeymapDef } from "../../src/jsonConfig";
-import { validate } from "../../src/validator";
-import { makeKeyCodes } from "../testUtils";
+import { KeymapDef } from "../src/jsonConfig";
+import { validate } from "../src/validator";
+import { makeKeyCodes } from "./testUtils";
 
 describe("validator", () => {
   test("requires modifiers on top-level", () => {

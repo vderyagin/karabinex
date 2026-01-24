@@ -42,7 +42,9 @@ function normalizeManipulator(manipulator: JsonMap): JsonMap {
   const mandatory = modifiers?.mandatory;
   if (Array.isArray(mandatory)) {
     const sorted = [...mandatory].map((value) => String(value)).sort();
-    modifiers.mandatory = sorted;
+    if (modifiers) {
+      modifiers.mandatory = sorted;
+    }
   }
 
   return normalized;
@@ -146,7 +148,11 @@ function parseSequence(manipulators: JsonMap[]): [FixtureNode[], JsonMap[]] {
   let rest = manipulators;
 
   while (rest.length > 0) {
-    const [current, ...tail] = rest;
+    const current = rest[0];
+    if (!current) {
+      break;
+    }
+    const tail = rest.slice(1);
     const varName = enableVarName(current);
 
     if (!varName) {
@@ -182,7 +188,11 @@ function parseKeymap(
     throw new Error(`Missing disable for ${varName}`);
   }
 
-  const [disableManipulator, ...tail] = remaining;
+  const disableManipulator = remaining[0];
+  if (!disableManipulator) {
+    throw new Error(`Missing disable for ${varName}`);
+  }
+  const tail = remaining.slice(1);
   if (disableVarName(disableManipulator) !== varName) {
     throw new Error(`Expected disable for ${varName}`);
   }
@@ -212,7 +222,11 @@ function parseChildrenAndCaptures(
     throw new Error(`Missing disable for ${varName}`);
   }
 
-  const [current, ...rest] = manipulators;
+  const current = manipulators[0];
+  if (!current) {
+    throw new Error(`Missing disable for ${varName}`);
+  }
+  const rest = manipulators.slice(1);
 
   if (disableVarName(current) === varName) {
     return [childrenAcc, manipulators, capturesAcc];
@@ -259,7 +273,11 @@ function parseCaptures(
     throw new Error(`Missing disable for ${varName}`);
   }
 
-  const [current, ...rest] = manipulators;
+  const current = manipulators[0];
+  if (!current) {
+    throw new Error(`Missing disable for ${varName}`);
+  }
+  const rest = manipulators.slice(1);
 
   if (captureVarName(current) === varName) {
     return parseCaptures(rest, varName, [
@@ -320,12 +338,13 @@ function disableVarName(manipulator: JsonMap): string | null {
   }
 
   const name = unique[0];
-  const unset = to.some(
-    (clause) =>
-      (clause as JsonMap).set_variable &&
-      (clause as JsonMap).set_variable?.name === name &&
-      (clause as JsonMap).set_variable?.type === "unset",
-  );
+  if (!name) {
+    return null;
+  }
+  const unset = to.some((clause) => {
+    const setVar = (clause as JsonMap).set_variable as JsonMap | undefined;
+    return setVar?.name === name && setVar?.type === "unset";
+  });
 
   return unset ? name : null;
 }
@@ -368,7 +387,7 @@ function captureVarName(manipulator: JsonMap): string | null {
     return null;
   }
 
-  return unique[0];
+  return unique[0] ?? null;
 }
 
 function variableIfValue(condition: unknown, expected: number): boolean {

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { preprocess } from "../../src/config";
-import { parseJsonConfig } from "../../src/jsonConfig";
+import { preprocess } from "../src/config";
+import { parseJsonConfig } from "../src/jsonConfig";
 
 function asKeymap(value: unknown) {
   if (!value || typeof value !== "object" || !("entries" in value)) {

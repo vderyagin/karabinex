@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { Command } from "../../src/command";
-import { preprocess } from "../../src/config";
-import { parseDefinitions } from "../../src/definitions";
-import { parseJsonConfig } from "../../src/jsonConfig";
-import { Keymap } from "../../src/keymap";
-import { makeKeyCodes } from "../testUtils";
+import { Command } from "../src/command";
+import { preprocess } from "../src/config";
+import { parseDefinitions } from "../src/definitions";
+import { parseJsonConfig } from "../src/jsonConfig";
+import { Keymap } from "../src/keymap";
+import { makeKeyCodes } from "./testUtils";
 
 describe("definitions", () => {
   test("builds keymap with hook and repeat child", () => {

@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { updateKarabinerConfig } from "../../src/karabinerConfig";
+import { updateKarabinerConfig } from "../src/karabinerConfig";
 
 function writeJson(path: string, data: unknown): void {
   writeFileSync(path, `${JSON.stringify(data, null, 2)}\n`);
@@ -50,7 +50,11 @@ describe("karabinerConfig", () => {
       }>;
     };
 
-    const rules = updated.profiles[0].complex_modifications.rules;
+    const profile = updated.profiles[0];
+    if (!profile) {
+      throw new Error("Missing profile");
+    }
+    const rules = profile.complex_modifications.rules;
     const first = rules.find(
       (rule) => rule.description === "karabinex bindings",
     );
