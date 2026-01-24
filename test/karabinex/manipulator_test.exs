@@ -12,15 +12,15 @@ defmodule Karabinex.ManipulatorTest do
 
     result = Manipulator.generate(keymap)
 
-    assert Enum.any?(result, fn
-             %CaptureModifier{modifier: "left_control", unset_on_key_up: false} -> true
-             _ -> false
-           end)
+    assert result
+           |> Enum.any?(
+             &match?(%CaptureModifier{modifier: "left_control", unset_on_key_up: false}, &1)
+           )
 
-    assert Enum.any?(result, fn
-             %CaptureModifier{modifier: "right_control", unset_on_key_up: false} -> true
-             _ -> false
-           end)
+    assert result
+           |> Enum.any?(
+             &match?(%CaptureModifier{modifier: "right_control", unset_on_key_up: false}, &1)
+           )
   end
 
   test "still unsets keymap on modifier release for non-repeatable commands" do
@@ -31,14 +31,14 @@ defmodule Karabinex.ManipulatorTest do
 
     result = Manipulator.generate(keymap)
 
-    assert Enum.any?(result, fn
-             %CaptureModifier{modifier: "left_control", unset_on_key_up: true} -> true
-             _ -> false
-           end)
+    assert result
+           |> Enum.any?(
+             &match?(%CaptureModifier{modifier: "left_control", unset_on_key_up: true}, &1)
+           )
 
-    assert Enum.any?(result, fn
-             %CaptureModifier{modifier: "right_control", unset_on_key_up: true} -> true
-             _ -> false
-           end)
+    assert result
+           |> Enum.any?(
+             &match?(%CaptureModifier{modifier: "right_control", unset_on_key_up: true}, &1)
+           )
   end
 end

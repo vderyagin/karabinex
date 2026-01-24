@@ -34,10 +34,8 @@ defmodule Karabinex.Manipulator.DisableKeymapTest do
 
       result = ToManipulator.manipulator(dk)
 
-      assert Enum.any?(result.conditions, fn
-               %{type: :variable_if, name: "karabinex_x_map", value: 1} -> true
-               _ -> false
-             end)
+      assert result.conditions
+             |> Enum.any?(&match?(%{type: :variable_if, name: "karabinex_x_map", value: 1}, &1))
     end
 
     test "unsets keymap's variable" do
@@ -47,10 +45,8 @@ defmodule Karabinex.Manipulator.DisableKeymapTest do
 
       result = ToManipulator.manipulator(dk)
 
-      assert Enum.any?(result.to, fn
-               %{set_variable: %{name: "karabinex_x_map", type: "unset"}} -> true
-               _ -> false
-             end)
+      assert result.to
+             |> Enum.any?(&match?(%{set_variable: %{name: "karabinex_x_map", type: "unset"}}, &1))
     end
 
     test "works with multi-key chord" do
@@ -64,10 +60,8 @@ defmodule Karabinex.Manipulator.DisableKeymapTest do
 
       result = ToManipulator.manipulator(dk)
 
-      assert Enum.any?(result.conditions, fn
-               %{type: :variable_if, name: "karabinex_r_a_map", value: 1} -> true
-               _ -> false
-             end)
+      assert result.conditions
+             |> Enum.any?(&match?(%{type: :variable_if, name: "karabinex_r_a_map", value: 1}, &1))
     end
   end
 end

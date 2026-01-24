@@ -92,10 +92,7 @@ defmodule Karabinex.Manipulator.InvokeCommandTest do
       assert result.type == :basic
       assert result.from == %{key_code: "c"}
 
-      assert Enum.any?(result.to, fn
-               %{set_variable: %{name: _, type: "unset"}} -> true
-               _ -> false
-             end)
+      assert result.to |> Enum.any?(&match?(%{set_variable: %{name: _, type: "unset"}}, &1))
     end
   end
 end

@@ -32,10 +32,7 @@ defmodule Karabinex.Manipulator.CaptureModifierTest do
 
       result = ToManipulator.manipulator(cm)
 
-      assert Enum.any?(result.to, fn
-               %{key_code: "left_shift"} -> true
-               _ -> false
-             end)
+      assert result.to |> Enum.any?(&match?(%{key_code: "left_shift"}, &1))
     end
 
     test "adds if_variable condition for chord's variable" do
@@ -44,10 +41,8 @@ defmodule Karabinex.Manipulator.CaptureModifierTest do
 
       result = ToManipulator.manipulator(cm)
 
-      assert Enum.any?(result.conditions, fn
-               %{type: :variable_if, name: "karabinex_r_map", value: 1} -> true
-               _ -> false
-             end)
+      assert result.conditions
+             |> Enum.any?(&match?(%{type: :variable_if, name: "karabinex_r_map", value: 1}, &1))
     end
 
     test "unsets variable after key up" do
@@ -56,10 +51,8 @@ defmodule Karabinex.Manipulator.CaptureModifierTest do
 
       result = ToManipulator.manipulator(cm)
 
-      assert Enum.any?(result.to_after_key_up, fn
-               %{set_variable: %{name: "karabinex_x_map", type: "unset"}} -> true
-               _ -> false
-             end)
+      assert result.to_after_key_up
+             |> Enum.any?(&match?(%{set_variable: %{name: "karabinex_x_map", type: "unset"}}, &1))
     end
 
     test "does not unset variable after key up when disabled" do
@@ -81,10 +74,8 @@ defmodule Karabinex.Manipulator.CaptureModifierTest do
 
       result = ToManipulator.manipulator(cm)
 
-      assert Enum.any?(result.conditions, fn
-               %{type: :variable_if, name: "karabinex_r_a_map", value: 1} -> true
-               _ -> false
-             end)
+      assert result.conditions
+             |> Enum.any?(&match?(%{type: :variable_if, name: "karabinex_r_a_map", value: 1}, &1))
     end
   end
 end

@@ -69,10 +69,7 @@ defmodule Karabinex.Manipulator.EnableKeymapTest do
 
       result = ToManipulator.manipulator(ek)
 
-      assert Enum.any?(result.conditions, fn
-               %{type: :variable_if, value: 0} -> true
-               _ -> false
-             end)
+      assert result.conditions |> Enum.any?(&match?(%{type: :variable_if, value: 0}, &1))
     end
   end
 
@@ -88,10 +85,8 @@ defmodule Karabinex.Manipulator.EnableKeymapTest do
       assert result.type == :basic
       assert result.from == %{key_code: "a"}
 
-      assert Enum.any?(result.conditions, fn
-               %{type: :variable_if, name: "karabinex_r_map", value: 1} -> true
-               _ -> false
-             end)
+      assert result.conditions
+             |> Enum.any?(&match?(%{type: :variable_if, name: "karabinex_r_map", value: 1}, &1))
     end
 
     test "unsets prefix variable and sets own variable" do
@@ -103,16 +98,12 @@ defmodule Karabinex.Manipulator.EnableKeymapTest do
       result = ToManipulator.manipulator(ek)
 
       has_unset =
-        Enum.any?(result.to, fn
-          %{set_variable: %{name: "karabinex_r_map", type: "unset"}} -> true
-          _ -> false
-        end)
+        result.to
+        |> Enum.any?(&match?(%{set_variable: %{name: "karabinex_r_map", type: "unset"}}, &1))
 
       has_set =
-        Enum.any?(result.to, fn
-          %{set_variable: %{name: "karabinex_r_a_map", value: 1}} -> true
-          _ -> false
-        end)
+        result.to
+        |> Enum.any?(&match?(%{set_variable: %{name: "karabinex_r_a_map", value: 1}}, &1))
 
       assert has_unset
       assert has_set
