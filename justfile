@@ -3,15 +3,13 @@ default: lint format-check typecheck test
 export PATH := "/Library/Application Support/org.pqrs/Karabiner-Elements/bin:" + env_var("PATH")
 
 generate-config: && lint-config
-    bun run generate-config
+    bun run scripts/generate-config.ts
 
 lint-config:
-    karabiner_cli \
-      --lint-complex-modifications \
-      karabinex.json
+    bun run scripts/lint-config.ts
 
 replace-config: generate-config
-    bun run replace-config
+    bun run scripts/replace-config.ts
 
 typecheck:
     bun run typecheck

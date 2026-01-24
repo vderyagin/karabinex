@@ -20,7 +20,7 @@ writeConfig({
   keyCodesPath,
 });
 
-lintConfig(outputPath);
+glintConfig(outputPath);
 
 mkdirSync(dirname(assetPath), { recursive: true });
 copyFileSync(outputPath, assetPath);
