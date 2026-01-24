@@ -24,6 +24,7 @@ Karabinex uses nested keymaps to create multi-key sequences, similar to Emacs pr
 4. The bound action executes
 
 Sequences can be arbitrarily deep. For example, `Meh-x r g` means:
+
 1. Press `Meh-x` (Option + Control + Shift + x), release
 2. Press `r`, release
 3. Press `g` — action executes
