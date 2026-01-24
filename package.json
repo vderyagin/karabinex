@@ -1,6 +1,7 @@
 {
-  "name": "karabinex-ts",
+  "name": "karabinex",
   "private": true,
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "test": "bun test",
