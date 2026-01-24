@@ -1,5 +1,6 @@
 import { parseJsonConfig } from "../jsonConfig";
 import type { KeyCodes } from "../keyCodes";
+import type { Manipulator } from "../manipulator";
 import { toManipulators } from "../transform";
 import { embeddedKeyCodes } from "./embeddedKeyCodes";
 
@@ -7,7 +8,7 @@ export type WebConfig = {
   title: string;
   rules: {
     description: string;
-    manipulators: unknown[];
+    manipulators: Manipulator[];
   }[];
 };
 

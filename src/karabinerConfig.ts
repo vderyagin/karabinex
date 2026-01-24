@@ -27,10 +27,13 @@ export function updateKarabinerConfig(
 
 function readRules(path: string): Rule[] {
   const data = readJson(path);
-  const rules = (data as JsonMap).rules;
+  const rules = data.rules;
 
   if (Array.isArray(rules) && rules.length > 0) {
-    return rules as Rule[];
+    if (!rules.every(isJsonMap)) {
+      throw new Error("karabinex.json rules must be objects");
+    }
+    return rules;
   }
 
   if (Array.isArray(rules) && rules.length === 0) {
@@ -41,7 +44,11 @@ function readRules(path: string): Rule[] {
 }
 
 function readJson(path: string): JsonMap {
-  return JSON.parse(readFileSync(path, "utf8")) as JsonMap;
+  const data: unknown = JSON.parse(readFileSync(path, "utf8"));
+  if (!isJsonMap(data)) {
+    throw new Error(`Expected JSON object in ${path}`);
+  }
+  return data;
 }
 
 function writeJson(path: string, data: JsonMap): void {
@@ -80,8 +87,12 @@ function replaceRulesInProfile(
   profile: JsonMap,
   newRules: Rule[],
 ): { updated: JsonMap; changed: boolean } {
-  const complex = profile.complex_modifications as JsonMap | undefined;
-  const rules = complex?.rules;
+  const complex = profile.complex_modifications;
+  if (!isJsonMap(complex)) {
+    return { updated: profile, changed: false };
+  }
+
+  const rules = complex.rules;
   if (!Array.isArray(rules)) {
     return { updated: profile, changed: false };
   }
@@ -139,4 +150,8 @@ function replaceRules(
   }
 
   return { updated, changed: true };
+}
+
+function isJsonMap(value: unknown): value is JsonMap {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }

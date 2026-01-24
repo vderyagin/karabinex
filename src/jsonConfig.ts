@@ -1,29 +1,28 @@
-import type { CommandDef, CommandKind, RepeatValue } from "./command";
+import {
+  type CommandDef,
+  type CommandKind,
+  commandKinds,
+  isCommandKind,
+  isRepeatValue,
+  type RepeatValue,
+} from "./command";
 
 export type Binding = CommandDef | KeymapDef;
 
 export class KeymapDef {
-  entries: Map<string, Binding>;
-  hook?: CommandDef;
+  readonly entries: ReadonlyMap<string, Binding>;
+  readonly hook?: CommandDef;
 
-  constructor(entries: Map<string, Binding>, hook?: CommandDef) {
+  constructor(entries: ReadonlyMap<string, Binding>, hook?: CommandDef) {
     this.entries = entries;
     this.hook = hook;
   }
 }
 
-const commandKeys: Record<string, CommandKind> = {
-  app: "app",
-  quit: "quit",
-  kill: "kill",
-  sh: "sh",
-  raycast: "raycast",
-};
-
-const reservedKeyNames = new Set([...Object.keys(commandKeys), "repeat"]);
+const reservedKeyNames = new Set<string>([...commandKinds, "repeat"]);
 
 export function parseJsonConfig(json: string): KeymapDef {
-  const data = JSON.parse(json);
+  const data: unknown = JSON.parse(json);
   return parseMap(data);
 }
 
@@ -69,9 +68,7 @@ function parseBinding(value: unknown, path: string[]): Binding {
     throw new Error(`Binding must be an object at ${pathLabel(path)}`);
   }
 
-  const keys = Object.keys(value).filter((key) =>
-    Object.hasOwn(commandKeys, key),
-  );
+  const keys = Object.keys(value).filter(isCommandKind);
 
   if (keys.length === 0) {
     return parseKeymap(value, path);
@@ -90,7 +87,7 @@ function parseBinding(value: unknown, path: string[]): Binding {
 
 function parseCommand(
   value: Record<string, unknown>,
-  commandKey: string,
+  commandKey: CommandKind,
   path: string[],
 ): CommandDef {
   const arg = value[commandKey];
@@ -111,12 +108,7 @@ function parseCommand(
     );
   }
 
-  const kind = commandKeys[commandKey];
-  if (!kind) {
-    throw new Error(
-      `Unknown command key ${JSON.stringify(commandKey)} at ${pathLabel(path)}`,
-    );
-  }
+  const kind = commandKey;
   if (repeat === undefined) {
     return { kind, arg };
   }
@@ -128,7 +120,7 @@ function parseRepeat(value: unknown, path: string[]): RepeatValue | undefined {
   if (value === undefined || value === null) {
     return undefined;
   }
-  if (value === "key" || value === "keymap") {
+  if (isRepeatValue(value)) {
     return value;
   }
   throw new Error(

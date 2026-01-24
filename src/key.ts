@@ -8,6 +8,11 @@ export type KeyCode = {
   code: string;
 };
 
+export type KeyCodeSpec =
+  | { key_code: string }
+  | { consumer_key_code: string }
+  | { pointing_button: string };
+
 const modifierOrder: Modifier[] = ["command", "option", "control", "shift"];
 const hyperSymbol = "\u2726";
 const commandSymbol = "\u2318";
@@ -17,10 +22,10 @@ const commandPrefix = `${commandSymbol}-`;
 const optionPrefix = `${optionSymbol}-`;
 
 export class Key {
-  raw: string;
-  code: KeyCode;
-  modifiers: Modifier[];
-  private modifierSet: Set<Modifier>;
+  readonly raw: string;
+  readonly code: KeyCode;
+  readonly modifiers: ReadonlyArray<Modifier>;
+  private readonly modifierSet: ReadonlySet<Modifier>;
 
   private constructor(
     raw: string,
@@ -109,7 +114,7 @@ export class Key {
     return this.modifiers.length > 0;
   }
 
-  codeSpec(): Record<string, string> {
+  codeSpec(): KeyCodeSpec {
     if (this.code.type === "regular") {
       return { key_code: this.code.code };
     }

@@ -1,10 +1,10 @@
 import type { Key } from "./key";
 
 export class Chord {
-  keys: Key[];
+  readonly keys: ReadonlyArray<Key>;
 
-  constructor(keys: Key[] = []) {
-    this.keys = keys;
+  constructor(keys: ReadonlyArray<Key> = []) {
+    this.keys = [...keys];
   }
 
   static empty(): Chord {

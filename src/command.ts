@@ -1,7 +1,21 @@
 import type { Chord } from "./chord";
 
-export type CommandKind = "app" | "quit" | "kill" | "sh" | "raycast";
-export type RepeatValue = "key" | "keymap";
+export const commandKinds = ["app", "quit", "kill", "sh", "raycast"] as const;
+export type CommandKind = (typeof commandKinds)[number];
+
+export const repeatValues = ["key", "keymap"] as const;
+export type RepeatValue = (typeof repeatValues)[number];
+
+const commandKindSet = new Set<CommandKind>(commandKinds);
+const repeatValueSet = new Set<RepeatValue>(repeatValues);
+
+export function isCommandKind(value: string): value is CommandKind {
+  return commandKindSet.has(value as CommandKind);
+}
+
+export function isRepeatValue(value: unknown): value is RepeatValue {
+  return typeof value === "string" && repeatValueSet.has(value as RepeatValue);
+}
 
 export type CommandDef = {
   kind: CommandKind;
@@ -10,10 +24,10 @@ export type CommandDef = {
 };
 
 export class Command {
-  chord: Chord;
-  kind: CommandKind;
-  arg: string;
-  repeat: boolean;
+  readonly chord: Chord;
+  readonly kind: CommandKind;
+  readonly arg: string;
+  readonly repeat: boolean;
 
   constructor(chord: Chord, kind: CommandKind, arg: string, repeat = false) {
     this.chord = chord;

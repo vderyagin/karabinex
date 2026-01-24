@@ -11,7 +11,10 @@ export function preprocess(defs: KeymapDef): KeymapDef {
   return new KeymapDefClass(new Map(processed), defs.hook);
 }
 
-function expandCompoundKey([key, value]: [string, Binding]): [string, Binding] {
+function expandCompoundKey([key, value]: readonly [string, Binding]): [
+  string,
+  Binding,
+] {
   const keyStr = String(key);
   const parts = keyStr.split(" ", 2);
 

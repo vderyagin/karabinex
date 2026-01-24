@@ -1,68 +1,82 @@
 import type { Chord } from "./chord";
 import type { CommandKind } from "./command";
 import { Command } from "./command";
-import { Key } from "./key";
+import { Key, type KeyCodeSpec, type Modifier } from "./key";
 import { Keymap } from "./keymap";
 
 export type Manipulator = {
-  type?: "basic";
-  from?: Record<string, unknown>;
-  to?: Record<string, unknown>[];
-  to_after_key_up?: Record<string, unknown>[];
-  conditions?: Record<string, unknown>[];
+  type: "basic";
+  from: FromClause;
+  to?: ToClause[];
+  to_after_key_up?: ToClause[];
+  conditions?: Condition[];
 };
 
-type FromSpec = Key | "any" | { key_code: string };
+type ModifierSpec = { mandatory: Modifier[] };
+
+type FromClause =
+  | (KeyCodeSpec & { modifiers?: ModifierSpec })
+  | { any: "key_code" };
+
+type SetVariableClause =
+  | { set_variable: { name: string; value: number } }
+  | { set_variable: { name: string; type: "unset" } };
+
+type ToClause =
+  | { key_code: string }
+  | { shell_command: string }
+  | SetVariableClause;
+
+type Condition = { type: "variable_if"; name: string; value: number };
+
+type FromSpec = Key | "any" | KeyCodeSpec;
 
 function manipulate(fromSpec: FromSpec): Manipulator {
-  return from({ type: "basic" }, fromSpec);
+  return { type: "basic", from: buildFromClause(fromSpec) };
 }
 
-function from(m: Manipulator, fromSpec: FromSpec): Manipulator {
+function buildFromClause(fromSpec: FromSpec): FromClause {
   if (fromSpec instanceof Key) {
     if (fromSpec.hasModifiers()) {
       return {
-        ...m,
-        from: {
-          ...fromSpec.codeSpec(),
-          modifiers: { mandatory: fromSpec.modifiers },
-        },
+        ...fromSpec.codeSpec(),
+        modifiers: { mandatory: [...fromSpec.modifiers] },
       };
     }
-    return { ...m, from: fromSpec.codeSpec() };
+    return fromSpec.codeSpec();
   }
 
   if (fromSpec === "any") {
-    return { ...m, from: { any: "key_code" } };
+    return { any: "key_code" };
   }
 
-  return { ...m, from: { key_code: fromSpec.key_code } };
+  return fromSpec;
 }
 
-function remap(m: Manipulator, clause: Record<string, unknown>): Manipulator {
-  return appendClause(m, "to", clause);
+function remap(m: Manipulator, clause: { key_code: string }): Manipulator {
+  return appendToClause(m, "to", clause);
 }
 
 function runShellCommand(m: Manipulator, cmd: string): Manipulator {
-  return appendClause(m, "to", { shell_command: cmd });
+  return appendToClause(m, "to", { shell_command: cmd });
 }
 
 function setVariable(m: Manipulator, name: string, value = 1): Manipulator {
-  return appendClause(m, "to", { set_variable: { name, value } });
+  return appendToClause(m, "to", { set_variable: { name, value } });
 }
 
 function unsetVariable(m: Manipulator, name: string): Manipulator {
-  return appendClause(m, "to", { set_variable: { name, type: "unset" } });
+  return appendToClause(m, "to", { set_variable: { name, type: "unset" } });
 }
 
 function unsetVariableAfterKeyUp(m: Manipulator, name: string): Manipulator {
-  return appendClause(m, "to_after_key_up", {
+  return appendToClause(m, "to_after_key_up", {
     set_variable: { name, type: "unset" },
   });
 }
 
 function ifVariable(m: Manipulator, name: string, value = 1): Manipulator {
-  return appendClause(m, "conditions", { type: "variable_if", name, value });
+  return appendCondition(m, { type: "variable_if", name, value });
 }
 
 function unlessVariable(m: Manipulator, name: string): Manipulator {
@@ -77,17 +91,22 @@ function unlessVariables(m: Manipulator, names: string[]): Manipulator {
   return next;
 }
 
-function appendClause(
+function appendToClause(
   m: Manipulator,
-  key: "to" | "to_after_key_up" | "conditions",
-  clause: Record<string, unknown>,
+  key: "to" | "to_after_key_up",
+  clause: ToClause,
 ): Manipulator {
   const existing = m[key] ?? [];
   return { ...m, [key]: [...existing, clause] };
 }
 
+function appendCondition(m: Manipulator, clause: Condition): Manipulator {
+  const existing = m.conditions ?? [];
+  return { ...m, conditions: [...existing, clause] };
+}
+
 export class EnableKeymap {
-  keymap: Keymap;
+  readonly keymap: Keymap;
   otherChords: Chord[];
 
   constructor(keymap: Keymap) {
@@ -107,7 +126,7 @@ export class EnableKeymap {
 }
 
 export class DisableKeymap {
-  keymap: Keymap;
+  readonly keymap: Keymap;
 
   constructor(keymap: Keymap) {
     this.keymap = keymap;
@@ -115,9 +134,9 @@ export class DisableKeymap {
 }
 
 export class CaptureModifier {
-  modifier: string;
-  chord: Chord;
-  unsetOnKeyUp: boolean;
+  readonly modifier: string;
+  readonly chord: Chord;
+  readonly unsetOnKeyUp: boolean;
 
   constructor(modifier: string, chord: Chord, unsetOnKeyUp = true) {
     this.modifier = modifier;
@@ -127,7 +146,7 @@ export class CaptureModifier {
 }
 
 export class InvokeCommand {
-  command: Command;
+  readonly command: Command;
 
   constructor(command: Command) {
     this.command = command;
@@ -159,8 +178,8 @@ export function generate(item: Keymap | Command): GeneratedManipulator[] {
 }
 
 function getChildModifiers(keymap: Keymap): Array<[string, boolean]> {
-  const repeatable = new Set<string>();
-  const modifiers = new Set<string>();
+  const repeatable = new Set<Modifier>();
+  const modifiers = new Set<Modifier>();
 
   for (const child of keymap.children) {
     for (const modifier of childModifiers(child)) {
@@ -180,11 +199,13 @@ function getChildModifiers(keymap: Keymap): Array<[string, boolean]> {
   });
 }
 
-function childModifiers(child: Keymap | Command): string[] {
+function childModifiers(child: Keymap | Command): ReadonlyArray<Modifier> {
   return child.chord.last().modifiers;
 }
 
-function repeatableChildModifiers(child: Keymap | Command): string[] {
+function repeatableChildModifiers(
+  child: Keymap | Command,
+): ReadonlyArray<Modifier> {
   if (child instanceof Command && child.repeat) {
     return childModifiers(child);
   }
@@ -192,19 +213,18 @@ function repeatableChildModifiers(child: Keymap | Command): string[] {
 }
 
 export function commandString(kind: CommandKind, arg: string): string {
-  if (kind === "app") {
-    return `open -a '${arg}'`;
+  switch (kind) {
+    case "app":
+      return `open -a '${arg}'`;
+    case "raycast":
+      return `open raycast://${arg}`;
+    case "quit":
+      return `osascript -e 'quit app "${arg}"'`;
+    case "kill":
+      return `killall -SIGKILL '${arg}'`;
+    case "sh":
+      return arg;
   }
-  if (kind === "raycast") {
-    return `open raycast://${arg}`;
-  }
-  if (kind === "quit") {
-    return `osascript -e 'quit app "${arg}"'`;
-  }
-  if (kind === "kill") {
-    return `killall -SIGKILL '${arg}'`;
-  }
-  return arg;
 }
 
 export function toManipulator(item: GeneratedManipulator): Manipulator {
@@ -284,9 +304,7 @@ function invokeCommandManipulator(item: InvokeCommand): Manipulator {
 export function captureOtherChords(
   items: GeneratedManipulator[],
 ): GeneratedManipulator[] {
-  const chords = items
-    .filter((item) => item instanceof EnableKeymap)
-    .map((item) => (item as EnableKeymap).keymap.chord);
+  const chords = items.filter(isEnableKeymap).map((item) => item.keymap.chord);
 
   for (const item of items) {
     if (item instanceof EnableKeymap) {
@@ -295,4 +313,8 @@ export function captureOtherChords(
   }
 
   return items;
+}
+
+function isEnableKeymap(item: GeneratedManipulator): item is EnableKeymap {
+  return item instanceof EnableKeymap;
 }

@@ -1,7 +1,7 @@
 export type KeyCodes = {
-  regular: Set<string>;
-  consumer: Set<string>;
-  pointer: Set<string>;
+  regular: ReadonlySet<string>;
+  consumer: ReadonlySet<string>;
+  pointer: ReadonlySet<string>;
 };
 
 export function parseKeyCodes(data: unknown): KeyCodes {
@@ -14,16 +14,18 @@ export function parseKeyCodes(data: unknown): KeyCodes {
   const pointer = new Set<string>();
 
   for (const entry of data) {
-    const items = (entry as { data?: unknown }).data;
+    if (!isRecord(entry)) {
+      continue;
+    }
+    const items = entry.data;
     if (!Array.isArray(items) || items.length !== 1) {
       continue;
     }
 
-    const item = items[0] as {
-      key_code?: unknown;
-      consumer_key_code?: unknown;
-      pointing_button?: unknown;
-    };
+    const item = items[0];
+    if (!isRecord(item)) {
+      continue;
+    }
 
     if (typeof item.key_code === "string") {
       regular.add(item.key_code);
@@ -35,4 +37,8 @@ export function parseKeyCodes(data: unknown): KeyCodes {
   }
 
   return { regular, consumer, pointer };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }

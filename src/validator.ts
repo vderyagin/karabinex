@@ -1,10 +1,13 @@
-import type { CommandDef, CommandKind } from "./command";
+import {
+  type CommandDef,
+  type CommandKind,
+  commandKinds,
+  isCommandKind,
+} from "./command";
 import type { Binding } from "./jsonConfig";
 import { KeymapDef } from "./jsonConfig";
 import { Key } from "./key";
 import type { KeyCodes } from "./keyCodes";
-
-const validKinds: CommandKind[] = ["app", "quit", "kill", "sh", "raycast"];
 
 export function validate(defs: KeymapDef, keyCodes: KeyCodes): void {
   validateDefinitions(defs, 0, keyCodes);
@@ -110,9 +113,9 @@ function validateKey(key: string, keyCodes: KeyCodes): void {
 }
 
 function validateKind(kind: CommandKind): void {
-  if (!validKinds.includes(kind)) {
+  if (!isCommandKind(kind)) {
     throw new Error(
-      `Unknown command type: ${JSON.stringify(kind)}. Valid types: ${JSON.stringify(validKinds)}`,
+      `Unknown command type: ${JSON.stringify(kind)}. Valid types: ${JSON.stringify(commandKinds)}`,
     );
   }
 }

@@ -1,18 +1,26 @@
 import { buildConfigJson } from "./buildConfig";
 
-function getElement<T extends HTMLElement>(id: string): T {
+type ElementConstructor<T extends HTMLElement> = new (...args: never[]) => T;
+
+function getElement<T extends HTMLElement>(
+  id: string,
+  ctor: ElementConstructor<T>,
+): T {
   const element = document.getElementById(id);
   if (!element) {
     throw new Error(`Missing element #${id}`);
   }
-  return element as T;
+  if (!(element instanceof ctor)) {
+    throw new Error(`Element #${id} is not a ${ctor.name}`);
+  }
+  return element;
 }
 
-const input = getElement<HTMLTextAreaElement>("rules");
-const output = getElement<HTMLTextAreaElement>("output");
-const status = getElement<HTMLDivElement>("status");
-const transformButton = getElement<HTMLButtonElement>("transform");
-const copyButton = getElement<HTMLButtonElement>("copy");
+const input = getElement("rules", HTMLTextAreaElement);
+const output = getElement("output", HTMLTextAreaElement);
+const status = getElement("status", HTMLDivElement);
+const transformButton = getElement("transform", HTMLButtonElement);
+const copyButton = getElement("copy", HTMLButtonElement);
 
 function setStatus(message: string, kind: "ok" | "error") {
   status.textContent = message;
