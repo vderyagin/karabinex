@@ -79,11 +79,13 @@ defmodule Karabinex.Validator do
   end
 
   defp validate_definition!({key, %{} = nested}, depth) do
+    validate_top_level_modifiers!(key, depth)
     validate_key!(key)
     validate_definitions!(nested, depth + 1)
   end
 
   defp validate_definition!({key, {kind, arg}}, depth) do
+    validate_top_level_modifiers!(key, depth)
     validate_key!(key)
     validate_kind!(kind)
     validate_arg!(arg)
@@ -91,6 +93,7 @@ defmodule Karabinex.Validator do
   end
 
   defp validate_definition!({key, {kind, arg, opts}}, depth) do
+    validate_top_level_modifiers!(key, depth)
     validate_key!(key)
     validate_kind!(kind)
     validate_arg!(arg)
@@ -143,4 +146,17 @@ defmodule Karabinex.Validator do
   end
 
   defp validate_no_repeat_at_top!(_opts, _depth, _key), do: :ok
+
+  @spec validate_top_level_modifiers!(atom() | String.t(), non_neg_integer()) :: :ok
+  defp validate_top_level_modifiers!(key, 0) do
+    parsed = Key.new(key)
+
+    if Key.has_modifiers?(parsed) do
+      :ok
+    else
+      raise "Top-level key must include modifiers: #{inspect(key)}"
+    end
+  end
+
+  defp validate_top_level_modifiers!(_key, _depth), do: :ok
 end

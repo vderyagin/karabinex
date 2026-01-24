@@ -5,13 +5,13 @@ defmodule Karabinex.ValidatorTest do
 
   describe "validate!/1 with valid config" do
     test "passes valid simple config" do
-      input = %{a: {:app, "Emacs"}}
+      input = %{"M-a": {:app, "Emacs"}}
       assert Validator.validate!(input) == input
     end
 
     test "passes valid nested config" do
       input = %{
-        x: %{
+        "M-x": %{
           a: {:app, "Emacs"},
           b: {:sh, "echo hello"}
         }
@@ -22,7 +22,7 @@ defmodule Karabinex.ValidatorTest do
 
     test "passes config with repeat: :key at nested level" do
       input = %{
-        x: %{
+        "M-x": %{
           c: {:raycast, "confetti", repeat: :key}
         }
       }
@@ -32,7 +32,7 @@ defmodule Karabinex.ValidatorTest do
 
     test "passes config with repeat: :keymap at nested level" do
       input = %{
-        x: %{
+        "M-x": %{
           c: {:raycast, "confetti", repeat: :keymap}
         }
       }
@@ -42,7 +42,7 @@ defmodule Karabinex.ValidatorTest do
 
     test "passes config with __hook__ at nested level" do
       input = %{
-        x: %{
+        "M-x": %{
           :__hook__ => {:raycast, "confetti"},
           c: {:app, "Emacs"}
         }
@@ -54,7 +54,7 @@ defmodule Karabinex.ValidatorTest do
 
   describe "validate!/1 rejects top-level repeat" do
     test "raises on repeat: :key at top level" do
-      input = %{a: {:app, "Emacs", repeat: :key}}
+      input = %{"M-a": {:app, "Emacs", repeat: :key}}
 
       assert_raise RuntimeError, ~r/repeat.*cannot be used at top level/i, fn ->
         Validator.validate!(input)
@@ -62,9 +62,27 @@ defmodule Karabinex.ValidatorTest do
     end
 
     test "raises on repeat: :keymap at top level" do
-      input = %{a: {:app, "Emacs", repeat: :keymap}}
+      input = %{"M-a": {:app, "Emacs", repeat: :keymap}}
 
       assert_raise RuntimeError, ~r/repeat.*cannot be used at top level/i, fn ->
+        Validator.validate!(input)
+      end
+    end
+  end
+
+  describe "validate!/1 rejects top-level keys without modifiers" do
+    test "raises on top-level command without modifiers" do
+      input = %{a: {:app, "Emacs"}}
+
+      assert_raise RuntimeError, ~r/top-level key.*modifiers/i, fn ->
+        Validator.validate!(input)
+      end
+    end
+
+    test "raises on top-level keymap without modifiers" do
+      input = %{a: %{b: {:app, "Emacs"}}}
+
+      assert_raise RuntimeError, ~r/top-level key.*modifiers/i, fn ->
         Validator.validate!(input)
       end
     end
@@ -89,7 +107,7 @@ defmodule Karabinex.ValidatorTest do
 
     test "raises on duplicates within nested keymap" do
       input = %{
-        r: %{
+        "M-r": %{
           "⌘-⌥-a": {:app, "Emacs"},
           "⌥-⌘-a": {:app, "Other"}
         }
@@ -109,7 +127,7 @@ defmodule Karabinex.ValidatorTest do
     end
 
     test "raises on empty nested keymap" do
-      input = %{r: %{}}
+      input = %{"M-r": %{}}
 
       assert_raise RuntimeError, ~r/empty keymap/i, fn ->
         Validator.validate!(input)
@@ -119,7 +137,7 @@ defmodule Karabinex.ValidatorTest do
 
   describe "validate!/1 rejects unknown command types" do
     test "raises on unknown command type" do
-      input = %{a: {:unknown, "arg"}}
+      input = %{"M-a": {:unknown, "arg"}}
 
       assert_raise RuntimeError, ~r/unknown command type.*:unknown/i, fn ->
         Validator.validate!(input)
@@ -127,7 +145,7 @@ defmodule Karabinex.ValidatorTest do
     end
 
     test "raises on typo in command type" do
-      input = %{a: {:ap, "Emacs"}}
+      input = %{"M-a": {:ap, "Emacs"}}
 
       assert_raise RuntimeError, ~r/unknown command type.*:ap/i, fn ->
         Validator.validate!(input)
@@ -137,7 +155,7 @@ defmodule Karabinex.ValidatorTest do
 
   describe "validate!/1 rejects unknown options" do
     test "raises on unknown option" do
-      input = %{x: %{a: {:app, "Emacs", foo: :bar}}}
+      input = %{"M-x": %{a: {:app, "Emacs", foo: :bar}}}
 
       assert_raise RuntimeError, ~r/unknown option.*:foo/i, fn ->
         Validator.validate!(input)
@@ -145,7 +163,7 @@ defmodule Karabinex.ValidatorTest do
     end
 
     test "raises on typo in option" do
-      input = %{x: %{a: {:app, "Emacs", repat: :keymap}}}
+      input = %{"M-x": %{a: {:app, "Emacs", repat: :keymap}}}
 
       assert_raise RuntimeError, ~r/unknown option.*:repat/i, fn ->
         Validator.validate!(input)
@@ -155,7 +173,7 @@ defmodule Karabinex.ValidatorTest do
 
   describe "validate!/1 rejects __hook__ at top level" do
     test "raises on __hook__ at top level" do
-      input = %{:__hook__ => {:raycast, "confetti"}, a: {:app, "Emacs"}}
+      input = %{:__hook__ => {:raycast, "confetti"}, "M-a": {:app, "Emacs"}}
 
       assert_raise RuntimeError, ~r/__hook__.*top level/i, fn ->
         Validator.validate!(input)
@@ -166,7 +184,7 @@ defmodule Karabinex.ValidatorTest do
   describe "validate!/1 rejects hooks with options" do
     test "raises when hook has options" do
       input = %{
-        x: %{
+        "M-x": %{
           :__hook__ => {:raycast, "confetti", repeat: :keymap},
           c: {:app, "Emacs"}
         }
@@ -181,7 +199,7 @@ defmodule Karabinex.ValidatorTest do
   describe "validate!/1 validates at all depths" do
     test "catches errors in deeply nested config" do
       input = %{
-        a: %{
+        "M-a": %{
           b: %{
             c: %{
               d: {:unknown_type, "arg"}
