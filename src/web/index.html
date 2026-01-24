@@ -23,7 +23,6 @@
       <section class="panel">
         <div class="fields">
           <div>
-            <label for="rules">Input rules.json</label>
             <textarea
               id="rules"
               placeholder='{
@@ -33,19 +32,18 @@
   }
 }'
             ></textarea>
+            <div class="input-actions">
+              <button class="primary" id="transform">Transform</button>
+              <button class="secondary" id="format" type="button">Format input</button>
+            </div>
           </div>
           <div>
-            <label for="output">Output karabinex.json</label>
             <textarea id="output" readonly placeholder="Output appears here"></textarea>
+            <div class="output-actions">
+              <button class="secondary" id="copy">Copy output</button>
+              <div id="status" data-state="ok">Ready.</div>
+            </div>
           </div>
-        </div>
-
-        <div class="controls">
-          <div class="buttons">
-            <button class="primary" id="transform">Transform</button>
-            <button class="secondary" id="copy">Copy output</button>
-          </div>
-          <div id="status" data-state="ok">Ready.</div>
         </div>
       </section>
     </main>

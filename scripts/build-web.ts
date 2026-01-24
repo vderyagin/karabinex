@@ -51,7 +51,12 @@ try {
   const htmlSource = readFileSync(sourceHtmlPath, "utf8");
   const processed = await posthtml([
     posthtmlInline({ root: webDir }),
-    htmlnano({ collapseWhitespace: "all", minifyCss: false, minifyJs: false }),
+    htmlnano({
+      collapseWhitespace: "all",
+      minifyCss: false,
+      minifyJs: false,
+      minifySvg: false,
+    }),
   ]).process(htmlSource, { from: sourceHtmlPath });
 
   writeFileSync(outputHtmlPath, processed.html);
