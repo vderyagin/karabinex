@@ -28,3 +28,4 @@ karabinex-*.tar
 # generated configs
 /karabinex.json
 /rules.json
+/node_modules/
