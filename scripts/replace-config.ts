@@ -8,7 +8,7 @@ import { writeConfig } from "../src/writeConfig";
 const projectRoot = process.cwd();
 const rulesPath = join(projectRoot, "rules.json");
 const outputPath = join(projectRoot, "karabinex.json");
-const keyCodesPath = join(projectRoot, "priv", "simple_modifications.json");
+const keyCodesPath = join(projectRoot, "data", "simple_modifications.json");
 const assetPath = join(
   homedir(),
   ".config/karabiner/assets/complex_modifications/karabinex.json",

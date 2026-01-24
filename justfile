@@ -28,10 +28,10 @@ format-check:
 test:
     bun test
 
-skey_codes_url := "https://github.com/pqrs-org/Karabiner-Elements/raw/main/src/apps/SettingsWindow/Resources/simple_modifications.json"
+key_codes_url := "https://github.com/pqrs-org/Karabiner-Elements/raw/main/src/apps/SettingsWindow/Resources/simple_modifications.json"
 
 fetch-key-codes:
-    rm -f ./priv/simple_modifications.json
+    rm -f ./data/simple_modifications.json
     wget \
-      --directory-prefix=./priv/ \
+      --directory-prefix=./data/ \
       {{key_codes_url}}

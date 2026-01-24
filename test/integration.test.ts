@@ -24,7 +24,7 @@ type FixtureNode =
 
 const fixturesDir = join("test", "fixtures");
 const keyCodes = loadKeyCodesFromFile(
-  join("priv", "simple_modifications.json"),
+  join("data", "simple_modifications.json"),
 );
 
 function normalizeManipulator(manipulator: JsonMap): JsonMap {
