@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Karabinex Web</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #161616;
+        --accent: #2b5cff;
+        --accent-ink: #0c1d6b;
+        --canvas: #f6f2e9;
+        --paper: #fffaf2;
+        --border: #dfd7c8;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: radial-gradient(
+            1200px 600px at 20% -10%,
+            #ffe8c7 0%,
+            transparent 70%
+          ),
+          radial-gradient(
+            900px 500px at 90% 10%,
+            #c9ddff 0%,
+            transparent 65%
+          ),
+          var(--canvas);
+        color: var(--ink);
+        font-family: "Iowan Old Style", "Palatino", "Georgia", serif;
+      }
+
+      .page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 48px 24px 64px;
+        display: grid;
+        gap: 28px;
+      }
+
+      .hero {
+        display: grid;
+        gap: 12px;
+      }
+
+      .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.22em;
+        font-size: 12px;
+        color: #5f5a50;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(28px, 4vw, 44px);
+      }
+
+      .subtitle {
+        max-width: 720px;
+        font-size: clamp(16px, 2vw, 18px);
+        color: #3f3a32;
+      }
+
+      .panel {
+        background: var(--paper);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 20px;
+        display: grid;
+        gap: 18px;
+        box-shadow: 0 18px 45px rgba(35, 30, 15, 0.08);
+      }
+
+      .fields {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+
+      label {
+        font-weight: 600;
+        font-size: 15px;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 320px;
+        padding: 16px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: white;
+        font-family: "SFMono-Regular", "Menlo", "Consolas", monospace;
+        font-size: 13px;
+        line-height: 1.5;
+        resize: vertical;
+      }
+
+      textarea:focus {
+        outline: 2px solid #9bb4ff;
+        border-color: #9bb4ff;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        border: none;
+        border-radius: 999px;
+        padding: 10px 18px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      button.primary {
+        background: var(--accent);
+        color: white;
+        box-shadow: 0 10px 20px rgba(43, 92, 255, 0.2);
+      }
+
+      button.secondary {
+        background: #f0ece3;
+        color: var(--accent-ink);
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+      }
+
+      #status {
+        font-size: 14px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: #edf3ff;
+        color: #2444c2;
+      }
+
+      #status[data-state="error"] {
+        background: #ffefef;
+        color: #b21414;
+      }
+
+      @media (max-width: 720px) {
+        .page {
+          padding: 32px 18px 48px;
+        }
+
+        textarea {
+          min-height: 240px;
+        }
+
+        .controls {
+          flex-direction: column;
+          align-items: stretch;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <div class="eyebrow">Karabinex</div>
+        <h1>Rules to Karabiner Config</h1>
+        <div class="subtitle">
+          Paste your keymap rules on the left and generate a ready-to-import
+          complex modifications file on the right.
+        </div>
+      </header>
+
+      <section class="panel">
+        <div class="fields">
+          <div>
+            <label for="rules">Input rules.json</label>
+            <textarea id="rules">
+{
+  "Meh-x": {
+    "e": { "app": "Emacs" },
+    "t": { "app": "Terminal" }
+  }
+}
+            </textarea>
+          </div>
+          <div>
+            <label for="output">Output karabinex.json</label>
+            <textarea id="output" readonly></textarea>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="buttons">
+            <button class="primary" id="transform">Transform</button>
+            <button class="secondary" id="copy">Copy output</button>
+          </div>
+          <div id="status" data-state="ok">Ready.</div>
+        </div>
+      </section>
+    </main>
+    <!-- INLINE_SCRIPT -->
+  </body>
+</html>

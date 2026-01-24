@@ -1,5 +1,3 @@
-import { readFileSync } from "node:fs";
-
 export type KeyCodes = {
   regular: Set<string>;
   consumer: Set<string>;
@@ -37,9 +35,4 @@ export function parseKeyCodes(data: unknown): KeyCodes {
   }
 
   return { regular, consumer, pointer };
-}
-
-export function loadKeyCodesFromFile(path: string): KeyCodes {
-  const data = JSON.parse(readFileSync(path, "utf8"));
-  return parseKeyCodes(data);
 }

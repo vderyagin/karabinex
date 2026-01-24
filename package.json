@@ -7,6 +7,7 @@
     "generate-config": "bun run scripts/generate-config.ts",
     "lint-config": "bun run scripts/lint-config.ts",
     "replace-config": "bun run scripts/replace-config.ts",
+    "build-web": "bun run scripts/build-web.ts",
     "typecheck": "tsc --noEmit",
     "lint": "biome check ./src ./test",
     "lint-fix": "biome check --write ./src ./test",

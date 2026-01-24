@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { parseJsonConfig } from "./jsonConfig";
-import { loadKeyCodesFromFile } from "./keyCodes";
+import { loadKeyCodesFromFile } from "./keyCodesFile";
 import { toManipulators } from "./transform";
 
 export type WriteConfigOptions = {
