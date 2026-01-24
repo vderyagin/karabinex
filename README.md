@@ -1,16 +1,21 @@
 # Karabinex
 
-An Elixir DSL for generating [Karabiner-Elements](https://karabiner-elements.pqrs.org/) complex modifications configuration.
+A tool for generating [Karabiner-Elements](https://karabiner-elements.pqrs.org/) complex modifications configuration.
 
 ## Usage
 
 1. Clone the repository
-2. Run `mix deps.get` to install dependencies
-3. Edit `rules.json` with your keybinding configuration
-4. Run `just generate-config` to generate and lint `karabinex.json`
-5. Run `just replace-config` to copy to Karabiner's complex modifications directory
-6. Enable the rules in Karabiner-Elements preferences
-7. Subsequent changes will be applied immediately after running `just replace-config`
+2. Edit `rules.json` with your keybinding configuration
+3. Run `just generate-config` to generate and lint `karabinex.json`
+4. Run `just replace-config` to copy to Karabiner's complex modifications directory
+5. Enable the rules in Karabiner-Elements preferences
+6. Subsequent changes will be applied immediately after running `just replace-config`
+
+## Development
+
+- `just test` runs the test suite (unit + integration).
+- `just typecheck` runs TypeScript typechecking (no emit).
+- `just format` and `just format-check` use Biome.
 
 ## How It Works
 
