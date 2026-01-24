@@ -1,1 +1,33 @@
-{}
+{
+  "Meh-a": {
+    "f": { "app": "Finder" },
+    "n": { "app": "Notes" },
+    "b": { "app": "Books" },
+    "g": { "app": "Google Chrome" },
+    "r": {
+      "c": { "raycast": "extensions/raycast/raycast/confetti", "repeat": "key" },
+      "h": { "raycast": "extensions/raycast/clipboard/history" },
+      "n": {
+        "raycast": "extensions/raycast/notes/search-notes",
+        "repeat": "keymap"
+      }
+    },
+    "z x": { "sh": "open -a Preview" }
+  },
+  "H-s": {
+    "t": { "app": "Terminal" },
+    "s": { "app": "Slack" },
+    "q": { "quit": "Slack" },
+    "k": { "kill": "Slack" },
+    "m": { "app": "Music" },
+    "d": { "sh": "open -a Dictionary" }
+  },
+  "C-M-d": {
+    "c": { "sh": "date | pbcopy" },
+    "o": {
+      "g": { "sh": "open https://github.com" },
+      "n": { "app": "Notes" }
+    },
+    "r s": { "raycast": "extensions/raycast/raycast/quicklinks" }
+  }
+}
