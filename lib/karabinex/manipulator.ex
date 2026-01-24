@@ -19,7 +19,7 @@ defmodule Karabinex.Manipulator do
 
   @type modifier_capture :: {String.t(), boolean()}
 
-  @spec generate(Keymap.t() | Command.t()) :: [struct()] | struct()
+  @spec generate(Keymap.t() | Command.t()) :: [struct()]
   def generate(%Keymap{children: children, chord: chord} = keymap) do
     [
       EnableKeymap.new(keymap),
@@ -34,7 +34,7 @@ defmodule Karabinex.Manipulator do
     |> List.flatten()
   end
 
-  def generate(%Command{} = c), do: InvokeCommand.new(c)
+  def generate(%Command{} = c), do: [InvokeCommand.new(c)]
 
   @spec get_child_modifiers(Keymap.t()) :: [modifier_capture()]
   def get_child_modifiers(%Keymap{children: children}) do
