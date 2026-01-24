@@ -1,9 +1,9 @@
-default: build format-check test typecheck
+default: format-check test typecheck
 
 export PATH := "/Library/Application Support/org.pqrs/Karabiner-Elements/bin:" + env_var("PATH")
 
 generate-config: && lint-config
-    mix eval "Karabinex.write_config()"
+    bun run generate-config
 
 lint-config:
     karabiner_cli \
@@ -11,43 +11,24 @@ lint-config:
       karabinex.json
 
 replace-config: generate-config
-    cp -f \
-      karabinex.json \
-      ~/.config/karabiner/assets/complex_modifications/karabinex.json
-    mix eval "Karabinex.KarabinerConfig.update()"
-
-build: deps
-    mix compile --warnings-as-errors
-
-deps:
-    mix deps.get
-
-deps-outdated:
-    mix hex.outdated --all
-
-deps-update:
-    mix deps.update --all
+    bun run replace-config
 
 typecheck:
-    mix dialyzer
+    bun run typecheck
+
+typecheck:
+    bun run typecheck
 
 format:
-    mix format
+    bun run format
 
 format-check:
-    mix format --check-formatted
-
-repl:
-    iex -S mix
-
-clean:
-    mix clean
-    rm -rf ./deps/ ./_build/
+    bun run format-check
 
 test:
-    mix test
+    bun test
 
-key_codes_url := "https://github.com/pqrs-org/Karabiner-Elements/raw/main/src/apps/SettingsWindow/Resources/simple_modifications.json"
+skey_codes_url := "https://github.com/pqrs-org/Karabiner-Elements/raw/main/src/apps/SettingsWindow/Resources/simple_modifications.json"
 
 fetch-key-codes:
     rm -f ./priv/simple_modifications.json
