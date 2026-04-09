@@ -46,16 +46,17 @@ The `rules.json` file contains a map of keybindings:
 }
 ```
 
-### Modifier Aliases
+### Modifier and Key Aliases
 
-| Alias        | Modifier                                   |
-|--------------|-------------------------------------------|
-| `M-` or `⌥-` | Option                                     |
-| `C-` or `^-` | Control                                    |
-| `S-`         | Shift                                      |
-| `⌘-`         | Command                                    |
-| `Meh-`       | Option + Control + Shift                   |
-| `H-` or `✦-` | Hyper (Option + Control + Shift + Command) |
+| Syntax       | Meaning                                                      |
+|--------------|--------------------------------------------------------------|
+| `M-` or `⌥-` | Option                                                       |
+| `C-` or `^-` | Control                                                      |
+| `S-`         | Shift                                                        |
+| `⌘-`         | Command                                                      |
+| `Meh-`       | Option + Control + Shift                                     |
+| `H-` or `✦-` | Hyper (Option + Control + Shift + Command)                   |
+| `A`-`Z`      | Shorthand for `S-a`-`S-z`; invalid with `S-`, `Meh-`, or `H-` |
 
 ### Command Types
 

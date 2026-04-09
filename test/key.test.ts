@@ -29,6 +29,11 @@ describe("key", () => {
     expect(() => Key.parse("C-C-a", codes)).toThrow();
   });
 
+  test("rejects redundant shift when already implied", () => {
+    const codes = makeKeyCodes();
+    expect(() => Key.parse("Meh-S-a", codes)).toThrow();
+  });
+
   test("codeSpec selects key type", () => {
     const codes = makeKeyCodes({
       regular: ["a"],

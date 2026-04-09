@@ -33,4 +33,39 @@ describe("config", () => {
       throw new Error("expected keymap repeat child");
     }
   });
+
+  test("normalizes uppercase letters before parsing", () => {
+    const defs = parseJsonConfig(
+      JSON.stringify({
+        "C-C X": { sh: "echo hi" },
+      }),
+    );
+    const processed = preprocess(defs);
+    const entry = processed.entries.get("C-S-c");
+    const keymap = asKeymap(entry);
+    expect(keymap.entries.has("S-x")).toBe(true);
+  });
+
+  test("rejects duplicate keys created by normalization", () => {
+    const defs = parseJsonConfig(
+      JSON.stringify({
+        "C-C": { sh: "echo one" },
+        "C-S-c": { sh: "echo two" },
+      }),
+    );
+    expect(() => preprocess(defs)).toThrow(
+      "Key normalization creates duplicate keys: C-S-c",
+    );
+  });
+
+  test("rejects uppercase shorthand when shift is already implied", () => {
+    const defs = parseJsonConfig(
+      JSON.stringify({
+        "Meh-A": { sh: "echo hi" },
+      }),
+    );
+    expect(() => preprocess(defs)).toThrow(
+      "Uppercase key cannot be used when shift is already present: Meh-A",
+    );
+  });
 });
