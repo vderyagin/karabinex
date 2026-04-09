@@ -17,7 +17,8 @@ body {
   min-height: 100vh;
   background: var(--canvas);
   color: var(--ink);
-  font-family: -apple-system, "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-family:
+    -apple-system, "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 }
 
 .page {

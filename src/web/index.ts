@@ -1,24 +1,21 @@
+import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
+import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
+import { json } from "@codemirror/lang-json";
 import {
   bracketMatching,
+  defaultHighlightStyle,
   foldGutter,
   foldKeymap,
   syntaxHighlighting,
-  defaultHighlightStyle,
 } from "@codemirror/language";
-import { json } from "@codemirror/lang-json";
 import { EditorState } from "@codemirror/state";
 import {
-  EditorView,
   drawSelection,
+  EditorView,
   highlightActiveLine,
   highlightSpecialChars,
   keymap,
 } from "@codemirror/view";
-import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
-import {
-  closeBrackets,
-  closeBracketsKeymap,
-} from "@codemirror/autocomplete";
 import { buildConfigJson } from "./buildConfig";
 
 const initialInput = `{
