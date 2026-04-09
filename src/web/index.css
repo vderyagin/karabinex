@@ -3,9 +3,9 @@
   --ink: #161616;
   --accent: #2b5cff;
   --accent-ink: #0c1d6b;
-  --canvas: #f6f2e9;
-  --paper: #fffaf2;
-  --border: #dfd7c8;
+  --canvas: #f5f5f5;
+  --paper: #fff;
+  --border: #d0d0d0;
 }
 
 * {
@@ -15,25 +15,22 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(1200px 600px at 20% -10%, #ffe8c7 0%, transparent 70%),
-    radial-gradient(900px 500px at 90% 10%, #c9ddff 0%, transparent 65%),
-    var(--canvas);
+  background: var(--canvas);
   color: var(--ink);
-  font-family: "Iowan Old Style", "Palatino", "Georgia", serif;
+  font-family: -apple-system, "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 }
 
 .page {
-  max-width: 1100px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 48px 24px 64px;
+  padding: 24px 16px 48px;
   display: grid;
-  gap: 28px;
+  gap: 16px;
 }
 
 .hero {
   display: grid;
-  gap: 12px;
+  gap: 8px;
 }
 
 .hero-top {
@@ -45,21 +42,21 @@ body {
 
 .eyebrow {
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-size: 14px;
+  letter-spacing: 0.15em;
+  font-size: 13px;
   font-weight: 600;
-  color: #433f36;
+  color: #555;
 }
 
 .repo-link {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   width: fit-content;
   margin-left: auto;
   color: var(--accent-ink);
   text-decoration: none;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -75,53 +72,46 @@ body {
 
 h1 {
   margin: 0;
-  font-size: clamp(28px, 4vw, 44px);
+  font-size: clamp(24px, 4vw, 36px);
 }
 
 .subtitle {
   max-width: 720px;
-  font-size: clamp(16px, 2vw, 18px);
-  color: #3f3a32;
+  font-size: 15px;
+  color: #444;
 }
 
 .panel {
   background: var(--paper);
   border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 20px;
+  border-radius: 4px;
+  padding: 16px;
   display: grid;
-  gap: 18px;
-  box-shadow: 0 18px 45px rgba(35, 30, 15, 0.08);
+  gap: 16px;
 }
 
 .fields {
   display: grid;
-  gap: 18px;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
 }
 
-textarea {
-  width: 100%;
-  min-height: 320px;
-  padding: 16px;
-  border-radius: 14px;
+.editor {
+  border-radius: 3px;
   border: 1px solid var(--border);
   background: white;
-  font-family: "SFMono-Regular", "Menlo", "Consolas", monospace;
-  font-size: 13px;
-  line-height: 1.5;
-  resize: vertical;
+  overflow: hidden;
 }
 
-textarea:focus {
-  outline: 2px solid #9bb4ff;
-  border-color: #9bb4ff;
+.editor .cm-editor {
+  min-height: 320px;
+  max-height: 600px;
 }
 
 .note {
-  margin-top: 10px;
-  font-size: clamp(16px, 2vw, 18px);
-  color: #3f3a32;
+  margin-top: 8px;
+  font-size: 14px;
+  color: #444;
   line-height: 1.5;
 }
 
@@ -129,76 +119,71 @@ textarea:focus {
   margin: 0;
   padding-left: 18px;
   display: grid;
-  gap: 6px;
+  gap: 4px;
 }
 
 .mono {
   display: inline-block;
   margin: 0 2px;
-  padding: 1px 6px;
-  border-radius: 8px;
-  background: #f0ece3;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: #eee;
   font-family: "SFMono-Regular", "Menlo", "Consolas", monospace;
-  font-size: 0.92em;
+  font-size: 0.9em;
 }
 
 .note-block {
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
 .input-actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .output-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   margin-top: 6px;
 }
 
 button {
   border: none;
-  border-radius: 999px;
-  padding: 10px 18px;
-  font-size: 14px;
+  border-radius: 3px;
+  padding: 8px 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
 }
 
 button.primary {
   background: var(--accent);
   color: white;
-  box-shadow: 0 10px 20px rgba(43, 92, 255, 0.2);
 }
 
 button.secondary {
-  background: #f0ece3;
+  background: #e8e8e8;
   color: var(--accent-ink);
 }
 
 button:hover {
-  transform: translateY(-1px);
+  filter: brightness(0.92);
 }
 
 button:disabled {
   cursor: not-allowed;
-  opacity: 0.55;
-  transform: none;
-  box-shadow: none;
+  opacity: 0.5;
+  filter: none;
 }
 
 #status {
-  font-size: 14px;
-  padding: 8px 14px;
-  border-radius: 999px;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 3px;
   background: #edf3ff;
   color: #2444c2;
 }
@@ -210,10 +195,10 @@ button:disabled {
 
 @media (max-width: 720px) {
   .page {
-    padding: 32px 18px 48px;
+    padding: 16px 12px 32px;
   }
 
-  textarea {
+  .editor .cm-editor {
     min-height: 240px;
   }
 }

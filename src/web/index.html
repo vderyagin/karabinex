@@ -32,22 +32,14 @@
       <section class="panel">
         <div class="fields">
           <div>
-            <textarea
-              id="rules"
-              placeholder='{
-  "Meh-x": {
-    "e": { "app": "Emacs" },
-    "t": { "app": "Terminal" }
-  }
-}'
-            ></textarea>
+            <div id="rules" class="editor"></div>
             <div class="input-actions">
               <button class="primary" id="transform">Transform</button>
               <button class="secondary" id="format" type="button">Format input</button>
             </div>
           </div>
           <div>
-            <textarea id="output" readonly placeholder="Output appears here"></textarea>
+            <div id="output" class="editor"></div>
             <div class="output-actions">
               <button class="secondary" id="copy">Copy output</button>
               <div id="status" data-state="ok">Ready.</div>
