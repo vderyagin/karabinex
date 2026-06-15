@@ -8,7 +8,7 @@ Try it in browser: https://vderyagin.github.io/karabinex
 
 1. [Install Bun](https://bun.sh/docs/installation)
 2. Clone the repository
-3. Edit `rules.json` with your keybinding configuration
+3. Edit `rules.json` or create another JSON file with your keybinding configuration
 4. Run `bun run generate-config` to generate and lint `karabinex.json`
 5. Run `bun run replace-config` to copy to Karabiner's complex modifications directory
 6. Enable the rules in Karabiner-Elements preferences
@@ -33,7 +33,16 @@ If you press an unbound key mid-sequence, the keymap deactivates and nothing hap
 
 ## Configuration
 
-The `rules.json` file contains a map of keybindings:
+By default, Karabinex reads `rules.json`. You can also pass a different file:
+
+```sh
+bun run generate-config ./path/to/rules.work.json
+bun run replace-config ./path/to/rules.work.json
+just generate-config ./path/to/rules.work.json
+just replace-config ./path/to/rules.work.json
+```
+
+The rules file contains a map of keybindings:
 
 ```json
 {
