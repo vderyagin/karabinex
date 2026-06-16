@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
-  loadKeyCodesFromFile,
+  embeddedKeyCodes,
   parseJsonConfig,
   toManipulators,
 } from "../src/index";
@@ -23,9 +23,7 @@ type FixtureNode =
     };
 
 const fixturesDir = join("test", "fixtures");
-const keyCodes = loadKeyCodesFromFile(
-  join("data", "simple_modifications.json"),
-);
+const keyCodes = embeddedKeyCodes;
 
 function normalizeManipulator(manipulator: JsonMap): JsonMap {
   const normalized = normalizeTerm(manipulator) as JsonMap;

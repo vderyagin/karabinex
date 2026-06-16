@@ -10,7 +10,6 @@ const outputPath = join(projectRoot, "karabinex.json");
 writeConfig({
   rulesPath,
   outputPath,
-  keyCodesPath: join(projectRoot, "data", "simple_modifications.json"),
 });
 
 lintComplexModifications(outputPath);
