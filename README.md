@@ -6,13 +6,19 @@ Try it in browser: https://vderyagin.github.io/karabinex
 
 ## Usage
 
-1. [Install Bun](https://bun.sh/docs/installation)
-2. Clone the repository
-3. Edit `rules.json` or create another JSON file with your keybinding configuration
-4. Run `bun run generate-config` to generate and lint `karabinex.json`
-5. Run `bun run replace-config` to copy to Karabiner's complex modifications directory
-6. Enable the rules in Karabiner-Elements preferences
-7. Subsequent changes will be applied immediately after running `bun run replace-config`
+1. Have [Node.js](https://nodejs.org/) and [Karabiner-Elements](https://karabiner-elements.pqrs.org/) installed.
+2. Download the latest release:
+
+   ```sh
+   curl -L https://github.com/vderyagin/karabinex/releases/latest/download/karabinex.tar.gz | tar -xz
+   ```
+
+3. Move `karabinex` somewhere on your `PATH`, such as `/usr/local/bin` or `~/.local/bin`
+4. Create a JSON file with your keybinding configuration
+5. Run `karabinex --generate-config ./bindings.json` to generate and lint `karabinex.json`
+6. Run `karabinex --replace-config ./bindings.json` to copy to Karabiner's complex modifications directory
+7. Enable the rules in Karabiner-Elements preferences
+8. Subsequent changes will be applied immediately after running `karabinex --replace-config ./bindings.json`
 
 ## How It Works
 
@@ -33,16 +39,30 @@ If you press an unbound key mid-sequence, the keymap deactivates and nothing hap
 
 ## Configuration
 
-By default, Karabinex reads `rules.json`. You can also pass a different file:
+Pass your keybinding file path after the command:
 
 ```sh
-bun run generate-config ./path/to/rules.work.json
-bun run replace-config ./path/to/rules.work.json
-just generate-config ./path/to/rules.work.json
-just replace-config ./path/to/rules.work.json
+karabinex --generate-config ./bindings.json
+karabinex --replace-config ./bindings.json
 ```
 
-The rules file contains a map of keybindings:
+To lint an already generated config:
+
+```sh
+karabinex --lint-config ./path/to/karabinex.json
+```
+
+## Development
+
+For local development, install [Bun](https://bun.sh/docs/installation), clone the repository, and run:
+
+```sh
+bun install
+bun test
+bun run build-cli
+```
+
+For example, a keybinding file can contain a map like this:
 
 ```json
 {
