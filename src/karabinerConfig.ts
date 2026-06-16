@@ -15,6 +15,18 @@ export function updateKarabinerConfig(
   configPath = defaultKarabinerConfigPath,
 ): void {
   const rules = readRules(karabinexRulesPath);
+  updateKarabinerConfigRules(rules, configPath);
+}
+
+export function updateKarabinerConfigJson(
+  karabinexJson: string,
+  configPath = defaultKarabinerConfigPath,
+): void {
+  const rules = rulesFromJson(readJsonString(karabinexJson, "karabinex.json"));
+  updateKarabinerConfigRules(rules, configPath);
+}
+
+function updateKarabinerConfigRules(rules: Rule[], configPath: string): void {
   const config = readJson(configPath);
   const { updated, changed } = replaceRulesInConfig(config, rules);
 
@@ -26,7 +38,10 @@ export function updateKarabinerConfig(
 }
 
 function readRules(path: string): Rule[] {
-  const data = readJson(path);
+  return rulesFromJson(readJson(path));
+}
+
+function rulesFromJson(data: JsonMap): Rule[] {
   const rules = data.rules;
 
   if (Array.isArray(rules) && rules.length > 0) {
@@ -41,6 +56,14 @@ function readRules(path: string): Rule[] {
   }
 
   throw new Error("karabinex.json missing rules");
+}
+
+function readJsonString(json: string, source: string): JsonMap {
+  const data: unknown = JSON.parse(json);
+  if (!isJsonMap(data)) {
+    throw new Error(`Expected JSON object in ${source}`);
+  }
+  return data;
 }
 
 function readJson(path: string): JsonMap {

@@ -317,8 +317,7 @@ function disableVarName(manipulator: JsonMap): string | null {
   const to = manipulator.to;
 
   if (
-    !from ||
-    from.any !== "key_code" ||
+    from?.any !== "key_code" ||
     !Array.isArray(conditions) ||
     !Array.isArray(to)
   ) {

@@ -3,15 +3,18 @@ import { embeddedKeyCodes } from "./embeddedKeyCodes";
 import { parseJsonConfig } from "./jsonConfig";
 import { toManipulators } from "./transform";
 
-export type WriteConfigOptions = {
+export type BuildConfigOptions = {
   rulesPath: string;
-  outputPath: string;
   title?: string;
   description?: string;
 };
 
-export function writeConfig(options: WriteConfigOptions): void {
-  const { rulesPath, outputPath } = options;
+export type WriteConfigOptions = BuildConfigOptions & {
+  outputPath: string;
+};
+
+export function buildConfig(options: BuildConfigOptions): string {
+  const { rulesPath } = options;
   const title = options.title ?? "karabinex bindings";
   const description = options.description ?? "karabinex bindings";
 
@@ -29,5 +32,11 @@ export function writeConfig(options: WriteConfigOptions): void {
     ],
   };
 
-  writeFileSync(outputPath, `${JSON.stringify(config, null, 2)}\n`);
+  return `${JSON.stringify(config, null, 2)}\n`;
+}
+
+export function writeConfig(options: WriteConfigOptions): void {
+  const { outputPath } = options;
+
+  writeFileSync(outputPath, buildConfig(options));
 }

@@ -16,7 +16,7 @@ Try it in browser: https://vderyagin.github.io/karabinex
 3. Move `karabinex` somewhere on your `PATH`, such as `/usr/local/bin` or `~/.local/bin`
 4. Create a JSON file with your keybinding configuration
 5. Run `karabinex --generate-config ./bindings.json` to generate and lint `karabinex.json`
-6. Run `karabinex --replace-config ./bindings.json` to copy to Karabiner's complex modifications directory
+6. Run `karabinex --replace-config ./bindings.json` to lint and install the generated configuration
 7. Enable the rules in Karabiner-Elements preferences
 8. Subsequent changes will be applied immediately after running `karabinex --replace-config ./bindings.json`
 
@@ -43,8 +43,11 @@ Pass your keybinding file path after the command:
 
 ```sh
 karabinex --generate-config ./bindings.json
+karabinex --generate-config ./bindings.json ./custom-output.json
 karabinex --replace-config ./bindings.json
 ```
+
+`--generate-config` writes to `karabinex.json` in the current directory unless an output path is provided. `--replace-config` installs the generated configuration without writing `karabinex.json` in the current directory.
 
 To lint an already generated config:
 

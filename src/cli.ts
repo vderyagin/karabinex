@@ -1,32 +1,36 @@
 #!/usr/bin/env node
-import { copyFileSync, mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
-import { lintComplexModifications } from "./karabinerCli";
-import { updateKarabinerConfig } from "./karabinerConfig";
+import {
+  lintComplexModifications,
+  lintComplexModificationsJson,
+} from "./karabinerCli";
+import { updateKarabinerConfigJson } from "./karabinerConfig";
 import { resolvePathArg } from "./pathArg";
-import { writeConfig } from "./writeConfig";
+import { buildConfig, writeConfig } from "./writeConfig";
 
 type Command = "generate-config" | "lint-config" | "replace-config";
+
+type RunArgs = {
+  command: Command;
+  paths: string[];
+};
 
 type CliArgs =
   | {
       kind: "help";
     }
-  | {
-      kind: "run";
-      command: Command;
-      path?: string;
-    };
+  | ({ kind: "run" } & RunArgs);
 
 const usage = `Usage:
-  karabinex --generate-config <bindings.json>
+  karabinex --generate-config <bindings.json> [output.json]
   karabinex --lint-config <karabinex.json>
   karabinex --replace-config <bindings.json>`;
 
 function parseArgs(args: string[]): CliArgs {
   let command: Command | undefined;
-  let path: string | undefined;
+  const paths: string[] = [];
 
   for (const arg of args) {
     if (arg === "--help" || arg === "-h") {
@@ -40,22 +44,19 @@ function parseArgs(args: string[]): CliArgs {
       }
       command = parsed.command;
       if (parsed.path !== undefined) {
-        path = parsed.path;
+        paths.push(parsed.path);
       }
       continue;
     }
 
-    if (path !== undefined) {
-      throw new Error("Expected at most one path argument");
-    }
-    path = arg;
+    paths.push(arg);
   }
 
   if (command === undefined) {
     throw new Error(`Missing command option\n\n${usage}`);
   }
 
-  return { kind: "run", command, path };
+  return { kind: "run", command, paths };
 }
 
 function parseCommandArg(arg: string): { command: Command; path?: string } {
@@ -85,72 +86,65 @@ function run(args: CliArgs): void {
 
   switch (args.command) {
     case "generate-config":
-      generateConfig(projectRoot, args.path);
+      generateConfig(projectRoot, args.paths);
       return;
     case "lint-config":
-      lintConfig(projectRoot, args.path);
+      lintConfig(projectRoot, args.paths);
       return;
     case "replace-config":
-      replaceConfig(projectRoot, args.path);
+      replaceConfig(projectRoot, args.paths);
       return;
   }
 }
 
-function generateConfig(
-  projectRoot: string,
-  rulesPathArg: string | undefined,
-): void {
-  const rulesPath = resolvePathArg(
-    [requirePathArg(rulesPathArg, "--generate-config")],
+function generateConfig(projectRoot: string, paths: string[]): void {
+  assertPathCount(paths, "--generate-config", 1, 2);
+  const rulesPath = resolvePathArg([paths[0] ?? ""], projectRoot, "");
+  const outputPath = resolvePathArg(
+    paths.slice(1),
     projectRoot,
-    "",
+    "karabinex.json",
   );
-  const outputPath = join(projectRoot, "karabinex.json");
 
   writeConfig({ rulesPath, outputPath });
   lintComplexModifications(outputPath);
 }
 
-function lintConfig(
-  projectRoot: string,
-  configPathArg: string | undefined,
-): void {
-  const configPath = resolvePathArg(
-    [requirePathArg(configPathArg, "--lint-config")],
-    projectRoot,
-    "",
-  );
+function lintConfig(projectRoot: string, paths: string[]): void {
+  assertPathCount(paths, "--lint-config", 1, 1);
+  const configPath = resolvePathArg([paths[0] ?? ""], projectRoot, "");
 
   lintComplexModifications(configPath);
 }
 
-function replaceConfig(
-  projectRoot: string,
-  rulesPathArg: string | undefined,
-): void {
-  const rulesPath = resolvePathArg(
-    [requirePathArg(rulesPathArg, "--replace-config")],
-    projectRoot,
-    "",
-  );
-  const outputPath = join(projectRoot, "karabinex.json");
+function replaceConfig(projectRoot: string, paths: string[]): void {
+  assertPathCount(paths, "--replace-config", 1, 1);
+  const rulesPath = resolvePathArg([paths[0] ?? ""], projectRoot, "");
   const assetPath = join(
     homedir(),
     ".config/karabiner/assets/complex_modifications/karabinex.json",
   );
+  const configJson = buildConfig({ rulesPath });
 
-  writeConfig({ rulesPath, outputPath });
-  lintComplexModifications(outputPath);
+  lintComplexModificationsJson(configJson);
   mkdirSync(dirname(assetPath), { recursive: true });
-  copyFileSync(outputPath, assetPath);
-  updateKarabinerConfig(outputPath);
+  writeFileSync(assetPath, configJson);
+  updateKarabinerConfigJson(configJson);
 }
 
-function requirePathArg(path: string | undefined, command: string): string {
-  if (!path) {
+function assertPathCount(
+  paths: string[],
+  command: string,
+  min: number,
+  max: number,
+): void {
+  if (paths.length < min) {
     throw new Error(`Missing file path for ${command}\n\n${usage}`);
   }
-  return path;
+
+  if (paths.length > max) {
+    throw new Error(`Too many file paths for ${command}\n\n${usage}`);
+  }
 }
 
 try {

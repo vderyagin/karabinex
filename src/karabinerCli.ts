@@ -1,4 +1,7 @@
 import { spawnSync } from "node:child_process";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 export function lintComplexModifications(path: string): void {
   const karabinerBin =
@@ -23,5 +26,17 @@ export function lintComplexModifications(path: string): void {
 
   if (result.status !== 0) {
     throw new Error("karabiner_cli lint failed");
+  }
+}
+
+export function lintComplexModificationsJson(json: string): void {
+  const dir = mkdtempSync(join(tmpdir(), "karabinex-"));
+  const path = join(dir, "karabinex.json");
+
+  try {
+    writeFileSync(path, json);
+    lintComplexModifications(path);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
   }
 }
