@@ -32,6 +32,9 @@ test:
 build-web:
     bun run build-web
 
+build-cli:
+    bun run build-cli
+
 key_codes_url := "https://github.com/pqrs-org/Karabiner-Elements/raw/main/src/apps/SettingsWindow/Resources/simple_modifications.json"
 
 fetch-key-codes:

@@ -29,4 +29,5 @@ karabinex-*.tar
 /karabinex.json
 /rules.json
 /node_modules/
+/dist/
 /web/index.html

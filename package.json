@@ -21,6 +21,7 @@
     "generate-config": "bun run scripts/generate-config.ts",
     "lint-config": "bun run scripts/lint-config.ts",
     "replace-config": "bun run scripts/replace-config.ts",
+    "build-cli": "bun build src/cli.ts --target=node --format=esm --minify --outfile=dist/karabinex && chmod +x dist/karabinex",
     "build-web": "bun run scripts/build-web.ts",
     "typecheck": "tsc --noEmit",
     "lint": "biome check ./src ./test",
