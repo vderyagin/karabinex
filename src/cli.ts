@@ -20,9 +20,9 @@ type CliArgs =
     };
 
 const usage = `Usage:
-  karabinex --generate-config [rules.json]
-  karabinex --lint-config [karabinex.json]
-  karabinex --replace-config [rules.json]`;
+  karabinex --generate-config <bindings.json>
+  karabinex --lint-config <karabinex.json>
+  karabinex --replace-config <bindings.json>`;
 
 function parseArgs(args: string[]): CliArgs {
   let command: Command | undefined;
@@ -101,9 +101,9 @@ function generateConfig(
   rulesPathArg: string | undefined,
 ): void {
   const rulesPath = resolvePathArg(
-    pathArgList(rulesPathArg),
+    [requirePathArg(rulesPathArg, "--generate-config")],
     projectRoot,
-    "rules.json",
+    "",
   );
   const outputPath = join(projectRoot, "karabinex.json");
 
@@ -116,9 +116,9 @@ function lintConfig(
   configPathArg: string | undefined,
 ): void {
   const configPath = resolvePathArg(
-    pathArgList(configPathArg),
+    [requirePathArg(configPathArg, "--lint-config")],
     projectRoot,
-    "karabinex.json",
+    "",
   );
 
   lintComplexModifications(configPath);
@@ -129,9 +129,9 @@ function replaceConfig(
   rulesPathArg: string | undefined,
 ): void {
   const rulesPath = resolvePathArg(
-    pathArgList(rulesPathArg),
+    [requirePathArg(rulesPathArg, "--replace-config")],
     projectRoot,
-    "rules.json",
+    "",
   );
   const outputPath = join(projectRoot, "karabinex.json");
   const assetPath = join(
@@ -146,8 +146,11 @@ function replaceConfig(
   updateKarabinerConfig(outputPath);
 }
 
-function pathArgList(path: string | undefined): string[] {
-  return path === undefined ? [] : [path];
+function requirePathArg(path: string | undefined, command: string): string {
+  if (!path) {
+    throw new Error(`Missing file path for ${command}\n\n${usage}`);
+  }
+  return path;
 }
 
 try {
