@@ -35,7 +35,8 @@ Sequences can be arbitrarily deep. For example, `Meh-x r g` means:
 2. Press `r`, release
 3. Press `g` — action executes
 
-If you press an unbound key mid-sequence, the keymap deactivates and the key is sent normally.
+If you press an unbound key mid-sequence, the keymap deactivates and nothing happens.
+After a repeatable key runs, any non-repeat key deactivates the repeat keymap and is sent normally.
 
 ## Configuration
 

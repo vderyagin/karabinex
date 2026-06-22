@@ -3,7 +3,12 @@ import { parseDefinitions } from "./definitions";
 import type { KeymapDef } from "./jsonConfig";
 import type { KeyCodes } from "./keyCodes";
 import type { Manipulator } from "./manipulator";
-import { captureOtherChords, generate, toManipulator } from "./manipulator";
+import {
+  captureOtherChords,
+  captureTopLevelKeymaps,
+  generate,
+  toManipulator,
+} from "./manipulator";
 import { validate } from "./validator";
 
 export function toManipulators(
@@ -15,5 +20,6 @@ export function toManipulators(
   const parsed = parseDefinitions(processed, keyCodes);
   const generated = parsed.flatMap((item) => generate(item));
   const withChords = captureOtherChords(generated);
-  return withChords.map((item) => toManipulator(item));
+  const withTopLevelKeymaps = captureTopLevelKeymaps(withChords);
+  return withTopLevelKeymaps.map((item) => toManipulator(item));
 }

@@ -5,6 +5,7 @@ import { Key } from "../src/key";
 import { Keymap } from "../src/keymap";
 import {
   captureOtherChords,
+  captureTopLevelKeymaps,
   commandString,
   generate,
   toManipulator,
@@ -47,11 +48,27 @@ describe("manipulator", () => {
     ).toBe(true);
   });
 
-  test("keymap resets with from_event pass-through", () => {
+  test("regular keymap reset swallows unmatched keys", () => {
     const codes = makeKeyCodes();
     const prefix = Chord.empty().append(Key.parse("C-a", codes));
     const keymap = new Keymap(prefix, [
       new Command(prefix.append(Key.parse("b", codes)), "sh", "echo hi"),
+    ]);
+    const manipulators = generate(keymap).map((item) => toManipulator(item));
+    const reset = manipulators.find(
+      (manipulator) =>
+        (manipulator.from as { any?: string }).any === "key_code",
+    );
+
+    expect(reset?.from).toEqual({ any: "key_code" });
+    expect(reset?.to).not.toContainEqual({ from_event: true });
+  });
+
+  test("repeat keymap resets with from_event pass-through", () => {
+    const codes = makeKeyCodes();
+    const prefix = Chord.empty().append(Key.parse("C-a", codes));
+    const keymap = new Keymap(prefix, [
+      new Command(prefix.append(Key.parse("b", codes)), "sh", "echo hi", true),
     ]);
     const manipulators = generate(keymap).map((item) => toManipulator(item));
     const passThroughReset = manipulators.find((manipulator) =>
@@ -74,44 +91,54 @@ describe("manipulator", () => {
     expect(passThroughReset?.to).toContainEqual({ from_event: true });
   });
 
-  test("top-level keymap activation clears active keymaps", () => {
+  test("repeat keymap can switch to a top-level keymap before pass-through reset", () => {
     const codes = makeKeyCodes();
     const prefixA = Chord.empty().append(Key.parse("C-a", codes));
     const prefixB = Chord.empty().append(Key.parse("C-b", codes));
     const nested = prefixA.append(Key.parse("c", codes));
     const keymapA = new Keymap(prefixA, [
       new Keymap(nested, [
-        new Command(nested.append(Key.parse("x", codes)), "sh", "echo nested"),
+        new Command(
+          nested.append(Key.parse("c", codes)),
+          "sh",
+          "echo repeat",
+          true,
+        ),
       ]),
     ]);
     const keymapB = new Keymap(prefixB, [
       new Command(prefixB.append(Key.parse("y", codes)), "sh", "echo b"),
     ]);
-    const manipulators = captureOtherChords([
-      ...generate(keymapA),
-      ...generate(keymapB),
-    ]).map((item) => toManipulator(item));
-    const enableA = manipulators.find(
-      (manipulator) =>
-        (manipulator.from as { key_code?: string }).key_code === "a",
+    const generated = captureTopLevelKeymaps(
+      captureOtherChords([...generate(keymapA), ...generate(keymapB)]),
     );
+    const manipulators = generated.map((item) => toManipulator(item));
+    const switchToBIndex = manipulators.findIndex(
+      (manipulator) =>
+        (manipulator.from as { key_code?: string }).key_code === "b" &&
+        (manipulator.conditions ?? []).some(
+          (condition) => condition.name === "karabinex_control-a_c_map",
+        ),
+    );
+    const passThroughResetIndex = manipulators.findIndex((manipulator) =>
+      (manipulator.to ?? []).some(
+        (clause: Record<string, unknown>) =>
+          (clause as { from_event?: boolean }).from_event === true,
+      ),
+    );
+    const switchToB = manipulators[switchToBIndex];
 
-    expect(enableA?.conditions).toBeUndefined();
-    expect(enableA?.to).toContainEqual({
+    expect(switchToBIndex).toBeGreaterThan(-1);
+    expect(passThroughResetIndex).toBeGreaterThan(switchToBIndex);
+    expect(switchToB?.to).toContainEqual({
       set_variable: {
         name: "karabinex_control-a_c_map",
         type: "unset",
       },
     });
-    expect(enableA?.to).toContainEqual({
+    expect(switchToB?.to).toContainEqual({
       set_variable: {
         name: "karabinex_control-b_map",
-        type: "unset",
-      },
-    });
-    expect(enableA?.to).toContainEqual({
-      set_variable: {
-        name: "karabinex_control-a_map",
         value: 1,
       },
     });

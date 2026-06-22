@@ -72,10 +72,6 @@ function unsetVariable(m: Manipulator, name: string): Manipulator {
   return appendToClause(m, "to", { set_variable: { name, type: "unset" } });
 }
 
-function unsetVariables(m: Manipulator, names: string[]): Manipulator {
-  return names.reduce((next, name) => unsetVariable(next, name), m);
-}
-
 function passThroughFromEvent(m: Manipulator): Manipulator {
   return appendToClause(m, "to", { from_event: true });
 }
@@ -144,6 +140,16 @@ export class DisableKeymap {
   }
 }
 
+export class SwitchToKeymap {
+  readonly source: Keymap;
+  readonly target: Keymap;
+
+  constructor(source: Keymap, target: Keymap) {
+    this.source = source;
+    this.target = target;
+  }
+}
+
 export class CaptureModifier {
   readonly modifier: string;
   readonly chord: Chord;
@@ -167,6 +173,7 @@ export class InvokeCommand {
 export type GeneratedManipulator =
   | EnableKeymap
   | DisableKeymap
+  | SwitchToKeymap
   | CaptureModifier
   | InvokeCommand;
 
@@ -223,6 +230,12 @@ function repeatableChildModifiers(
   return [];
 }
 
+function isRepeatKeymap(keymap: Keymap): boolean {
+  return keymap.children.some(
+    (child) => child instanceof Command && child.repeat,
+  );
+}
+
 export function commandString(kind: CommandKind, arg: string): string {
   switch (kind) {
     case "app":
@@ -245,6 +258,9 @@ export function toManipulator(item: GeneratedManipulator): Manipulator {
   if (item instanceof DisableKeymap) {
     return disableKeymapManipulator(item);
   }
+  if (item instanceof SwitchToKeymap) {
+    return switchToKeymapManipulator(item);
+  }
   if (item instanceof CaptureModifier) {
     return captureModifierManipulator(item);
   }
@@ -255,14 +271,6 @@ function enableKeymapManipulator(item: EnableKeymap): Manipulator {
   const chord = item.keymap.chord;
   const otherVars = item.otherChords.map((chordItem) => chordItem.varName());
   let m = manipulate(chord.last());
-
-  if (chord.isSingleton()) {
-    const varName = chord.varName();
-    const resetVars = otherVars.filter((name) => name !== varName);
-    m = unsetVariables(m, resetVars);
-    return setVariable(m, varName);
-  }
-
   m = unlessVariables(m, otherVars);
 
   if (item.keymap.hook) {
@@ -275,6 +283,10 @@ function enableKeymapManipulator(item: EnableKeymap): Manipulator {
     );
   }
 
+  if (chord.isSingleton()) {
+    return setVariable(m, chord.varName());
+  }
+
   m = ifVariable(m, chord.prefixVarName());
   m = unsetVariable(m, chord.prefixVarName());
   return setVariable(m, chord.varName());
@@ -282,10 +294,27 @@ function enableKeymapManipulator(item: EnableKeymap): Manipulator {
 
 function disableKeymapManipulator(item: DisableKeymap): Manipulator {
   const varName = item.keymap.chord.varName();
-  let m = manipulate({ any: "key_code", modifiers: { optional: ["any"] } });
+  let m: Manipulator;
+  if (isRepeatKeymap(item.keymap)) {
+    m = manipulate({ any: "key_code", modifiers: { optional: ["any"] } });
+  } else {
+    m = manipulate("any");
+  }
   m = ifVariable(m, varName);
   m = unsetVariable(m, varName);
-  return passThroughFromEvent(m);
+  if (isRepeatKeymap(item.keymap)) {
+    return passThroughFromEvent(m);
+  }
+  return m;
+}
+
+function switchToKeymapManipulator(item: SwitchToKeymap): Manipulator {
+  const sourceVarName = item.source.chord.varName();
+  const targetVarName = item.target.chord.varName();
+  let m = manipulate(item.target.chord.last());
+  m = ifVariable(m, sourceVarName);
+  m = unsetVariable(m, sourceVarName);
+  return setVariable(m, targetVarName);
 }
 
 function captureModifierManipulator(item: CaptureModifier): Manipulator {
@@ -329,6 +358,25 @@ export function captureOtherChords(
   }
 
   return items;
+}
+
+export function captureTopLevelKeymaps(
+  items: GeneratedManipulator[],
+): GeneratedManipulator[] {
+  const keymaps = items
+    .filter(isEnableKeymap)
+    .map((item) => item.keymap)
+    .filter((keymap) => keymap.chord.isSingleton());
+
+  return items.flatMap((item) => {
+    if (item instanceof DisableKeymap && isRepeatKeymap(item.keymap)) {
+      const switches = keymaps.map(
+        (keymap) => new SwitchToKeymap(item.keymap, keymap),
+      );
+      return [...switches, item];
+    }
+    return [item];
+  });
 }
 
 function isEnableKeymap(item: GeneratedManipulator): item is EnableKeymap {

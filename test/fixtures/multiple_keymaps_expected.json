@@ -7,13 +7,19 @@
         "mandatory": ["option"]
       }
     },
-    "to": [
+    "conditions": [
       {
-        "set_variable": {
-          "name": "karabinex_option-d_map",
-          "type": "unset"
-        }
+        "type": "variable_if",
+        "name": "karabinex_option-a_map",
+        "value": 0
       },
+      {
+        "type": "variable_if",
+        "name": "karabinex_option-d_map",
+        "value": 0
+      }
+    ],
+    "to": [
       {
         "set_variable": {
           "name": "karabinex_option-a_map",
@@ -49,10 +55,7 @@
   {
     "type": "basic",
     "from": {
-      "any": "key_code",
-      "modifiers": {
-        "optional": ["any"]
-      }
+      "any": "key_code"
     },
     "conditions": [
       {
@@ -67,9 +70,6 @@
           "name": "karabinex_option-a_map",
           "type": "unset"
         }
-      },
-      {
-        "from_event": true
       }
     ]
   },
@@ -81,13 +81,19 @@
         "mandatory": ["option"]
       }
     },
-    "to": [
+    "conditions": [
       {
-        "set_variable": {
-          "name": "karabinex_option-a_map",
-          "type": "unset"
-        }
+        "type": "variable_if",
+        "name": "karabinex_option-a_map",
+        "value": 0
       },
+      {
+        "type": "variable_if",
+        "name": "karabinex_option-d_map",
+        "value": 0
+      }
+    ],
+    "to": [
       {
         "set_variable": {
           "name": "karabinex_option-d_map",
@@ -123,10 +129,7 @@
   {
     "type": "basic",
     "from": {
-      "any": "key_code",
-      "modifiers": {
-        "optional": ["any"]
-      }
+      "any": "key_code"
     },
     "conditions": [
       {
@@ -141,9 +144,6 @@
           "name": "karabinex_option-d_map",
           "type": "unset"
         }
-      },
-      {
-        "from_event": true
       }
     ]
   }
