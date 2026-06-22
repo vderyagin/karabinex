@@ -1,6 +1,19 @@
 [
   {
     "type": "basic",
+    "from": {
+      "key_code": "a",
+      "modifiers": {
+        "mandatory": ["option"]
+      }
+    },
+    "conditions": [
+      {
+        "type": "variable_if",
+        "name": "karabinex_option-a_map",
+        "value": 0
+      }
+    ],
     "to": [
       {
         "set_variable": {
@@ -8,50 +21,20 @@
           "value": 1
         }
       }
-    ],
-    "from": {
-      "modifiers": {
-        "mandatory": ["option"]
-      },
-      "key_code": "a"
-    },
-    "conditions": [
-      {
-        "name": "karabinex_option-a_map",
-        "type": "variable_if",
-        "value": 0
-      }
     ]
   },
   {
     "type": "basic",
-    "to": [
-      {
-        "set_variable": {
-          "name": "karabinex_option-a_map",
-          "type": "unset"
-        }
-      },
-      {
-        "shell_command": "echo hi"
-      }
-    ],
     "from": {
-      "modifiers": {
-        "mandatory": ["control"]
-      },
-      "key_code": "c"
+      "key_code": "b"
     },
     "conditions": [
       {
-        "name": "karabinex_option-a_map",
         "type": "variable_if",
+        "name": "karabinex_option-a_map",
         "value": 1
       }
-    ]
-  },
-  {
-    "type": "basic",
+    ],
     "to": [
       {
         "set_variable": {
@@ -62,32 +45,49 @@
       {
         "shell_command": "open -a 'Safari'"
       }
-    ],
+    ]
+  },
+  {
+    "type": "basic",
     "from": {
-      "key_code": "b"
+      "key_code": "c",
+      "modifiers": {
+        "mandatory": ["control"]
+      }
     },
     "conditions": [
       {
-        "name": "karabinex_option-a_map",
         "type": "variable_if",
+        "name": "karabinex_option-a_map",
         "value": 1
+      }
+    ],
+    "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "type": "unset"
+        }
+      },
+      {
+        "shell_command": "echo hi"
       }
     ]
   },
   {
     "type": "basic",
+    "from": {
+      "key_code": "left_control"
+    },
     "to": [
       {
         "key_code": "left_control"
       }
     ],
-    "from": {
-      "key_code": "left_control"
-    },
     "conditions": [
       {
-        "name": "karabinex_option-a_map",
         "type": "variable_if",
+        "name": "karabinex_option-a_map",
         "value": 1
       }
     ],
@@ -102,18 +102,18 @@
   },
   {
     "type": "basic",
+    "from": {
+      "key_code": "right_control"
+    },
     "to": [
       {
         "key_code": "right_control"
       }
     ],
-    "from": {
-      "key_code": "right_control"
-    },
     "conditions": [
       {
-        "name": "karabinex_option-a_map",
         "type": "variable_if",
+        "name": "karabinex_option-a_map",
         "value": 1
       }
     ],
@@ -128,22 +128,28 @@
   },
   {
     "type": "basic",
+    "from": {
+      "any": "key_code",
+      "modifiers": {
+        "optional": ["any"]
+      }
+    },
+    "conditions": [
+      {
+        "type": "variable_if",
+        "name": "karabinex_option-a_map",
+        "value": 1
+      }
+    ],
     "to": [
       {
         "set_variable": {
           "name": "karabinex_option-a_map",
           "type": "unset"
         }
-      }
-    ],
-    "from": {
-      "any": "key_code"
-    },
-    "conditions": [
+      },
       {
-        "name": "karabinex_option-a_map",
-        "type": "variable_if",
-        "value": 1
+        "from_event": true
       }
     ]
   }

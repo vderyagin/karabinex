@@ -12,11 +12,13 @@ export type Manipulator = {
   conditions?: Condition[];
 };
 
-type ModifierSpec = { mandatory: Modifier[] };
+type OptionalModifier = Modifier | "any";
+
+type ModifierSpec = { mandatory?: Modifier[]; optional?: OptionalModifier[] };
 
 type FromClause =
   | (KeyCodeSpec & { modifiers?: ModifierSpec })
-  | { any: "key_code" };
+  | { any: "key_code"; modifiers?: ModifierSpec };
 
 type SetVariableClause =
   | { set_variable: { name: string; value: number } }
@@ -25,11 +27,12 @@ type SetVariableClause =
 type ToClause =
   | { key_code: string }
   | { shell_command: string }
-  | SetVariableClause;
+  | SetVariableClause
+  | { from_event: true };
 
 type Condition = { type: "variable_if"; name: string; value: number };
 
-type FromSpec = Key | "any" | KeyCodeSpec;
+type FromSpec = Key | "any" | FromClause;
 
 function manipulate(fromSpec: FromSpec): Manipulator {
   return { type: "basic", from: buildFromClause(fromSpec) };
@@ -67,6 +70,10 @@ function setVariable(m: Manipulator, name: string, value = 1): Manipulator {
 
 function unsetVariable(m: Manipulator, name: string): Manipulator {
   return appendToClause(m, "to", { set_variable: { name, type: "unset" } });
+}
+
+function passThroughFromEvent(m: Manipulator): Manipulator {
+  return appendToClause(m, "to", { from_event: true });
 }
 
 function unsetVariableAfterKeyUp(m: Manipulator, name: string): Manipulator {
@@ -267,9 +274,10 @@ function enableKeymapManipulator(item: EnableKeymap): Manipulator {
 
 function disableKeymapManipulator(item: DisableKeymap): Manipulator {
   const varName = item.keymap.chord.varName();
-  let m = manipulate("any");
+  let m = manipulate({ any: "key_code", modifiers: { optional: ["any"] } });
   m = ifVariable(m, varName);
-  return unsetVariable(m, varName);
+  m = unsetVariable(m, varName);
+  return passThroughFromEvent(m);
 }
 
 function captureModifierManipulator(item: CaptureModifier): Manipulator {

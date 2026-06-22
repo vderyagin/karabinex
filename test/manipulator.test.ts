@@ -47,6 +47,33 @@ describe("manipulator", () => {
     ).toBe(true);
   });
 
+  test("keymap resets with from_event pass-through", () => {
+    const codes = makeKeyCodes();
+    const prefix = Chord.empty().append(Key.parse("C-a", codes));
+    const keymap = new Keymap(prefix, [
+      new Command(prefix.append(Key.parse("b", codes)), "sh", "echo hi"),
+    ]);
+    const manipulators = generate(keymap).map((item) => toManipulator(item));
+    const passThroughReset = manipulators.find((manipulator) =>
+      (manipulator.to ?? []).some(
+        (clause: Record<string, unknown>) =>
+          (clause as { from_event?: boolean }).from_event === true,
+      ),
+    );
+
+    expect(passThroughReset?.from).toEqual({
+      any: "key_code",
+      modifiers: { optional: ["any"] },
+    });
+    expect(passThroughReset?.to).toContainEqual({
+      set_variable: {
+        name: "karabinex_control-a_map",
+        type: "unset",
+      },
+    });
+    expect(passThroughReset?.to).toContainEqual({ from_event: true });
+  });
+
   test("captureOtherChords registers other keymaps", () => {
     const codes = makeKeyCodes();
     const keymapA = new Keymap(Chord.empty().append(Key.parse("C-a", codes)), [

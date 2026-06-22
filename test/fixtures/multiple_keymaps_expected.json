@@ -1,6 +1,24 @@
 [
   {
     "type": "basic",
+    "from": {
+      "key_code": "a",
+      "modifiers": {
+        "mandatory": ["option"]
+      }
+    },
+    "conditions": [
+      {
+        "type": "variable_if",
+        "name": "karabinex_option-a_map",
+        "value": 0
+      },
+      {
+        "type": "variable_if",
+        "name": "karabinex_option-d_map",
+        "value": 0
+      }
+    ],
     "to": [
       {
         "set_variable": {
@@ -8,28 +26,20 @@
           "value": 1
         }
       }
-    ],
-    "from": {
-      "modifiers": {
-        "mandatory": ["option"]
-      },
-      "key_code": "a"
-    },
-    "conditions": [
-      {
-        "name": "karabinex_option-a_map",
-        "type": "variable_if",
-        "value": 0
-      },
-      {
-        "name": "karabinex_option-d_map",
-        "type": "variable_if",
-        "value": 0
-      }
     ]
   },
   {
     "type": "basic",
+    "from": {
+      "key_code": "b"
+    },
+    "conditions": [
+      {
+        "type": "variable_if",
+        "name": "karabinex_option-a_map",
+        "value": 1
+      }
+    ],
     "to": [
       {
         "set_variable": {
@@ -40,41 +50,55 @@
       {
         "shell_command": "open -a 'Safari'"
       }
-    ],
-    "from": {
-      "key_code": "b"
-    },
-    "conditions": [
-      {
-        "name": "karabinex_option-a_map",
-        "type": "variable_if",
-        "value": 1
-      }
     ]
   },
   {
     "type": "basic",
+    "from": {
+      "any": "key_code",
+      "modifiers": {
+        "optional": ["any"]
+      }
+    },
+    "conditions": [
+      {
+        "type": "variable_if",
+        "name": "karabinex_option-a_map",
+        "value": 1
+      }
+    ],
     "to": [
       {
         "set_variable": {
           "name": "karabinex_option-a_map",
           "type": "unset"
         }
-      }
-    ],
-    "from": {
-      "any": "key_code"
-    },
-    "conditions": [
+      },
       {
-        "name": "karabinex_option-a_map",
-        "type": "variable_if",
-        "value": 1
+        "from_event": true
       }
     ]
   },
   {
     "type": "basic",
+    "from": {
+      "key_code": "d",
+      "modifiers": {
+        "mandatory": ["option"]
+      }
+    },
+    "conditions": [
+      {
+        "type": "variable_if",
+        "name": "karabinex_option-a_map",
+        "value": 0
+      },
+      {
+        "type": "variable_if",
+        "name": "karabinex_option-d_map",
+        "value": 0
+      }
+    ],
     "to": [
       {
         "set_variable": {
@@ -82,28 +106,20 @@
           "value": 1
         }
       }
-    ],
-    "from": {
-      "modifiers": {
-        "mandatory": ["option"]
-      },
-      "key_code": "d"
-    },
-    "conditions": [
-      {
-        "name": "karabinex_option-a_map",
-        "type": "variable_if",
-        "value": 0
-      },
-      {
-        "name": "karabinex_option-d_map",
-        "type": "variable_if",
-        "value": 0
-      }
     ]
   },
   {
     "type": "basic",
+    "from": {
+      "key_code": "e"
+    },
+    "conditions": [
+      {
+        "type": "variable_if",
+        "name": "karabinex_option-d_map",
+        "value": 1
+      }
+    ],
     "to": [
       {
         "set_variable": {
@@ -114,36 +130,32 @@
       {
         "shell_command": "osascript -e 'quit app \"Notes\"'"
       }
-    ],
-    "from": {
-      "key_code": "e"
-    },
-    "conditions": [
-      {
-        "name": "karabinex_option-d_map",
-        "type": "variable_if",
-        "value": 1
-      }
     ]
   },
   {
     "type": "basic",
+    "from": {
+      "any": "key_code",
+      "modifiers": {
+        "optional": ["any"]
+      }
+    },
+    "conditions": [
+      {
+        "type": "variable_if",
+        "name": "karabinex_option-d_map",
+        "value": 1
+      }
+    ],
     "to": [
       {
         "set_variable": {
           "name": "karabinex_option-d_map",
           "type": "unset"
         }
-      }
-    ],
-    "from": {
-      "any": "key_code"
-    },
-    "conditions": [
+      },
       {
-        "name": "karabinex_option-d_map",
-        "type": "variable_if",
-        "value": 1
+        "from_event": true
       }
     ]
   }

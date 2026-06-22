@@ -1,16 +1,16 @@
 [
   {
     "type": "basic",
+    "from": {
+      "key_code": "a",
+      "modifiers": {
+        "mandatory": ["option"]
+      }
+    },
     "to": [
       {
         "shell_command": "open -a 'Safari'"
       }
-    ],
-    "from": {
-      "modifiers": {
-        "mandatory": ["option"]
-      },
-      "key_code": "a"
-    }
+    ]
   }
 ]
