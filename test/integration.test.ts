@@ -239,6 +239,19 @@ function parseChildrenAndCaptures(
     return [childrenAcc, remaining, captures];
   }
 
+  if (switchSourceVarName(current) === varName) {
+    const childNode: FixtureNode = {
+      type: "command",
+      manipulator: normalizeManipulator(current),
+    };
+    return parseChildrenAndCaptures(
+      rest,
+      varName,
+      [...childrenAcc, childNode],
+      capturesAcc,
+    );
+  }
+
   const childVarName = enableVarName(current);
   if (childVarName) {
     const [childNode, remaining] = parseKeymap(current, rest, childVarName);
@@ -284,7 +297,10 @@ function parseCaptures(
     ]);
   }
 
-  if (disableVarName(current) === varName) {
+  if (
+    disableVarName(current) === varName ||
+    switchSourceVarName(current) === varName
+  ) {
     return [acc, manipulators];
   }
 
@@ -344,6 +360,46 @@ function disableVarName(manipulator: JsonMap): string | null {
   });
 
   return unset ? name : null;
+}
+
+function switchSourceVarName(manipulator: JsonMap): string | null {
+  const conditions = manipulator.conditions;
+  const to = manipulator.to;
+
+  if (!Array.isArray(conditions) || !Array.isArray(to)) {
+    return null;
+  }
+
+  const sourceNames = conditions
+    .filter((condition) => variableIfValue(condition, 1))
+    .map((condition) => (condition as JsonMap).name)
+    .filter((name): name is string => typeof name === "string");
+  if (sourceNames.length !== 1) {
+    return null;
+  }
+
+  const source = sourceNames[0];
+  if (!source) {
+    return null;
+  }
+
+  const target = to
+    .map((clause) => (clause as JsonMap).set_variable as JsonMap | undefined)
+    .find((setVar) => typeof setVar?.value === "number")?.name;
+  if (typeof target !== "string") {
+    return null;
+  }
+
+  const unsetsSource = to.some((clause) => {
+    const setVar = (clause as JsonMap).set_variable as JsonMap | undefined;
+    return setVar?.name === source && setVar.type === "unset";
+  });
+  if (!unsetsSource) {
+    return null;
+  }
+
+  const childPrefix = source.replace(/_map$/, "_");
+  return target.startsWith(childPrefix) ? null : source;
 }
 
 function captureVarName(manipulator: JsonMap): string | null {
