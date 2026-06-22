@@ -7,19 +7,13 @@
         "mandatory": ["option"]
       }
     },
-    "conditions": [
-      {
-        "type": "variable_if",
-        "name": "karabinex_option-a_map",
-        "value": 0
-      },
-      {
-        "type": "variable_if",
-        "name": "karabinex_option-a_b_map",
-        "value": 0
-      }
-    ],
     "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_b_map",
+          "type": "unset"
+        }
+      },
       {
         "set_variable": {
           "name": "karabinex_option-a_map",

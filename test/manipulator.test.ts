@@ -74,6 +74,49 @@ describe("manipulator", () => {
     expect(passThroughReset?.to).toContainEqual({ from_event: true });
   });
 
+  test("top-level keymap activation clears active keymaps", () => {
+    const codes = makeKeyCodes();
+    const prefixA = Chord.empty().append(Key.parse("C-a", codes));
+    const prefixB = Chord.empty().append(Key.parse("C-b", codes));
+    const nested = prefixA.append(Key.parse("c", codes));
+    const keymapA = new Keymap(prefixA, [
+      new Keymap(nested, [
+        new Command(nested.append(Key.parse("x", codes)), "sh", "echo nested"),
+      ]),
+    ]);
+    const keymapB = new Keymap(prefixB, [
+      new Command(prefixB.append(Key.parse("y", codes)), "sh", "echo b"),
+    ]);
+    const manipulators = captureOtherChords([
+      ...generate(keymapA),
+      ...generate(keymapB),
+    ]).map((item) => toManipulator(item));
+    const enableA = manipulators.find(
+      (manipulator) =>
+        (manipulator.from as { key_code?: string }).key_code === "a",
+    );
+
+    expect(enableA?.conditions).toBeUndefined();
+    expect(enableA?.to).toContainEqual({
+      set_variable: {
+        name: "karabinex_control-a_c_map",
+        type: "unset",
+      },
+    });
+    expect(enableA?.to).toContainEqual({
+      set_variable: {
+        name: "karabinex_control-b_map",
+        type: "unset",
+      },
+    });
+    expect(enableA?.to).toContainEqual({
+      set_variable: {
+        name: "karabinex_control-a_map",
+        value: 1,
+      },
+    });
+  });
+
   test("captureOtherChords registers other keymaps", () => {
     const codes = makeKeyCodes();
     const keymapA = new Keymap(Chord.empty().append(Key.parse("C-a", codes)), [

@@ -7,49 +7,49 @@
         "mandatory": ["option"]
       }
     },
-    "conditions": [
-      {
-        "type": "variable_if",
-        "name": "karabinex_option-a_map",
-        "value": 0
-      },
-      {
-        "type": "variable_if",
-        "name": "karabinex_option-a_d_map",
-        "value": 0
-      },
-      {
-        "type": "variable_if",
-        "name": "karabinex_option-a_g_map",
-        "value": 0
-      },
-      {
-        "type": "variable_if",
-        "name": "karabinex_option-a_g_h_map",
-        "value": 0
-      },
-      {
-        "type": "variable_if",
-        "name": "karabinex_option-a_j_map",
-        "value": 0
-      },
-      {
-        "type": "variable_if",
-        "name": "karabinex_option-a_j_k_map",
-        "value": 0
-      },
-      {
-        "type": "variable_if",
-        "name": "karabinex_control-shift-x_map",
-        "value": 0
-      },
-      {
-        "type": "variable_if",
-        "name": "karabinex_control-shift-x_w_map",
-        "value": 0
-      }
-    ],
     "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_d_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_g_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_g_h_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_j_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_j_k_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_control-shift-x_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_control-shift-x_w_map",
+          "type": "unset"
+        }
+      },
       {
         "set_variable": {
           "name": "karabinex_option-a_map",
@@ -807,49 +807,49 @@
         "mandatory": ["control", "shift"]
       }
     },
-    "conditions": [
-      {
-        "type": "variable_if",
-        "name": "karabinex_option-a_map",
-        "value": 0
-      },
-      {
-        "type": "variable_if",
-        "name": "karabinex_option-a_d_map",
-        "value": 0
-      },
-      {
-        "type": "variable_if",
-        "name": "karabinex_option-a_g_map",
-        "value": 0
-      },
-      {
-        "type": "variable_if",
-        "name": "karabinex_option-a_g_h_map",
-        "value": 0
-      },
-      {
-        "type": "variable_if",
-        "name": "karabinex_option-a_j_map",
-        "value": 0
-      },
-      {
-        "type": "variable_if",
-        "name": "karabinex_option-a_j_k_map",
-        "value": 0
-      },
-      {
-        "type": "variable_if",
-        "name": "karabinex_control-shift-x_map",
-        "value": 0
-      },
-      {
-        "type": "variable_if",
-        "name": "karabinex_control-shift-x_w_map",
-        "value": 0
-      }
-    ],
     "to": [
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_d_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_g_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_g_h_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_j_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_option-a_j_k_map",
+          "type": "unset"
+        }
+      },
+      {
+        "set_variable": {
+          "name": "karabinex_control-shift-x_w_map",
+          "type": "unset"
+        }
+      },
       {
         "set_variable": {
           "name": "karabinex_control-shift-x_map",

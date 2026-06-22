@@ -72,6 +72,10 @@ function unsetVariable(m: Manipulator, name: string): Manipulator {
   return appendToClause(m, "to", { set_variable: { name, type: "unset" } });
 }
 
+function unsetVariables(m: Manipulator, names: string[]): Manipulator {
+  return names.reduce((next, name) => unsetVariable(next, name), m);
+}
+
 function passThroughFromEvent(m: Manipulator): Manipulator {
   return appendToClause(m, "to", { from_event: true });
 }
@@ -251,6 +255,14 @@ function enableKeymapManipulator(item: EnableKeymap): Manipulator {
   const chord = item.keymap.chord;
   const otherVars = item.otherChords.map((chordItem) => chordItem.varName());
   let m = manipulate(chord.last());
+
+  if (chord.isSingleton()) {
+    const varName = chord.varName();
+    const resetVars = otherVars.filter((name) => name !== varName);
+    m = unsetVariables(m, resetVars);
+    return setVariable(m, varName);
+  }
+
   m = unlessVariables(m, otherVars);
 
   if (item.keymap.hook) {
@@ -261,10 +273,6 @@ function enableKeymapManipulator(item: EnableKeymap): Manipulator {
       m,
       commandString(item.keymap.hook.kind, item.keymap.hook.arg),
     );
-  }
-
-  if (chord.isSingleton()) {
-    return setVariable(m, chord.varName());
   }
 
   m = ifVariable(m, chord.prefixVarName());
