@@ -1,11 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import {
-  embeddedKeyCodes,
-  parseJsonConfig,
-  toManipulators,
-} from "../src/index";
+import { parseJsonConfig, toManipulators } from "../src/index";
+import { makeKeyCodes } from "./testUtils";
 
 type JsonMap = Record<string, unknown>;
 
@@ -23,7 +20,32 @@ type FixtureNode =
     };
 
 const fixturesDir = join("test", "fixtures");
-const keyCodes = embeddedKeyCodes;
+const keyCodes = makeKeyCodes({
+  regular: [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "w",
+    "x",
+    "y",
+    "z",
+    "left_control",
+    "right_control",
+    "left_shift",
+    "right_shift",
+    "left_option",
+    "right_option",
+  ],
+});
 
 function normalizeManipulator(manipulator: JsonMap): JsonMap {
   const normalized = normalizeTerm(manipulator) as JsonMap;
@@ -521,15 +543,12 @@ describe("fixtures", () => {
         JSON.stringify(toManipulators(defs, keyCodes)),
       ) as JsonMap[];
 
-      const actualNodes = parseNodes(actual);
-      const expectedNodes = parseNodes(expected);
+      const normalizedActual = actual.map((item) => normalizeManipulator(item));
+      const normalizedExpected = expected.map((item) =>
+        normalizeManipulator(item),
+      );
 
-      try {
-        compareMultisets(actualNodes, expectedNodes);
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        throw new Error(`fixture mismatch: ${base}\n${message}`);
-      }
+      expect(normalizedActual).toEqual(normalizedExpected);
     }
   });
 });

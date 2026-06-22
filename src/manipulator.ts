@@ -2,6 +2,7 @@ import type { Chord } from "./chord";
 import type { CommandKind } from "./command";
 import { Command } from "./command";
 import { Key, type KeyCodeSpec, type Modifier } from "./key";
+import type { KeyCodes } from "./keyCodes";
 import { Keymap } from "./keymap";
 
 export type Manipulator = {
@@ -91,11 +92,10 @@ function unlessVariable(m: Manipulator, name: string): Manipulator {
 }
 
 function unlessVariables(m: Manipulator, names: string[]): Manipulator {
-  let next = m;
-  for (const name of names) {
-    next = unlessVariable(next, name);
-  }
-  return next;
+  return names.reduce(
+    (manipulator, name) => unlessVariable(manipulator, name),
+    m,
+  );
 }
 
 function appendToClause(
@@ -267,9 +267,20 @@ export function toManipulator(item: GeneratedManipulator): Manipulator {
   return invokeCommandManipulator(item);
 }
 
+export function toManipulators(
+  item: GeneratedManipulator,
+  keyCodes: KeyCodes,
+): Manipulator[] {
+  if (item instanceof DisableKeymap && isRepeatKeymap(item.keymap)) {
+    return repeatResetManipulators(item, keyCodes);
+  }
+  return [toManipulator(item)];
+}
+
 function enableKeymapManipulator(item: EnableKeymap): Manipulator {
   const chord = item.keymap.chord;
   const otherVars = item.otherChords.map((chordItem) => chordItem.varName());
+
   let m = manipulate(chord.last());
   m = unlessVariables(m, otherVars);
 
@@ -294,19 +305,45 @@ function enableKeymapManipulator(item: EnableKeymap): Manipulator {
 
 function disableKeymapManipulator(item: DisableKeymap): Manipulator {
   const varName = item.keymap.chord.varName();
-  let m: Manipulator;
-  if (isRepeatKeymap(item.keymap)) {
-    m = manipulate({ any: "key_code", modifiers: { optional: ["any"] } });
-  } else {
-    m = manipulate("any");
-  }
+  let m = manipulate("any");
   m = ifVariable(m, varName);
   m = unsetVariable(m, varName);
-  if (isRepeatKeymap(item.keymap)) {
-    return passThroughFromEvent(m);
-  }
   return m;
 }
+
+function repeatResetManipulators(
+  item: DisableKeymap,
+  keyCodes: KeyCodes,
+): Manipulator[] {
+  const fromSpecs = [
+    ...[...keyCodes.regular]
+      .filter((code) => !modifierKeyCodes.has(code))
+      .map((key_code) => ({ key_code })),
+    ...[...keyCodes.consumer].map((consumer_key_code) => ({
+      consumer_key_code,
+    })),
+    ...[...keyCodes.pointer].map((pointing_button) => ({ pointing_button })),
+  ] as FromClause[];
+
+  return fromSpecs.map((fromSpec) => {
+    const varName = item.keymap.chord.varName();
+    let m = manipulate({ ...fromSpec, modifiers: { optional: ["any"] } });
+    m = ifVariable(m, varName);
+    m = unsetVariable(m, varName);
+    return passThroughFromEvent(m);
+  });
+}
+
+const modifierKeyCodes = new Set([
+  "left_command",
+  "right_command",
+  "left_option",
+  "right_option",
+  "left_control",
+  "right_control",
+  "left_shift",
+  "right_shift",
+]);
 
 function switchToKeymapManipulator(item: SwitchToKeymap): Manipulator {
   const sourceVarName = item.source.chord.varName();

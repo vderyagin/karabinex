@@ -9,6 +9,7 @@ import {
   commandString,
   generate,
   toManipulator,
+  toManipulators as generatedToManipulators,
 } from "../src/manipulator";
 import { makeKeyCodes } from "./testUtils";
 
@@ -70,7 +71,9 @@ describe("manipulator", () => {
     const keymap = new Keymap(prefix, [
       new Command(prefix.append(Key.parse("b", codes)), "sh", "echo hi", true),
     ]);
-    const manipulators = generate(keymap).map((item) => toManipulator(item));
+    const manipulators = generate(keymap).flatMap((item) =>
+      generatedToManipulators(item, codes),
+    );
     const passThroughReset = manipulators.find((manipulator) =>
       (manipulator.to ?? []).some(
         (clause: Record<string, unknown>) =>
@@ -79,7 +82,7 @@ describe("manipulator", () => {
     );
 
     expect(passThroughReset?.from).toEqual({
-      any: "key_code",
+      key_code: "a",
       modifiers: { optional: ["any"] },
     });
     expect(passThroughReset?.to).toContainEqual({
@@ -89,6 +92,17 @@ describe("manipulator", () => {
       },
     });
     expect(passThroughReset?.to).toContainEqual({ from_event: true });
+    expect(
+      manipulators.some(
+        (manipulator) =>
+          (manipulator.from as { key_code?: string }).key_code ===
+            "left_control" &&
+          (manipulator.to ?? []).some(
+            (clause: Record<string, unknown>) =>
+              (clause as { from_event?: boolean }).from_event === true,
+          ),
+      ),
+    ).toBe(false);
   });
 
   test("repeat keymap can switch to a top-level keymap before pass-through reset", () => {
@@ -112,7 +126,9 @@ describe("manipulator", () => {
     const generated = captureTopLevelKeymaps(
       captureOtherChords([...generate(keymapA), ...generate(keymapB)]),
     );
-    const manipulators = generated.map((item) => toManipulator(item));
+    const manipulators = generated.flatMap((item) =>
+      generatedToManipulators(item, codes),
+    );
     const switchToBIndex = manipulators.findIndex(
       (manipulator) =>
         (manipulator.from as { key_code?: string }).key_code === "b" &&
@@ -130,6 +146,10 @@ describe("manipulator", () => {
 
     expect(switchToBIndex).toBeGreaterThan(-1);
     expect(passThroughResetIndex).toBeGreaterThan(switchToBIndex);
+    expect(switchToB?.from).toEqual({
+      key_code: "b",
+      modifiers: { mandatory: ["control"] },
+    });
     expect(switchToB?.to).toContainEqual({
       set_variable: {
         name: "karabinex_control-a_c_map",
@@ -141,6 +161,97 @@ describe("manipulator", () => {
         name: "karabinex_control-b_map",
         value: 1,
       },
+    });
+  });
+
+  test("repeat keymap leaves modifier keydowns for top-level switches", () => {
+    const codes = makeKeyCodes({
+      regular: ["c", "e", "x", "left_option", "left_control", "left_shift"],
+    });
+    const prefix = Chord.empty().append(Key.parse("Meh-x", codes));
+    const repeatMap = prefix.append(Key.parse("c", codes));
+    const keymap = new Keymap(prefix, [
+      new Keymap(repeatMap, [
+        new Command(
+          repeatMap.append(Key.parse("c", codes)),
+          "sh",
+          "echo repeat",
+          true,
+        ),
+      ]),
+      new Command(prefix.append(Key.parse("e", codes)), "sh", "echo e"),
+    ]);
+    const generated = captureTopLevelKeymaps(
+      captureOtherChords(generate(keymap)),
+    );
+    const manipulators = generated.flatMap((item) =>
+      generatedToManipulators(item, codes),
+    );
+    const switchToPrefixIndex = manipulators.findIndex(
+      (manipulator) =>
+        (manipulator.from as { key_code?: string }).key_code === "x" &&
+        (manipulator.conditions ?? []).some(
+          (condition) => condition.name === "karabinex_meh-x_c_map",
+        ) &&
+        (manipulator.to ?? []).some(
+          (clause: Record<string, unknown>) =>
+            (clause as { set_variable?: { name?: string; value?: number } })
+              .set_variable?.name === "karabinex_meh-x_map",
+        ),
+    );
+    const passThroughResetIndex = manipulators.findIndex((manipulator) =>
+      (manipulator.to ?? []).some(
+        (clause: Record<string, unknown>) =>
+          (clause as { from_event?: boolean }).from_event === true,
+      ),
+    );
+    const modifierResetIndex = manipulators.findIndex(
+      (manipulator) =>
+        (manipulator.from as { key_code?: string }).key_code ===
+          "left_option" &&
+        (manipulator.to ?? []).some(
+          (clause: Record<string, unknown>) =>
+            (clause as { from_event?: boolean }).from_event === true,
+        ),
+    );
+    const switchToPrefix = manipulators[switchToPrefixIndex];
+
+    expect(modifierResetIndex).toBe(-1);
+    expect(switchToPrefixIndex).toBeGreaterThan(-1);
+    expect(switchToPrefix?.from).toEqual({
+      key_code: "x",
+      modifiers: { mandatory: ["option", "control", "shift"] },
+    });
+    expect(passThroughResetIndex).toBeGreaterThan(switchToPrefixIndex);
+  });
+
+  test("native modifiers distinguish plain and shifted child keys", () => {
+    const codes = makeKeyCodes({ regular: ["a", "c", "left_shift"] });
+    const prefix = Chord.empty().append(Key.parse("C-a", codes));
+    const keymap = new Keymap(prefix, [
+      new Command(prefix.append(Key.parse("c", codes)), "sh", "plain"),
+      new Command(prefix.append(Key.parse("S-c", codes)), "sh", "shifted"),
+    ]);
+    const manipulators = generate(keymap).map((item) => toManipulator(item));
+    const plain = manipulators.find((manipulator) =>
+      (manipulator.to ?? []).some(
+        (clause: Record<string, unknown>) =>
+          (clause as { shell_command?: string }).shell_command === "plain",
+      ),
+    );
+    const shifted = manipulators.find((manipulator) =>
+      (manipulator.to ?? []).some(
+        (clause: Record<string, unknown>) =>
+          (clause as { shell_command?: string }).shell_command === "shifted",
+      ),
+    );
+
+    expect(plain?.from).toEqual({
+      key_code: "c",
+    });
+    expect(shifted?.from).toEqual({
+      key_code: "c",
+      modifiers: { mandatory: ["shift"] },
     });
   });
 

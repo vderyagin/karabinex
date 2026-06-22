@@ -7,7 +7,7 @@ import {
   captureOtherChords,
   captureTopLevelKeymaps,
   generate,
-  toManipulator,
+  toManipulators as generatedToManipulators,
 } from "./manipulator";
 import { validate } from "./validator";
 
@@ -21,5 +21,7 @@ export function toManipulators(
   const generated = parsed.flatMap((item) => generate(item));
   const withChords = captureOtherChords(generated);
   const withTopLevelKeymaps = captureTopLevelKeymaps(withChords);
-  return withTopLevelKeymaps.map((item) => toManipulator(item));
+  return withTopLevelKeymaps.flatMap((item) =>
+    generatedToManipulators(item, keyCodes),
+  );
 }
