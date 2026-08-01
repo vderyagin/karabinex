@@ -8,8 +8,8 @@ import {
   captureTopLevelKeymaps,
   commandString,
   generate,
-  toManipulator,
   toManipulators as generatedToManipulators,
+  toManipulator,
 } from "../src/manipulator";
 import { makeKeyCodes } from "./testUtils";
 
