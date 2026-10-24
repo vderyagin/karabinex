@@ -1,4 +1,4 @@
-default: lint format-check typecheck test
+default: build
 
 typecheck:
     bun run typecheck
@@ -6,14 +6,14 @@ typecheck:
 lint:
     bun run lint
 
-lint-fix:
-    bun run lint-fix
+fix-lint:
+    bun run fix-lint
 
 format:
     bun run format
 
-format-check:
-    bun run format-check
+check-format:
+    bun run check-format
 
 test:
     bun test
@@ -31,3 +31,7 @@ fetch-key-codes:
     wget \
       --directory-prefix=./data/ \
       {{key_codes_url}}
+
+check: check-format typecheck lint test build
+
+build: build-cli build-web
